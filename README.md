@@ -28,8 +28,8 @@ From behaviour point of view it's an enhancement of the
 ### Manual
 1. Download the folder worldtidesinfocustom from the latest [release](https://github.com/jugla/worldtidesinfocustom/releases) (with right click, save 
 link as) 
-1. Place the downloaded directory on your Home Assistant machine in the `config/www` folder (when there is no `www` folder in the 
-folder where your `configuration.yaml` file is, create it and place the file there) 
+1. Place the downloaded directory on your Home Assistant machine in the `config/custom_components` folder (when there is no `custom_components` folder in the 
+folder where your `configuration.yaml` file is, create it and place the directory there) 
 1. restart HomeAssistant
 ## Using the component
 Get API from https://www.worldtides.info/developer (buy prepaid)
