@@ -1,0 +1,6 @@
+{
+  "domain": "worldtidesinfo_custom",
+  "name": "World Tides Custom",
+  "documentation": "https://www.home-assistant.io/integrations/worldtidesinfo",
+  "codeowners": []
+}
