@@ -8,6 +8,8 @@ This component allows to :
 - gives the current height
 - gives the next tide
 
+Refresh rate (Scan Interval) is everay 15minutes with refresh of data from server every 12h
+
 The service has to be paid. So the component :
 - trigger, few times a day , a request to server : save bandwith and save credit
 
@@ -44,7 +46,7 @@ sensor:
     latitude: 45.61949378902948
     longitude: -1.0318721687376207
 #    vertical_ref : LAT
-#    scan_interval: 3600
+#    scan_interval: 900
 #    worldtides_request_interval: 43200
 
 ``` 
