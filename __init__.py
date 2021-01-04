@@ -1,1 +1,0 @@
-"""The worldtidesinfo custom component."""
