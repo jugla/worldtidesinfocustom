@@ -1,28 +1,35 @@
 # worldtidesinfocustom
 world tides info custom component for [Home Assistant](https://home-assistant.io/).
 
-This component allow to :
-- trigger few times a day , a request to server : save bandwith and save credit
-- display the tide curve (heiht)
+This component is used to retrieve tide information for a dedicate location (all over the world)
+
+This component allows to :
+- display the tide curve (height)
 - gives the current height
-- gives the net tide
+- gives the next tide
+The service has to be paid. So the component :
+- trigger, few times a day , a request to server : save bandwith and save credit
 
 From behaviour point of view it's an enhancement of the 
-[integration worldtidesinfo] (https://www.home-assistant.io/integrations/worldtidesinfo/) 
+[integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
 
-[![GitHub
-Release][releases-shield]][releases-link] [![GitHub Release Date][release-date-shield]][releases-link] [![GitHub
-Releases][latest-download-shield]][traffic-link] [![GitHub Releases][total-download-shield]][traffic-link]
+[![GitHub Release][releases-shield]][releases-link] [![GitHub Release Date][release-date-shield]][releases-link] [![GitHub Releases][latest-download-shield]][traffic-link] [![GitHub Releases][total-download-shield]][traffic-link]
 
 
 ## Installation
 ### [HACS](https://hacs.xyz/) (Home Assistant Community Store)  [NOT YET IMPLEMENTED]
-1. Go to HACS page on your Home Assistant instance 1. Select `integration` 1. Press add icon and search for `worldtidesinfocustom` 1. Select Compass Card 
-repo and install 1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>) 1. Add worldtidesinfocustom to your page
+1. Go to HACS page on your Home Assistant instance 
+1. Select `integration` 
+1. Press add icon and search for `worldtidesinfocustom` 
+1. Select worldtidesinfocustom repo and install 
+1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>) 
+1. Add worldtidesinfocustom to your page
 ### Manual
 1. Download the folder worldtidesinfocustom from the latest [release](https://github.com/jugla/worldtidesinfocustom/releases) (with right click, save 
-link as) 1. Place the downloaded directory on your Home Assistant machine in the `config/www` folder (when there is no `www` folder in the 
-folder where your `configuration.yaml` file is, create it and place the file there) 1. restart HomeAssistant
+link as) 
+1. Place the downloaded directory on your Home Assistant machine in the `config/www` folder (when there is no `www` folder in the 
+folder where your `configuration.yaml` file is, create it and place the file there) 
+1. restart HomeAssistant
 ## Using the component
 Get API from https://www.worldtides.info/developer (buy prepaid)
 In configuration.yaml, declare :
@@ -41,11 +48,11 @@ sensor:
 where :
 - name is name of your sensor
 - api_key is the key you get
-- latitude, longiude is the place you want to see
+- latitude, longiude is the place you want to see (hereabove Royan,France)
 and  optional parameter
-- vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref] (https://www.worldtides.info/datums)
-- scan_interval : the scan rate to refresh entity, should not be use
-- worldtides_request_interval : the scan rate to fetch data on server, should not be use
+- vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
+- scan_interval : the scan rate to refresh entity (should not be use)
+- worldtides_request_interval : the scan rate to fetch data on server (should not be use)
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
 ```yaml
