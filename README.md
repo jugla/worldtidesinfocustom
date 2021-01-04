@@ -7,6 +7,7 @@ This component allows to :
 - display the tide curve (height)
 - gives the current height
 - gives the next tide
+
 The service has to be paid. So the component :
 - trigger, few times a day , a request to server : save bandwith and save credit
 
