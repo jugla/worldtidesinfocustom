@@ -36,7 +36,7 @@ link as)
 folder where your `configuration.yaml` file is, create it and place the directory there) 
 1. restart HomeAssistant
 ## Using the component
-Get API from https://www.worldtides.info/developer (buy prepaid)
+Get API key from https://www.worldtides.info/developer (buy prepaid)
 In configuration.yaml, declare :
 ```yaml
 sensor:
