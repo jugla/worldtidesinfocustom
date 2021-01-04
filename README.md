@@ -8,7 +8,7 @@ This component allows to :
 - gives the current height
 - gives the next tide
 
-Refresh rate (Scan Interval) is everay 15minutes with refresh of data from server every 12h
+Refresh rate (Scan Interval) is every 15minutes with refresh of data from server every 12h
 
 The service has to be paid. So the component :
 - trigger, few times a day , a request to server : save bandwith and save credit
