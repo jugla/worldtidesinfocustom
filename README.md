@@ -50,6 +50,7 @@ where :
 - name is name of your sensor
 - api_key is the key you get
 - latitude, longiude is the place you want to see (hereabove Royan,France)
+
 and  optional parameter
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
 - scan_interval : the scan rate to refresh entity (should not be use)
