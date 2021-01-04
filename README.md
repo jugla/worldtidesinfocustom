@@ -1,7 +1,7 @@
 # worldtidesinfocustom
 world tides info custom component for [Home Assistant](https://home-assistant.io/).
 
-This component is used to retrieve tide information for a dedicate location (all over the world)
+This component is used to retrieve tide information for a dedicate location (all over the world) : [https://www.worldtides.info/](https://www.worldtides.info/)
 
 This component allows to :
 - display the tide curve (height)
