@@ -99,7 +99,7 @@ camera:
 
 Hereafter an example under lovelace UI
 
-![Default](https://github.com/jugla/worldtidesinfocustom/tree/main/doc/picture/RoyanTidesExample.JPG?raw=true)
+![Default](https://github.com/jugla/worldtidesinfocustom/tree/main/doc/picture/RoyanTidesExample.JPG)
 
 
 ## Wish/Todo list
