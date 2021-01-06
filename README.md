@@ -1,6 +1,11 @@
 # worldtidesinfocustom
 world tides info custom component for [Home Assistant](https://home-assistant.io/).
 
+
+![GitHub release](https://img.shields.io/github/release/jugla/worldtidesinfocustom)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
+
 This component is used to retrieve tide information for a dedicate location (all over the world) : [https://www.worldtides.info/](https://www.worldtides.info/)
 
 This component allows to :
@@ -17,9 +22,6 @@ E.g. implementation request twice a day : 2*3=6 credits. 20000 credits will last
 
 From behaviour point of view it's an enhancement of the 
 [integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
-
-![GitHub release](https://img.shields.io/github/release/jugla/worldtidesinfocustom)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
 
 
