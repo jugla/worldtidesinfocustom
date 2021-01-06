@@ -18,7 +18,9 @@ E.g. implementation request twice a day : 2*3=6 credits. 20000 credits will last
 From behaviour point of view it's an enhancement of the 
 [integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
 
-[![GitHub Release][releases-shield]][releases-link] [![GitHub Release Date][release-date-shield]][releases-link] [![GitHub Releases][latest-download-shield]][traffic-link] [![GitHub Releases][total-download-shield]][traffic-link]
+![GitHub release](https://img.shields.io/github/release/jugla/worldtidesinfocustom)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
 
 
 ## Installation
