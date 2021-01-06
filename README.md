@@ -99,8 +99,10 @@ camera:
 
 Hereafter an example under lovelace UI
 
-![Example](https://github.com/jugla/worldtidesinfocustom/tree/main/doc/picture/RoyanTidesExample.JPG)
 
+<p align="center">
+  <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
+</p>
 
 ## Wish/Todo list
 - implement UI instead of YAML
