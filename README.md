@@ -120,6 +120,9 @@ Hereafter an example under lovelace UI
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 | worldtides_request_interval     | positive int                                                   | **Optional** | v1.0.0    | 43200s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit) |
 
+## about vertical reference
+Different Vertical reference can be used for tide. Please go this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
+
 ## Wish/Todo list
 - implement UI instead of YAML
 - implement asynchoneous instead of polling
