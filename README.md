@@ -108,6 +108,18 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
+## Detail Configuration parameter
+
+| Name              | Type                                                           | Requirement  | Supported | Config                                                    | Description                                                                                                |
+|-------------------|----------------------------------------------------------------|--------------|-----------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| name              | string                                                         | **Optional** | v1.0.0    | YAML                                                                                                                                                               | Default name for sensor entity will be worldtidesinfocustom                                              |
+| api_key           | string                                                         | **Required** | v1.0.0    | YAML                                                       | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
+| latitude          | float                                                          | **Optional** | v1.0.0    | YAML                                                                                                                                                                  | Default is the latitude in your Home Assistant configuration                                             |
+| longitude         | float                                                          | **Optional** | v1.0.0    | YAML                                                                                                                                                                  | Default is the longitude in your Home Assistant configuration                                            |
+| vertical_ref      | string                                                         | **Optional** | v1.0.0    | YAML                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (Default is LAT). See [datum ref](https://www.worldtides.info/datums) |  
+| scan_interval     | positive int                                                   | **Optional** | v1.0.0    | YAML                                                                                                                                                                  | Default is 900s=15mn. It's the time (in seconds) between 2 refresh of sensor with its attributes         |
+| worldtides_request_interval     | positive int                                                   | **Optional** | v1.0.0    | YAML                                                      | Default is 43200s=12h. It's the time between 2 request from WorldTimeInfo serveur (each request request credit) |
+
 ## Wish/Todo list
 - implement UI instead of YAML
 - implement asynchoneous instead of polling
