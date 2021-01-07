@@ -110,7 +110,7 @@ Hereafter an example under lovelace UI
 
 ## Wish/Todo list
 - implement UI instead of YAML
-- implement asychoneous instead of polling
+- implement asynchoneous instead of polling
 - make this integration as default in home assistant
 
 ## Contact
