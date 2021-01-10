@@ -13,4 +13,3 @@ CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
 
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
-
