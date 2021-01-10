@@ -19,17 +19,19 @@ from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
 
-ATTRIBUTION = "Data provided by WorldTides"
+from .const import (
+    ATTRIBUTION,
+    DEFAULT_NAME,
+    SCAN_INTERVAL_SECONDS,
+    DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
+    CONF_WORLDTIDES_REQUEST_INTERVAL,
+    DEFAULT_VERTICAL_REF,
+    CONF_VERTICAL_REF,
+)
 
-DEFAULT_NAME = "WorldTidesInfoCustom"
 
-SCAN_INTERVAL = timedelta(seconds=900)
+SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
-DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 43200
-CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
-
-DEFAULT_VERTICAL_REF = "LAT"
-CONF_VERTICAL_REF = "vertical_ref"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
