@@ -61,8 +61,8 @@ where :
 
 and  optional parameter
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
-- scan_interval : the scan rate to refresh entity (should not be use)
-- worldtides_request_interval : the scan rate to fetch data on server (should not be use)
+- scan_interval : the scan rate to refresh entity (should not be used)
+- worldtides_request_interval : the scan rate to fetch data on server (should not be used)
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
 ```yaml
@@ -121,7 +121,7 @@ Hereafter an example under lovelace UI
 | worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 43200s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit) |
 
 ## about vertical reference
-Different Vertical reference can be used for tide. Please go this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
+Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
 
 ## Wish/Todo list
 - implement UI instead of YAML
