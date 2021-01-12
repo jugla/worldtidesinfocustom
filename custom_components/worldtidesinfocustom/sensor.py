@@ -190,7 +190,7 @@ class WorldTidesInfoCustomSensor(Entity):
         if data_to_require:
             """Get the latest data from WorldTidesInfo API v2."""
             resource = (
-                "https://www.worldtides.info/api/v2?extremes&days=2&date=today&heights&plot&step=900"
+                "https://www.worldtides.info/api/v2?extremes&days=2&date=today&heights&plot&timemode=24&step=900"
                 "&key={}&lat={}&lon={}&datum={}"
             ).format(self._key, self._lat, self._lon, self._vertical_ref)
             try:
