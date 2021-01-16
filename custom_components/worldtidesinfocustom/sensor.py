@@ -6,7 +6,6 @@ import time
 from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
-import os
 import requests
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -23,14 +22,14 @@ _LOGGER = logging.getLogger(__name__)
 
 from .const import (
     ATTRIBUTION,
+    CONF_STATION_DISTANCE,
     CONF_VERTICAL_REF,
     CONF_WORLDTIDES_REQUEST_INTERVAL,
     DEFAULT_NAME,
+    DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
     SCAN_INTERVAL_SECONDS,
-    CONF_STATION_DISTANCE,
-    DEFAULT_STATION_DISTANCE,
 )
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -71,7 +70,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
 
     tides = WorldTidesInfoCustomSensor(
-        name, lat, lon, key, vertical_ref, worldides_request_interval, tide_station_distance, www_path
+        name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        worldides_request_interval,
+        tide_station_distance,
+        www_path,
     )
     tides.retrieve_tide_station()
     tides.update()
@@ -86,7 +92,15 @@ class WorldTidesInfoCustomSensor(Entity):
     """Representation of a WorldTidesInfo sensor."""
 
     def __init__(
-        self, name, lat, lon, key, vertical_ref, worldides_request_interval, tide_station_distance, www_path
+        self,
+        name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        worldides_request_interval,
+        tide_station_distance,
+        www_path,
     ):
         """Initialize the sensor."""
         self._name = name
@@ -103,14 +117,8 @@ class WorldTidesInfoCustomSensor(Entity):
         self.next_midnight = timedelta(days=1) + (datetime.today()).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
-<<<<<<< HEAD
         self.credit_used = 0
         self.data_datums_offset = None
-=======
-        self.credit_used = False
-        self.curve_picture_filename = www_path + "/" + self._name + ".png"
-        self.init_data = None
->>>>>>> d7685832be89dc8346f202bd24538f9e3852ff5c
 
     @property
     def name(self):
@@ -139,24 +147,24 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["high_tide_height"] = self.data["extremes"][next_tide]["height"]
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
             attr["low_tide_height"] = self.data["extremes"][next_tide + 1]["height"]
-            diff_high_tide_next_low_tide = self.data["extremes"][next_tide]["height"] - self.data["extremes"][next_tide + 1]["height"]
+            diff_high_tide_next_low_tide = (
+                self.data["extremes"][next_tide]["height"]
+                - self.data["extremes"][next_tide + 1]["height"]
+            )
         elif "Low" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
             attr["high_tide_height"] = self.data["extremes"][next_tide + 1]["height"]
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
             attr["low_tide_height"] = self.data["extremes"][next_tide]["height"]
-            diff_high_tide_next_low_tide = self.data["extremes"][next_tide + 1]["height"] - self.data["extremes"][next_tide + 2]["height"]
+            diff_high_tide_next_low_tide = (
+                self.data["extremes"][next_tide + 1]["height"]
+                - self.data["extremes"][next_tide + 2]["height"]
+            )
         attr["vertical_reference"] = self.data["responseDatum"]
         if "station" in self.data:
-<<<<<<< HEAD
-           attr["tidal_station_used"] = self.data["station"]
-        else:
-           attr["tidal_station_used"] = "no reference station used"
-=======
             attr["tidal_station_used"] = self.data["station"]
         else:
             attr["tidal_station_used"] = "no reference station used"
->>>>>>> d7685832be89dc8346f202bd24538f9e3852ff5c
         current_height = 0
         for height_index in range(len(self.data["heights"])):
             if self.data["heights"][height_index]["dt"] < current_time:
@@ -173,22 +181,26 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["plot"] = self.curve_picture_filename
 
         attr["CreditCallUsedForInit"] = self.init_data["callCount"]
-<<<<<<< HEAD
-        attr["station_around_nb"] = len (self.init_data["stations"])
+
+        attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = self._tide_station_distance
         if len(self.init_data["stations"]) > 0:
-           attr["station_around_name"] = ""
-           for name_index in range(len(self.init_data["stations"])):
-               attr["station_around_name"] = attr["station_around_name"] + "; " + self.init_data["stations"][name_index]["name"]
-           attr["station_around_time_zone"] = self.init_data["stations"][0]["timezone"]
+            attr["station_around_name"] = ""
+            for name_index in range(len(self.init_data["stations"])):
+                attr["station_around_name"] = (
+                    attr["station_around_name"]
+                    + "; "
+                    + self.init_data["stations"][name_index]["name"]
+                )
+            attr["station_around_time_zone"] = self.init_data["stations"][0]["timezone"]
         else:
-           attr["station_around_name"] = "None"
-           attr["station_around_time_zone"] = "None"
+            attr["station_around_name"] = "None"
+            attr["station_around_time_zone"] = "None"
 
-        #attr["datums"] = self.data_datums_offset
+        # attr["datums"] = self.data_datums_offset
 
-        MHW_index=0
-        MLW_index=0
+        MHW_index = 0
+        MLW_index = 0
         for ref_index in range(len(self.data_datums_offset)):
             if self.data_datums_offset[ref_index]["name"] == "MHWS":
                 MHW_index = ref_index
@@ -196,25 +208,15 @@ class WorldTidesInfoCustomSensor(Entity):
                 MLW_index = ref_index
 
         attr["Coeff"] = int(
-            (diff_high_tide_next_low_tide
-               / (self.data_datums_offset[MHW_index]["height"] - self.data_datums_offset[MLW_index]["height"] )
-            )*100
-        )
-=======
-        attr["station_around_nb"] = len(self.init_data["stations"])
-        if len(self.init_data["stations"]) > 0:
-            attr["station_around_name"] = ""
-            for name_index in range(len(self.init_data["stations"])):
-                attr["station_around_name"] = (
-                    attr["station_around_name"]
-                    + " "
-                    + self.init_data["stations"][name_index]["name"]
+            (
+                diff_high_tide_next_low_tide
+                / (
+                    self.data_datums_offset[MHW_index]["height"]
+                    - self.data_datums_offset[MLW_index]["height"]
                 )
-            attr["station_around_time_zone"] = self.init_data["stations"][0]["timezone"]
-        else:
-            attr["station_around_name"] = "None"
-            attr["station_around_time_zone"] = "None"
->>>>>>> d7685832be89dc8346f202bd24538f9e3852ff5c
+            )
+            * 100
+        )
 
         return attr
 
@@ -269,7 +271,6 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         if data_to_require:
-<<<<<<< HEAD
             self.retrieve_height_station()
         else:
             _LOGGER.debug(
@@ -280,11 +281,10 @@ class WorldTidesInfoCustomSensor(Entity):
         current_time = time.time()
         data_has_been_received = False
 
-
         """Get the latest data from WorldTidesInfo API v2."""
         resource = (
-             "https://www.worldtides.info/api/v2?stations"
-             "&key={}&lat={}&lon={}&stationDistance={}"
+            "https://www.worldtides.info/api/v2?stations"
+            "&key={}&lat={}&lon={}&stationDistance={}"
         ).format(self._key, self._lat, self._lon, self._tide_station_distance)
         try:
             self.init_data = requests.get(resource, timeout=10).json()
@@ -298,7 +298,6 @@ class WorldTidesInfoCustomSensor(Entity):
         if data_has_been_received:
             self.credit_used = self.credit_used + self.init_data["callCount"]
 
-
     def retrieve_height_station(self):
         """Get the latest data from WorldTidesInfo API v2."""
         data_has_been_received = False
@@ -307,11 +306,17 @@ class WorldTidesInfoCustomSensor(Entity):
         if self.data_datums_offset == None:
             datums_string = "&datums"
 
-
         resource = (
             "https://www.worldtides.info/api/v2?extremes&days=2&date=today&heights&plot&timemode=24&step=900"
             "&key={}&lat={}&lon={}&datum={}&stationDistance={}{}"
-        ).format(self._key, self._lat, self._lon, self._vertical_ref, self._tide_station_distance,datums_string)
+        ).format(
+            self._key,
+            self._lat,
+            self._lon,
+            self._vertical_ref,
+            self._tide_station_distance,
+            datums_string,
+        )
         try:
             self.data = requests.get(resource, timeout=10).json()
             data_has_been_received = True
@@ -324,7 +329,7 @@ class WorldTidesInfoCustomSensor(Entity):
         if data_has_been_received:
             self.credit_used = self.credit_used + self.data["callCount"]
             self.data_request_time = current_time
-            if "datums" in  self.data:
+            if "datums" in self.data:
                 self.data_datums_offset = self.data["datums"]
             if "plot" in self.data:
                 filename = self.curve_picture_filename
@@ -338,57 +343,3 @@ class WorldTidesInfoCustomSensor(Entity):
             else:
                 if os.path.isfile(self.curve_picture_filename):
                     os.remove(self.curve_picture_filename)
-
-
-
-=======
-            """Get the latest data from WorldTidesInfo API v2."""
-            resource = (
-                "https://www.worldtides.info/api/v2?extremes&days=2&date=today&heights&plot&timemode=24&step=900"
-                "&key={}&lat={}&lon={}&datum={}"
-            ).format(self._key, self._lat, self._lon, self._vertical_ref)
-            try:
-                self.data = requests.get(resource, timeout=10).json()
-                data_has_been_received = True
-                _LOGGER.debug("Data: %s", self.data)
-                _LOGGER.debug("Tide data queried at: %s", int(current_time))
-            except ValueError as err:
-                _LOGGER.error("Error retrieving data from WorldTidesInfo: %s", err.args)
-                self.data = None
-
-            if data_has_been_received:
-                self.credit_used = True
-                self.data_request_time = current_time
-                if "plot" in self.data:
-                    filename = self.curve_picture_filename
-                    std_string = "data:image/png;base64,"
-                    str_to_convert = self.data["plot"][
-                        len(std_string) : len(self.data["plot"])
-                    ]
-                    imgdata = base64.b64decode(str_to_convert)
-                    with open(filename, "wb") as filehandler:
-                        filehandler.write(imgdata)
-                else:
-                    if os.path.isfile(self.curve_picture_filename):
-                        os.remove(self.curve_picture_filename)
-
-        else:
-            _LOGGER.debug(
-                "Tide data not need to be requeried at: %s", int(current_time)
-            )
-
-    def retrieve_tide_station(self):
-        current_time = time.time()
-
-        """Get the latest data from WorldTidesInfo API v2."""
-        resource = (
-            "https://www.worldtides.info/api/v2?stations" "&key={}&lat={}&lon={}"
-        ).format(self._key, self._lat, self._lon)
-        try:
-            self.init_data = requests.get(resource, timeout=10).json()
-            _LOGGER.debug("Init Data: %s", self.data)
-            _LOGGER.debug("Init data queried at: %s", int(current_time))
-        except ValueError as err:
-            _LOGGER.error("Error retrieving data from WorldTidesInfo: %s", err.args)
-            self.init_data = None
->>>>>>> d7685832be89dc8346f202bd24538f9e3852ff5c
