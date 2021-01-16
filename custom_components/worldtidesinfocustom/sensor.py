@@ -1,6 +1,7 @@
 """Support for the worldtides.info API v2."""
 import base64
 import logging
+import os
 import time
 from datetime import datetime, timedelta
 
@@ -64,6 +65,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     tides = WorldTidesInfoCustomSensor(
         name, lat, lon, key, vertical_ref, worldides_request_interval, www_path
     )
+    tides.retrieve_tide_station()
     tides.update()
     if tides.data.get("error") == "No location found":
         _LOGGER.error("Location not available")
@@ -92,6 +94,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
         self.credit_used = False
         self.curve_picture_filename = www_path + "/" + self._name + ".png"
+        self.init_data = None
 
     @property
     def name(self):
@@ -108,8 +111,9 @@ class WorldTidesInfoCustomSensor(Entity):
         for tide_index in range(len(self.data["extremes"])):
             if self.data["extremes"][tide_index]["dt"] < current_time:
                 next_tide = tide_index
-
-        next_tide = next_tide + 1
+        """if next_tide=0 perform a check"""
+        if self.data["extremes"][next_tide]["dt"] < current_time:
+            next_tide = next_tide + 1
 
         if "High" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
@@ -122,7 +126,10 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
             attr["low_tide_height"] = self.data["extremes"][next_tide]["height"]
         attr["vertical_reference"] = self.data["responseDatum"]
-
+        if "station" in self.data:
+            attr["tidal_station_used"] = self.data["station"]
+        else:
+            attr["tidal_station_used"] = "no reference station used"
         current_height = 0
         for height_index in range(len(self.data["heights"])):
             if self.data["heights"][height_index]["dt"] < current_time:
@@ -141,6 +148,21 @@ class WorldTidesInfoCustomSensor(Entity):
 
         attr["plot"] = self.curve_picture_filename
 
+        attr["CreditCallUsedForInit"] = self.init_data["callCount"]
+        attr["station_around_nb"] = len(self.init_data["stations"])
+        if len(self.init_data["stations"]) > 0:
+            attr["station_around_name"] = ""
+            for name_index in range(len(self.init_data["stations"])):
+                attr["station_around_name"] = (
+                    attr["station_around_name"]
+                    + " "
+                    + self.init_data["stations"][name_index]["name"]
+                )
+            attr["station_around_time_zone"] = self.init_data["stations"][0]["timezone"]
+        else:
+            attr["station_around_name"] = "None"
+            attr["station_around_time_zone"] = "None"
+
         return attr
 
     @property
@@ -152,7 +174,9 @@ class WorldTidesInfoCustomSensor(Entity):
             for tide_index in range(len(self.data["extremes"])):
                 if self.data["extremes"][tide_index]["dt"] < current_time:
                     next_tide = tide_index
-            next_tide = next_tide + 1
+            if self.data["extremes"][next_tide]["dt"] < current_time:
+                next_tide = next_tide + 1
+
             if "High" in str(self.data["extremes"][next_tide]["type"]):
                 tidetime = time.strftime(
                     "%H:%M", time.localtime(self.data["extremes"][next_tide]["dt"])
@@ -205,17 +229,35 @@ class WorldTidesInfoCustomSensor(Entity):
             if data_has_been_received:
                 self.credit_used = True
                 self.data_request_time = current_time
-
-                filename = self.curve_picture_filename
-                std_string = "data:image/png;base64,"
-                str_to_convert = self.data["plot"][
-                    len(std_string) : len(self.data["plot"])
-                ]
-                imgdata = base64.b64decode(str_to_convert)
-                with open(filename, "wb") as filehandler:
-                    filehandler.write(imgdata)
+                if "plot" in self.data:
+                    filename = self.curve_picture_filename
+                    std_string = "data:image/png;base64,"
+                    str_to_convert = self.data["plot"][
+                        len(std_string) : len(self.data["plot"])
+                    ]
+                    imgdata = base64.b64decode(str_to_convert)
+                    with open(filename, "wb") as filehandler:
+                        filehandler.write(imgdata)
+                else:
+                    if os.path.isfile(self.curve_picture_filename):
+                        os.remove(self.curve_picture_filename)
 
         else:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
             )
+
+    def retrieve_tide_station(self):
+        current_time = time.time()
+
+        """Get the latest data from WorldTidesInfo API v2."""
+        resource = (
+            "https://www.worldtides.info/api/v2?stations" "&key={}&lat={}&lon={}"
+        ).format(self._key, self._lat, self._lon)
+        try:
+            self.init_data = requests.get(resource, timeout=10).json()
+            _LOGGER.debug("Init Data: %s", self.data)
+            _LOGGER.debug("Init data queried at: %s", int(current_time))
+        except ValueError as err:
+            _LOGGER.error("Error retrieving data from WorldTidesInfo: %s", err.args)
+            self.init_data = None
