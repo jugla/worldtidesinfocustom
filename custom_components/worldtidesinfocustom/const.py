@@ -13,3 +13,6 @@ CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
 
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
+
+DEFAULT_STATION_DISTANCE = 10
+CONF_STATION_DISTANCE = "station_distance"
