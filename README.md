@@ -130,23 +130,23 @@ Different Vertical reference can be used for tide. Please go to this page that e
 The platform create 1 sensor (name given in configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
-| name given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | HA local time  | gives the next tide low or high with HA local time     |
+| name given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | **HA local time**  | gives the next tide low or high with HA local time     |
 
 This sensor has a set of attributes describes hereafter
 
 | Name                 | Supported | format     | unit | Description                                                                                                   |
 |----------------------|-----------|------------|------|---------------------------------------------------------------------------------------------------------------|
-| High tide time utc   |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | UTC  | Next High tide in UTC     |
-| High tide height     |  v1.0.0   |  float     | m    | Next High tide in UTC     |
-| Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | UTC  | Next High tide in UTC     |
-| Low tide height      |  v1.0.0   |  float     | m    | Next High tide in UTC     |
+| High tide time utc   |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next High tide in UTC     |
+| High tide height     |  v1.0.0   |  float     | m    | Next High tide height     |
+| Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next High tide in UTC     |
+| Low tide height      |  v1.0.0   |  float     | m    | Next High tide heiht     |
 | Vertical reference   |  v1.0.0   |  string    | NA   |  string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums)    |
 | Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
-| Current height       | v1.0.0    |  float     | m    | current height (HA local time)     |
-| Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | UTC  | height sample used to compute current height     |
+| Current height       | v1.0.0    |  float     | m    | current height (**HA local time**)     |
+| Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | **UTC**  | height sample used to compute current height     |
 | CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
-| Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | HA local time | time of last request to world tide info server |
-| Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in local time. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
+| Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | **HA local time** | time of last request to world tide info server |
+| Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in **local time of the tide location**. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
 | CreditCallUsedForInit | v2.0.0   | int        | credit | credit used to retrieve tide station at startup |
 | Station around nb    | v2.0.0    | int        | N/A  | number of tide station within radius specified in configuration.yaml |
 | Station distance     | v2.0.0    | int        | km   | the radius used to retrieve tide station around location |
