@@ -49,6 +49,7 @@ sensor:
     api_key: YOUR_API_KEY
     latitude: 45.61949378902948
     longitude: -1.0318721687376207
+#    station_distance: 10
 #    vertical_ref : LAT
 #    scan_interval: 900
 #    worldtides_request_interval: 43200
@@ -116,12 +117,41 @@ Hereafter an example under lovelace UI
 | api_key           | string                                                         | **Required** | v1.0.0    | n.a | YAML                                                       | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
 | latitude          | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data . |
 | longitude         | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data .    |
+| station_distance  | positive int                                                   | **Optional** | v2.0.0    | 10km | YAML                                                                                                                                                                  | The maximum distance (in kilometers) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 | worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 43200s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit) |
 
 ## about vertical reference
 Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
+
+## Detail Sensor attribute description
+The platform create 1 sensor (name given in configuration.yaml). 
+| Name              | Supported | format | unit | Description                                                                                                   |
+|-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
+| name given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | HA local time  | gives the next tide low or high with HA local time     |
+
+This sensor has a set of attributes describes hereafter
+
+| Name                 | Supported | format     | unit | Description                                                                                                   |
+|----------------------|-----------|------------|------|---------------------------------------------------------------------------------------------------------------|
+| High tide time utc   |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | UTC  | Next High tide in UTC     |
+| High tide height     |  v1.0.0   |  float     | m    | Next High tide in UTC     |
+| Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | UTC  | Next High tide in UTC     |
+| Low tide height      |  v1.0.0   |  float     | m    | Next High tide in UTC     |
+| Vertical reference   |  v1.0.0   |  string    | NA   |  string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums)    |
+| Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
+| Current height       | v1.0.0    |  float     | m    | current height (HA local time)     |
+| Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | UTC  | height sample used to compute current height     |
+| CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
+| Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | HA local time | time of last request to world tide info server |
+| Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in local time. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
+| CreditCallUsedForInit | v2.0.0   | int        | credit | credit used to retrieve tide station at startup |
+| Station around nb    | v2.0.0    | int        | N/A  | number of tide station within radius specifie in configuration.yaml |
+| Station distance     | v2.0.0    | int        | km   | the radius used to retrieve tide station around location |
+| Station around name  | v2.0.0    | string     | location name | tide station list separate by ";" |
+| Station around time zone | v2.0.0 | string    | time zone | Full timezone name (ex. America/Los_Angeles) |
+| Coeff                | v2.0.0    | int        | NA   | coeff that represents the ((next Hight Tide - next Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) |
 
 ## Wish/Todo list
 - implement UI instead of YAML
