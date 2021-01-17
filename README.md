@@ -138,8 +138,8 @@ This sensor has a set of attributes describes hereafter
 |----------------------|-----------|------------|------|---------------------------------------------------------------------------------------------------------------|
 | High tide time utc   |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next High tide in UTC     |
 | High tide height     |  v1.0.0   |  float     | m    | Next High tide height     |
-| Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next High tide in UTC     |
-| Low tide height      |  v1.0.0   |  float     | m    | Next High tide heiht     |
+| Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next Low tide in UTC     |
+| Low tide height      |  v1.0.0   |  float     | m    | Next Low tide heiht     |
 | Vertical reference   |  v1.0.0   |  string    | NA   |  string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums)    |
 | Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
 | Current height       | v1.0.0    |  float     | m    | current height (**HA local time**)     |
