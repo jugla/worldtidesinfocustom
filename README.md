@@ -61,6 +61,7 @@ where :
 - latitude, longiude is the place you want to see (hereabove Royan,France)
 
 and  optional parameter
+- station_distance: the radius in km from location to retrieve tide station
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
 - scan_interval : the scan rate to refresh entity (should not be used)
 - worldtides_request_interval : the scan rate to fetch data on server (should not be used)
