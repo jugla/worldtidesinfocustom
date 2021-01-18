@@ -110,7 +110,7 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 <p align="center">
-  <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="100">
+  <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
 </p>
 
 ## Detail Configuration parameter
