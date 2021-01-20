@@ -18,7 +18,7 @@ Refresh rate (Scan Interval) is every 15minutes with refresh of data from server
 The service has to be paid. So the component :
 - trigger, few times a day , a request to server : save bandwith and save credit
 
-E.g. implementation request twice a day : 2*3=6 credits. 20000 credits will last ~9 years
+E.g. implementation request once a day per location: 1*3=6 credits. 20000 credits will last ~18 years
 
 From behaviour point of view it's an enhancement of the 
 [integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
@@ -52,7 +52,7 @@ sensor:
 #    station_distance: 10
 #    vertical_ref : LAT
 #    scan_interval: 900
-#    worldtides_request_interval: 43200
+#    worldtides_request_interval: 90000
 
 ``` 
 where :
@@ -124,7 +124,7 @@ Hereafter an example under lovelace UI
 | station_distance  | positive int                                                   | **Optional** | v2.0.0    | 10km | YAML                                                                                                                                                                  | The maximum distance (in kilometers) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
-| worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 43200s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit) |
+| worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 90000s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit). One request is force around minight whatever the parameter value is |
 
 ## about vertical reference
 Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
