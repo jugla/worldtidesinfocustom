@@ -16,7 +16,7 @@ This component allows to :
 Refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 
 The request per day per location uses 3 credits.
-E.g. So for one location: 20000 credits will last ~18 years
+So for one location: 20000 credits will last ~18 years
 
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
