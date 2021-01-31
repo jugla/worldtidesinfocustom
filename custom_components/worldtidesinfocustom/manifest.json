@@ -1,7 +1,7 @@
 {
   "domain": "worldtidesinfocustom",
   "name": "World Tides Custom",
-  "version" : "2.1.1",
+  "version" : "2.1.2",
   "codeowners": ["@jugla"],
   "documentation": "https://github.com/jugla/worldtidesinfocustom",
   "issue_tracker": "https://github.com/jugla/worldtidesinfocustom/issues"
