@@ -31,9 +31,8 @@ From behaviour point of view it's an enhancement of the
 1. Go to HACS page on your Home Assistant instance 
 1. Select `integration` 
 1. Press add icon and search for `worldtidesinfocustom` 
-1. Select worldtidesinfocustom repo and install 
-1. Force refresh the Home Assistant page (<kbd>Ctrl</kbd> + <kbd>F5</kbd>) 
-1. Add worldtidesinfocustom to your page
+1. Select worldtidesinfocustom and install 
+
 ### Manual
 1. Download the folder worldtidesinfocustom from the latest [release](https://github.com/jugla/worldtidesinfocustom/releases) (with right click, save 
 link as) 
