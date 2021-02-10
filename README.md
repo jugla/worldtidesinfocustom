@@ -27,7 +27,7 @@ From behaviour point of view it's an enhancement of the
 
 
 ## Installation
-### [HACS](https://hacs.xyz/) (Home Assistant Community Store)  { Pull request undergoing }
+### [HACS](https://hacs.xyz/) (Home Assistant Community Store) 
 1. Go to HACS page on your Home Assistant instance 
 1. Select `integration` 
 1. Press add icon and search for `worldtidesinfocustom` 
