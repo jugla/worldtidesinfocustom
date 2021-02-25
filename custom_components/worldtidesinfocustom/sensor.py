@@ -306,8 +306,9 @@ class WorldTidesInfoCustomSensor(Entity):
         if self.data_datums_offset == None:
             datums_string = "&datums"
 
+        """3 days --> to manage one day beyond midnight and one before midnight""" 
         resource = (
-            "https://www.worldtides.info/api/v2?extremes&days=2&date=today&heights&plot&timemode=24&step=900"
+            "https://www.worldtides.info/api/v2?extremes&days=3&date=today&heights&plot&timemode=24&step=900"
             "&key={}&lat={}&lon={}&datum={}&stationDistance={}{}"
         ).format(
             self._key,
