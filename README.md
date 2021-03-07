@@ -68,6 +68,7 @@ and  optional parameter
 - worldtides_request_interval : the scan rate to fetch data on server (should not be used)
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
+
 ```yaml
 ##configuration.yaml example
 sensor:
@@ -122,6 +123,7 @@ Hereafter an example under lovelace UI
 </p>
 
 <details><summary>with source code</summary>
+
 ```yaml
 ##UI interface example (can be entered via manual card)
 type: entities
