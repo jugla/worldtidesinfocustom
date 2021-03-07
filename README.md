@@ -116,13 +116,13 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
 </p>
 
-Hereafter an example of picture elment card under lovelace UI
+Hereafter an example of picture element card under lovelace UI
 
 <p align="center">
-  <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="300">
+  <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="400">
 </p>
 
-with hereafter the source code of the card
+with the source code of the card
 
 ```yaml
 elements:
