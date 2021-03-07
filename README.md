@@ -93,6 +93,9 @@ sensor:
         value_template: "{{ state_attr('sensor.royan_tides','current_height')  }}"
         friendly_name: "Royan Tide Current Height"
         unit_of_measurement: m
+      tide_royan_station:
+        value_template: "{{ state_attr('sensor.royan_tides','tidal_station_used')  }}"
+        friendly_name: "Royan Tide Station used"
 
 ## CAMERA
 camera:
@@ -112,6 +115,122 @@ Hereafter an example under lovelace UI
 <p align="center">
   <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
 </p>
+
+Hereafter an example of picture elment card under lovelace UI
+
+<p align="center">
+  <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="300">
+</p>
+
+with hereafter the source code of the card
+
+```yaml
+elements:
+  - entity: sensor.tide_royan_station
+    style:
+      background-color: 'rgba(0, 0, 0, 0.3)'
+      bottom: 0
+      color: white
+      font-size: 14px
+      left: 0
+      line-height: 34px
+      padding: 0 15px
+      pointer-events: none
+      transform: initial
+      font-weight: bold
+      width: 100%
+    type: state-label
+  - entity: sensor.tide_royan_current_height
+    style:
+      color: white
+      font-size: 12px
+      line-height: 32px
+      margin: 150px 5px
+      pointer-events: none
+      font-weight: bold
+      right: 0
+      top: 0
+      transform: initial
+    prefix: 'Current Tide Height : '
+    type: state-label
+  - entity: sensor.tide_royan_next_high
+    style:
+      color: black
+      font-size: 12px
+      line-height: 32px
+      margin: 1px 35px
+      pointer-events: none
+      font-weight: bold
+      right: 0
+      top: 0
+      transform: initial
+    prefix: 'Next High Tide : '
+    type: state-label
+  - entity: sensor.tide_royan_next_high_height
+    style:
+      color: black
+      font-size: 12px
+      line-height: 32px
+      margin: 30px 35px
+      font-weight: bold
+      pointer-events: none
+      right: 0
+      top: 0
+      transform: initial
+    prefix: 'High Tide Height: '
+    type: state-label
+  - icon: 'mdi:arrow-up-bold'
+    style:
+      color: black
+      line-height: 32px
+      margin: 39px 20px
+      pointer-events: none
+      right: 0
+      top: 0
+      transform: scale(0.8)
+    type: icon
+  - entity: sensor.tide_royan_next_low
+    style:
+      color: black
+      font-weight: bold
+      font-size: 12px
+      line-height: 32px
+      margin: 59px 35px
+      pointer-events: none
+      right: 0
+      top: 0
+      transform: initial
+    prefix: 'Next Low Tide : '
+    type: state-label
+  - entity: sensor.tide_royan_next_low_height
+    style:
+      color: black
+      font-weight: bold
+      font-size: 12px
+      line-height: 32px
+      margin: 84px 35px
+      pointer-events: none
+      right: 0
+      top: 0
+      transform: initial
+    type: state-label
+    prefix: 'Low Tide Height : '
+  - icon: 'mdi:arrow-down-bold'
+    style:
+      color: black
+      line-height: 40px
+      margin: 88px 20px
+      pointer-events: none
+      right: 0
+      top: 0
+      transform: scale(0.8)
+    type: icon
+image: local/royan_tides.png
+type: picture-elements
+
+```
+
+
 
 ## Detail Configuration parameter
 
@@ -165,5 +284,6 @@ This sensor has a set of attributes describes hereafter
 ## Contact
 
 ## Thanks to
+Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
 
 ## Support
