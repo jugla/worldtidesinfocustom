@@ -106,15 +106,61 @@ camera:
 
 ```
 
-Hereafter an example under lovelace UI
+Hereafter the display of attributes within lovelace UI
 
+<p align="center">
+  <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
+</p>
+
+
+Hereafter an example under lovelace UI
 
 <p align="center">
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
-<p align="center">
-  <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
-</p>
+
+with source code
+```yaml
+type: entities
+entities:
+  - entity: sensor.royan_tides
+  - entity: sensor.tide_royan_next_low
+  - entity: sensor.tide_royan_next_high
+  - entity: sensor.tide_royan_next_low_height
+  - entity: sensor.tide_royan_next_high_height
+title: Royan Tides (worldtidesinfo)
+```
+
+```yaml
+type: history-graph
+entities:
+  - entity: sensor.tide_royan_current_height
+  - entity: sensor.royan_tides
+hours_to_show: 24
+refresh_interval: 0
+title: Royan Next Tide/Current Height
+```
+
+```yaml
+type: vertical-stack
+cards:
+  - type: entity
+    entity: sensor.royan_tides
+    attribute: station_around_time_zone
+    name: royan time zone station
+  - type: picture-entity
+    entity: sensor.royan_tides
+    camera_image: camera.royan_tides_curve
+```
+
+```yaml
+type: history-graph
+entities:
+  - entity: sensor.tide_royan_credit
+hours_to_show: 24
+refresh_interval: 0
+title: royan credit used worldtide
+```
 
 Hereafter an example of picture element card under lovelace UI
 
