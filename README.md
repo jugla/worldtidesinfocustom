@@ -121,7 +121,7 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
-with source code
+<details><summary>with source code</summary>
 ```yaml
 ##UI interface example (can be entered via manual card)
 type: entities
@@ -167,6 +167,7 @@ hours_to_show: 24
 refresh_interval: 0
 title: royan credit used worldtide
 ```
+</details>
 
 Hereafter an example of picture element card under lovelace UI
 
@@ -174,7 +175,7 @@ Hereafter an example of picture element card under lovelace UI
   <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="400">
 </p>
 
-with the source code of the card
+<details><summary>with the source code of the card</summary>
 
 ```yaml
 ##UI interface example (can be entered via manual card)
@@ -282,7 +283,7 @@ image: local/royan_tides.png
 type: picture-elements
 
 ```
-
+</details>
 
 
 ## Detail Configuration parameter
