@@ -43,6 +43,7 @@ folder where your `configuration.yaml` file is, create it and place the director
 Get API key from https://www.worldtides.info/developer (buy prepaid)
 In configuration.yaml, declare :
 ```yaml
+##configuration.yaml example
 sensor:
   - platform: worldtidesinfocustom
     name: royan_tides
@@ -68,6 +69,7 @@ and  optional parameter
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
 ```yaml
+##configuration.yaml example
 sensor:
   - platform: template
     sensors:
@@ -121,6 +123,7 @@ Hereafter an example under lovelace UI
 
 with source code
 ```yaml
+##UI interface example (can be entered via manual card)
 type: entities
 entities:
   - entity: sensor.royan_tides
@@ -132,6 +135,7 @@ title: Royan Tides (worldtidesinfo)
 ```
 
 ```yaml
+##UI interface example (can be entered via manual card)
 type: history-graph
 entities:
   - entity: sensor.tide_royan_current_height
@@ -142,6 +146,7 @@ title: Royan Next Tide/Current Height
 ```
 
 ```yaml
+##UI interface example (can be entered via manual card)
 type: vertical-stack
 cards:
   - type: entity
@@ -154,6 +159,7 @@ cards:
 ```
 
 ```yaml
+##UI interface example (can be entered via manual card)
 type: history-graph
 entities:
   - entity: sensor.tide_royan_credit
@@ -171,6 +177,7 @@ Hereafter an example of picture element card under lovelace UI
 with the source code of the card
 
 ```yaml
+##UI interface example (can be entered via manual card)
 elements:
   - entity: sensor.tide_royan_station
     style:
