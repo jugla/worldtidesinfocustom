@@ -281,10 +281,13 @@ elements:
       top: 0
       transform: scale(0.8)
     type: icon
-image: local/royan_tides.png
+camera_image: camera.royan_tides_curve
 type: picture-elements
 
 ```
+
+NB: watch out : in the code we use the camera_image keyword and not image
+
 </details>
 
 
