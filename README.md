@@ -43,6 +43,7 @@ folder where your `configuration.yaml` file is, create it and place the director
 Get API key from https://www.worldtides.info/developer (buy prepaid)
 In configuration.yaml, declare :
 ```yaml
+##configuration.yaml example
 sensor:
   - platform: worldtidesinfocustom
     name: royan_tides
@@ -67,7 +68,9 @@ and  optional parameter
 - worldtides_request_interval : the scan rate to fetch data on server (should not be used)
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
+
 ```yaml
+##configuration.yaml example
 sensor:
   - platform: template
     sensors:
@@ -106,25 +109,78 @@ camera:
 
 ```
 
-Hereafter an example under lovelace UI
+Hereafter the display of attributes within lovelace UI
 
-
-<p align="center">
-  <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
-</p>
 <p align="center">
   <img src="./doc/picture/RoyanTidesExample_attribute.JPG" alt="Size Limit CLI" width="300">
 </p>
 
-Hereafter an example of picture elment card under lovelace UI
+
+Hereafter an example under lovelace UI
 
 <p align="center">
-  <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="300">
+  <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
-with hereafter the source code of the card
+<details><summary>with source code</summary>
 
 ```yaml
+##UI interface example (can be entered via manual card)
+type: entities
+entities:
+  - entity: sensor.royan_tides
+  - entity: sensor.tide_royan_next_low
+  - entity: sensor.tide_royan_next_high
+  - entity: sensor.tide_royan_next_low_height
+  - entity: sensor.tide_royan_next_high_height
+title: Royan Tides (worldtidesinfo)
+```
+
+```yaml
+##UI interface example (can be entered via manual card)
+type: history-graph
+entities:
+  - entity: sensor.tide_royan_current_height
+  - entity: sensor.royan_tides
+hours_to_show: 24
+refresh_interval: 0
+title: Royan Next Tide/Current Height
+```
+
+```yaml
+##UI interface example (can be entered via manual card)
+type: vertical-stack
+cards:
+  - type: entity
+    entity: sensor.royan_tides
+    attribute: station_around_time_zone
+    name: royan time zone station
+  - type: picture-entity
+    entity: sensor.royan_tides
+    camera_image: camera.royan_tides_curve
+```
+
+```yaml
+##UI interface example (can be entered via manual card)
+type: history-graph
+entities:
+  - entity: sensor.tide_royan_credit
+hours_to_show: 24
+refresh_interval: 0
+title: royan credit used worldtide
+```
+</details>
+
+Hereafter an example of picture element card under lovelace UI
+
+<p align="center">
+  <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="400">
+</p>
+
+<details><summary>with the source code of the card</summary>
+
+```yaml
+##UI interface example (can be entered via manual card)
 elements:
   - entity: sensor.tide_royan_station
     style:
@@ -225,11 +281,14 @@ elements:
       top: 0
       transform: scale(0.8)
     type: icon
-image: local/royan_tides.png
+camera_image: camera.royan_tides_curve
 type: picture-elements
 
 ```
 
+NB: watch out : in the code we use the camera_image keyword and not image
+
+</details>
 
 
 ## Detail Configuration parameter
