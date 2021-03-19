@@ -80,7 +80,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         tide_station_distance,
         www_path,
     )
-    #tides.retrieve_tide_station()
+    # tides.retrieve_tide_station()
     tides.update()
     if tides.data.get("error") == "No location found":
         _LOGGER.error("Location not available")
@@ -114,36 +114,37 @@ class TidesInfoData:
     def filename(self):
         return self._filename
 
-    def store_parameters (self, name,lat,lon, vertical_ref, tide_station_distance):
+    def store_parameters(self, name, lat, lon, vertical_ref, tide_station_distance):
         self._name = name
         self._lat = lat
         self._lon = lon
         self._vertical_ref = vertical_ref
         self._tide_station_distance = tide_station_distance
 
-    def store_init_info (self, init_data):
+    def store_init_info(self, init_data):
         self.init_data = init_data
 
-    def store_init_offset (self, data_datums_offset):
+    def store_init_offset(self, data_datums_offset):
         self.data_datums_offset = data_datums_offset
 
-    def store_data_info (self,data, data_request_time): 
+    def store_data_info(self, data, data_request_time):
         self.data = data
         self.data_request_time = data_request_time
 
-    def store_next_midnight (self,next_midnight):
+    def store_next_midnight(self, next_midnight):
         self.next_midnight = next_midnight
 
-
-    def data_usable (self, name,lat,lon, vertical_ref, tide_station_distance):
-       if (self._name == name 
-            and self._lat == lat 
+    def data_usable(self, name, lat, lon, vertical_ref, tide_station_distance):
+        if (
+            self._name == name
+            and self._lat == lat
             and self._lon == lon
-            and self._vertical_ref == vertical_ref 
-            and self._tide_station_distance == tide_station_distance):
-          return True
-       else:
-          return False
+            and self._vertical_ref == vertical_ref
+            and self._tide_station_distance == tide_station_distance
+        ):
+            return True
+        else:
+            return False
 
 
 class WorldTidesInfoCustomSensor(Entity):
@@ -179,10 +180,16 @@ class WorldTidesInfoCustomSensor(Entity):
         self.data_datums_offset = None
         """ initialize the data to store"""
         self.TidesInfoData_filename = www_path + "/" + self._name + ".ser"
-        self.TidesInfoData = TidesInfoData( self.TidesInfoData_filename )
+        self.TidesInfoData = TidesInfoData(self.TidesInfoData_filename)
         """parameter"""
-        self.TidesInfoData.store_parameters(self._name, self._lat, self._lon, self._vertical_ref, self._tide_station_distance)
-        self.TidesInfoData.store_next_midnight (self.next_midnight)
+        self.TidesInfoData.store_parameters(
+            self._name,
+            self._lat,
+            self._lon,
+            self._vertical_ref,
+            self._tide_station_distance,
+        )
+        self.TidesInfoData.store_next_midnight(self.next_midnight)
 
     @property
     def name(self):
@@ -320,35 +327,37 @@ class WorldTidesInfoCustomSensor(Entity):
             TidesInfoData_read = None
             """read previous received data"""
             try:
-                data_to_read = open (self.TidesInfoData_filename, 'rb')
+                data_to_read = open(self.TidesInfoData_filename, "rb")
                 unpickler = pickle.Unpickler(data_to_read)
                 TidesInfoData_read = unpickler.load()
                 data_to_read.close()
                 previous_data_fetched = True
             except:
-                _LOGGER.debug(
-                     "Init to be performed at: %s", int(current_time)
-                )
+                _LOGGER.debug("Init to be performed at: %s", int(current_time))
             if previous_data_fetched:
-                if self.TidesInfoData.data_usable (TidesInfoData_read._name,
-                  TidesInfoData_read._lat,
-                  TidesInfoData_read._lon, 
-                  TidesInfoData_read._vertical_ref, 
-                  TidesInfoData_read._tide_station_distance):
-                   """fetch data"""
-                   self.init_data = TidesInfoData_read.init_data
-                   self.data_datums_offset = TidesInfoData_read.data_datums_offset
-                   self.data = TidesInfoData_read.data
-                   self.data_request_time = TidesInfoData_read.data_request_time
-                   self.next_midnight = TidesInfoData_read.next_midnight
-                   """set data to store"""
-                   self.TidesInfoData.store_init_info(self.init_data)
-                   self.TidesInfoData.store_init_offset(self.data_datums_offset)
-                   self.TidesInfoData.store_data_info (self.data, self.data_request_time)
-                   self.TidesInfoData.store_next_midnight (self.next_midnight)
+                if self.TidesInfoData.data_usable(
+                    TidesInfoData_read._name,
+                    TidesInfoData_read._lat,
+                    TidesInfoData_read._lon,
+                    TidesInfoData_read._vertical_ref,
+                    TidesInfoData_read._tide_station_distance,
+                ):
+                    """fetch data"""
+                    self.init_data = TidesInfoData_read.init_data
+                    self.data_datums_offset = TidesInfoData_read.data_datums_offset
+                    self.data = TidesInfoData_read.data
+                    self.data_request_time = TidesInfoData_read.data_request_time
+                    self.next_midnight = TidesInfoData_read.next_midnight
+                    """set data to store"""
+                    self.TidesInfoData.store_init_info(self.init_data)
+                    self.TidesInfoData.store_init_offset(self.data_datums_offset)
+                    self.TidesInfoData.store_data_info(
+                        self.data, self.data_request_time
+                    )
+                    self.TidesInfoData.store_next_midnight(self.next_midnight)
                 else:
-                   """retrieve station"""
-                   self.retrieve_tide_station()
+                    """retrieve station"""
+                    self.retrieve_tide_station()
             else:
                 """retrieve station"""
                 self.retrieve_tide_station()
@@ -369,7 +378,7 @@ class WorldTidesInfoCustomSensor(Entity):
             hour=0, minute=0, second=0, microsecond=0
         )
         """store next midnight"""
-        self.TidesInfoData.store_next_midnight (self.next_midnight)
+        self.TidesInfoData.store_next_midnight(self.next_midnight)
 
         if data_to_require:
             self.retrieve_height_station()
@@ -408,7 +417,7 @@ class WorldTidesInfoCustomSensor(Entity):
         if self.data_datums_offset == None:
             datums_string = "&datums"
 
-        """3 days --> to manage one day beyond midnight and one before midnight""" 
+        """3 days --> to manage one day beyond midnight and one before midnight"""
         resource = (
             "https://www.worldtides.info/api/v2?extremes&days=3&date=today&heights&plot&timemode=24&step=900"
             "&key={}&lat={}&lon={}&datum={}&stationDistance={}{}"
@@ -432,7 +441,7 @@ class WorldTidesInfoCustomSensor(Entity):
         if data_has_been_received:
             self.credit_used = self.credit_used + self.data["callCount"]
             self.data_request_time = current_time
-            self.TidesInfoData.store_data_info (self.data, self.data_request_time)
+            self.TidesInfoData.store_data_info(self.data, self.data_request_time)
             if "datums" in self.data:
                 self.data_datums_offset = self.data["datums"]
                 self.TidesInfoData.store_init_offset(self.data_datums_offset)
@@ -449,8 +458,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 if os.path.isfile(self.curve_picture_filename):
                     os.remove(self.curve_picture_filename)
             """store received data"""
-            data_to_store = open (self.TidesInfoData_filename, 'wb')
+            data_to_store = open(self.TidesInfoData_filename, "wb")
             pickler = pickle.Pickler(data_to_store, pickle.HIGHEST_PROTOCOL)
             pickler.dump(self.TidesInfoData)
             data_to_store.close()
-
