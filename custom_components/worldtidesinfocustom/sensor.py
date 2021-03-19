@@ -5,6 +5,8 @@ import os
 import pickle
 import time
 from datetime import datetime, timedelta
+import hashlib
+import hmac
 
 import homeassistant.helpers.config_validation as cv
 import requests
@@ -88,6 +90,16 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     add_entities([tides])
 
+class SignedPickle:
+    """ Class to save """
+    def  __init__(
+        self,
+        pickle_data,
+        hmac
+    ):
+        """Initialize the data."""
+        self._pickle_data = pickle_data
+        self._hmac = hmac
 
 class TidesInfoData:
     """ Class to store  """
@@ -322,34 +334,55 @@ class WorldTidesInfoCustomSensor(Entity):
             try:
                 data_to_read = open (self.TidesInfoData_filename, 'rb')
                 unpickler = pickle.Unpickler(data_to_read)
-                TidesInfoData_read = unpickler.load()
+                to_load = unpickler.load()
                 data_to_read.close()
                 previous_data_fetched = True
             except:
                 _LOGGER.debug(
                      "Init to be performed at: %s", int(current_time)
                 )
+            previous_data_decode = False
             if previous_data_fetched:
-                if self.TidesInfoData.data_usable (TidesInfoData_read._name,
-                  TidesInfoData_read._lat,
-                  TidesInfoData_read._lon, 
-                  TidesInfoData_read._vertical_ref, 
-                  TidesInfoData_read._tide_station_distance):
-                   """fetch data"""
-                   self.init_data = TidesInfoData_read.init_data
-                   self.data_datums_offset = TidesInfoData_read.data_datums_offset
-                   self.data = TidesInfoData_read.data
-                   self.data_request_time = TidesInfoData_read.data_request_time
-                   self.next_midnight = TidesInfoData_read.next_midnight
-                   """set data to store"""
-                   self.TidesInfoData.store_init_info(self.init_data)
-                   self.TidesInfoData.store_init_offset(self.data_datums_offset)
-                   self.TidesInfoData.store_data_info (self.data, self.data_request_time)
-                   self.TidesInfoData.store_next_midnight (self.next_midnight)
-                else:
-                   """retrieve station"""
-                   self.retrieve_tide_station()
-            else:
+                try:
+                    hmac_data = hmac.new(self._key.encode('utf-8'), to_load._pickle_data, hashlib.sha1).hexdigest()
+                    if hmac_data == to_load._hmac:
+                       TidesInfoData_read = pickle.loads(to_load._pickle_data)
+                       if self.TidesInfoData.data_usable (TidesInfoData_read._name,
+                          TidesInfoData_read._lat,
+                          TidesInfoData_read._lon,
+                          TidesInfoData_read._vertical_ref,
+                          TidesInfoData_read._tide_station_distance):
+                            """fetch data"""
+                            self.init_data = TidesInfoData_read.init_data
+                            self.data_datums_offset = TidesInfoData_read.data_datums_offset
+                            self.data = TidesInfoData_read.data
+                            self.data_request_time = TidesInfoData_read.data_request_time
+                            self.next_midnight = TidesInfoData_read.next_midnight
+                            """Ok!"""
+                            previous_data_decode = True
+
+                except:
+                    _LOGGER.debug(
+                       "Error in decoding data file at: %s", int(current_time)
+                    )
+                    """reinit data from server"""
+                    self.init_data = None
+                    self.data_datums_offset = None
+                    self.data = None
+                    self.data_request_time = None
+                    self.next_midnight = timedelta(days=1) + (datetime.today()).replace(
+                            hour=0, minute=0, second=0, microsecond=0
+                    )
+ 
+            if previous_data_decode == True:
+               """set data to store"""
+               """ the read file has been trusted """
+               self.TidesInfoData.store_init_info(self.init_data)
+               self.TidesInfoData.store_init_offset(self.data_datums_offset)
+               self.TidesInfoData.store_data_info (self.data, self.data_request_time)
+               self.TidesInfoData.store_next_midnight (self.next_midnight)
+
+            if previous_data_decode == False:
                 """retrieve station"""
                 self.retrieve_tide_station()
 
@@ -448,9 +481,14 @@ class WorldTidesInfoCustomSensor(Entity):
             else:
                 if os.path.isfile(self.curve_picture_filename):
                     os.remove(self.curve_picture_filename)
+            """ signed pickle """
+            data_pickle = pickle.dumps(self.TidesInfoData, pickle.HIGHEST_PROTOCOL)
+            hmac_data = hmac.new(self._key.encode('utf-8'), data_pickle, hashlib.sha1).hexdigest()
+            to_save = SignedPickle(data_pickle,hmac_data)
+            """ dump """
             """store received data"""
             data_to_store = open (self.TidesInfoData_filename, 'wb')
             pickler = pickle.Pickler(data_to_store, pickle.HIGHEST_PROTOCOL)
-            pickler.dump(self.TidesInfoData)
+            pickler.dump(to_save)
             data_to_store.close()
 
