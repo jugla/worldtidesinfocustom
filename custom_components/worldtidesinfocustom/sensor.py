@@ -22,6 +22,7 @@ from homeassistant.const import (
     CONF_NAME,
 )
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.storage import STORAGE_DIR
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ from .const import (
     DEFAULT_VERTICAL_REF,
     DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
     SCAN_INTERVAL_SECONDS,
-    WORLD_TIDES_INFO_CUSTOM_DOMAIN
+    WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -71,7 +72,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
     www_path = hass.config.path("www")
-    storage_path =  hass.config.path(STORAGE_DIR,WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser")
+    storage_path = hass.config.path(
+        STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
+    )
 
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
@@ -85,7 +88,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         worldides_request_interval,
         tide_station_distance,
         www_path,
-        storage_path
+        storage_path,
     )
     # tides.retrieve_tide_station()
     tides.update()
@@ -176,7 +179,7 @@ class WorldTidesInfoCustomSensor(Entity):
         worldides_request_interval,
         tide_station_distance,
         www_path,
-        storage_path
+        storage_path,
     ):
         """Initialize the sensor."""
         self._name = name
@@ -197,8 +200,8 @@ class WorldTidesInfoCustomSensor(Entity):
         self.credit_used = 0
         self.data_datums_offset = None
         """ initialize the data to store"""
-#        self.TidesInfoData_filename = www_path + "/" + self._name + ".ser"
-        self.TidesInfoData_filename =  storage_path
+        # self.TidesInfoData_filename = www_path + "/" + self._name + ".ser"
+        self.TidesInfoData_filename = storage_path
         self.TidesInfoData = TidesInfoData(self.TidesInfoData_filename)
         """parameter"""
         self.TidesInfoData.store_parameters(
@@ -352,9 +355,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 data_to_read.close()
                 previous_data_fetched = True
             except:
-                _LOGGER.debug(
-                     "Init to be performed at: %s", int(current_time)
-                )
+                _LOGGER.debug("Init to be performed at: %s", int(current_time))
 
             previous_data_decode = False
             if previous_data_fetched:
