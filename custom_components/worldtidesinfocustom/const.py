@@ -18,3 +18,6 @@ CONF_VERTICAL_REF = "vertical_ref"
 """in km"""
 DEFAULT_STATION_DISTANCE = 50
 CONF_STATION_DISTANCE = "station_distance"
+
+
+
