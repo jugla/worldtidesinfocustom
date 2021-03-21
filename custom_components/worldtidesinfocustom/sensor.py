@@ -9,8 +9,6 @@ import time
 from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.storage import STORAGE_DIR
-
 import requests
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -71,7 +69,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     vertical_ref = config.get(CONF_VERTICAL_REF)
     worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
-    www_path = hass.config.path("www", name + ".png" )
+    www_path = hass.config.path("www", name + ".png")
     storage_path = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
     )
@@ -189,8 +187,8 @@ class WorldTidesInfoCustomSensor(Entity):
         self._vertical_ref = vertical_ref
         self._worldides_request_interval = worldides_request_interval
         self._tide_station_distance = tide_station_distance
-        #self.curve_picture_filename = www_path + "/" + self._name + ".png"
-        self.curve_picture_filename = www_path 
+        # self.curve_picture_filename = www_path + "/" + self._name + ".png"
+        self.curve_picture_filename = www_path
         """internal data"""
         self.init_data = None
         self.data = None
