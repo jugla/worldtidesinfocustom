@@ -18,3 +18,11 @@ CONF_VERTICAL_REF = "vertical_ref"
 """in km"""
 DEFAULT_STATION_DISTANCE = 50
 CONF_STATION_DISTANCE = "station_distance"
+
+"""plot color"""
+DEFAULT_PLOT_COLOR = "2,102,255"
+CONF_PLOT_COLOR = "plot_color"
+
+"""plot background"""
+DEFAULT_PLOT_BACKGROUND = "255,255,255"
+CONF_PLOT_BACKGROUND = "plot_background"
