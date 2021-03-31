@@ -35,6 +35,10 @@ from .const import (
     DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
+    CONF_PLOT_COLOR,
+    DEFAULT_PLOT_COLOR,
+    CONF_PLOT_BACKGROUND,
+    DEFAULT_PLOT_BACKGROUND,
 )
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -55,6 +59,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
             CONF_STATION_DISTANCE,
             default=DEFAULT_STATION_DISTANCE,
         ): cv.positive_int,
+        vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
+        vol.Optional(CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND): cv.string,
     }
 )
 
@@ -73,6 +79,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     storage_path = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
     )
+    plot_color = config.get(CONF_PLOT_COLOR)
+    plot_background = config.get(CONF_PLOT_BACKGROUND)
 
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
@@ -87,6 +95,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         tide_station_distance,
         www_path,
         storage_path,
+        plot_color,
+        plot_background,
     )
     # tides.retrieve_tide_station()
     tides.update()
@@ -178,6 +188,8 @@ class WorldTidesInfoCustomSensor(Entity):
         tide_station_distance,
         www_path,
         storage_path,
+        plot_color,
+        plot_background,
     ):
         """Initialize the sensor."""
         self._name = name
@@ -189,6 +201,8 @@ class WorldTidesInfoCustomSensor(Entity):
         self._tide_station_distance = tide_station_distance
         # self.curve_picture_filename = www_path + "/" + self._name + ".png"
         self.curve_picture_filename = www_path
+        self._plot_color = plot_color
+        self._plot_background = plot_background
         """internal data"""
         self.init_data = None
         self.data = None
@@ -467,13 +481,15 @@ class WorldTidesInfoCustomSensor(Entity):
         """3 days --> to manage one day beyond midnight and one before midnight"""
         resource = (
             "https://www.worldtides.info/api/v2?extremes&days=3&date=today&heights&plot&timemode=24&step=900"
-            "&key={}&lat={}&lon={}&datum={}&stationDistance={}{}"
+            "&key={}&lat={}&lon={}&datum={}&stationDistance={}&color={}&background={}{}"
         ).format(
             self._key,
             self._lat,
             self._lon,
             self._vertical_ref,
             self._tide_station_distance,
+            self._plot_color,
+            self._plot_background,
             datums_string,
         )
         try:

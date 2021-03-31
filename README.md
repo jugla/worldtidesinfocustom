@@ -52,6 +52,8 @@ sensor:
     longitude: -1.0318721687376207
 #    station_distance: 50
 #    vertical_ref : LAT
+#    plot_color: 2,102,255
+#    plot_background: 255,255,255
 #    scan_interval: 900
 #    worldtides_request_interval: 90000
 
@@ -64,6 +66,8 @@ where :
 and  optional parameter
 - station_distance: the radius in km from location to retrieve tide station
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
+- plot_color : the comma-separated RGB values for the tide graph foreground color
+- plot_background : the comma-separated RGB values for the tide graph background color
 - scan_interval : the scan rate to refresh entity (should not be used)
 - worldtides_request_interval : the scan rate to fetch data on server (should not be used)
 
@@ -301,6 +305,8 @@ NB: watch out : in the code we use the camera_image keyword and not image
 | longitude         | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data .    |
 | station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km | YAML                                                                                                                                                                  | The maximum distance (in kilometers) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
+| plot_color      | string                                                         | **Optional** | v2.x.x    | 2,102,255 | YAML                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
+| plot_background      | string                                                         | **Optional** | v2.x.x    | 2,102,255 | YAML                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph background color |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 | worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 90000s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit). One request is force around minight whatever the parameter value is |
 
