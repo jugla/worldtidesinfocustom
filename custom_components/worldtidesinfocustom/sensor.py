@@ -131,6 +131,8 @@ class TidesInfoData:
         self._lon = None
         self._vertical_ref = None
         self._tide_station_distance = None
+        self._plot_color = None
+        self._plot_background = None
         """data from server"""
         self.init_data = None
         self.data = None
@@ -141,12 +143,14 @@ class TidesInfoData:
     def filename(self):
         return self._filename
 
-    def store_parameters(self, name, lat, lon, vertical_ref, tide_station_distance):
+    def store_parameters(self, name, lat, lon, vertical_ref, tide_station_distance, plot_color, plot_background):
         self._name = name
         self._lat = lat
         self._lon = lon
         self._vertical_ref = vertical_ref
         self._tide_station_distance = tide_station_distance
+        self._plot_color = plot_color
+        self._plot_background = plot_background
 
     def store_init_info(self, init_data):
         self.init_data = init_data
@@ -161,13 +165,15 @@ class TidesInfoData:
     def store_next_midnight(self, next_midnight):
         self.next_midnight = next_midnight
 
-    def data_usable(self, name, lat, lon, vertical_ref, tide_station_distance):
+    def data_usable(self, name, lat, lon, vertical_ref, tide_station_distance, plot_color, plot_background):
         if (
             self._name == name
             and self._lat == lat
             and self._lon == lon
             and self._vertical_ref == vertical_ref
             and self._tide_station_distance == tide_station_distance
+            and self._plot_color == plot_color
+            and self._plot_background == plot_background
         ):
             return True
         else:
@@ -223,6 +229,8 @@ class WorldTidesInfoCustomSensor(Entity):
             self._lon,
             self._vertical_ref,
             self._tide_station_distance,
+            self._plot_color,
+            self._plot_background
         )
         self.TidesInfoData.store_next_midnight(self.next_midnight)
 
@@ -384,6 +392,8 @@ class WorldTidesInfoCustomSensor(Entity):
                             TidesInfoData_read._lon,
                             TidesInfoData_read._vertical_ref,
                             TidesInfoData_read._tide_station_distance,
+                            TidesInfoData_read._plot_color,
+                            TidesInfoData_read._plot_background
                         ):
                             """fetch data"""
                             self.init_data = TidesInfoData_read.init_data
