@@ -351,4 +351,6 @@ This sensor has a set of attributes describes hereafter
 ## Thanks to
 Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
 
+Thanks for all contributors !
+
 ## Support
