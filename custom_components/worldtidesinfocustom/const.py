@@ -12,6 +12,10 @@ SCAN_INTERVAL_SECONDS = 900
 DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
 
+"""fetch init every 30 days"""
+FORCE_FETCH_INIT_DATA = 30
+
+"""LAT reference as default"""
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
 
