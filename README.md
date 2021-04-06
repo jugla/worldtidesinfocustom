@@ -334,7 +334,7 @@ This sensor has a set of attributes describes hereafter
 | CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
 | Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | **HA local time** | time of last request to world tide info server |
 | Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in **local time of the tide location**. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
-| CreditCallUsedForInit | v2.0.0   | int        | credit | credit used to retrieve tide station at startup |
+| CreditCallUsedForInit | v2.0.0   | int        | credit | credit used to retrieve tide station at startup **DEPRECATED** |
 | Station around nb    | v2.0.0    | int        | N/A  | number of tide station within radius specified in configuration.yaml |
 | Station distance     | v2.0.0    | int        | km   | the radius used to retrieve tide station around location |
 | Station around name  | v2.0.0    | string     | location name | tide station list separate by ";" |
