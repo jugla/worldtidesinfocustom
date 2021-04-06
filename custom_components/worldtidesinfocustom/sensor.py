@@ -479,6 +479,8 @@ class WorldTidesInfoCustomSensor(Entity):
                     self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (
                         datetime.today()
                     ).replace(hour=0, minute=0, second=0, microsecond=0)
+                    """ KO """
+                    previous_data_decode = False
 
             if previous_data_decode == True:
                 """set data to store"""
