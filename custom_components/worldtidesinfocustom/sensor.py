@@ -240,9 +240,9 @@ class WorldTidesInfoCustomSensor(Entity):
         self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
-        self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (datetime.today()).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
+        self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (
+            datetime.today()
+        ).replace(hour=0, minute=0, second=0, microsecond=0)
         self.credit_used = 0
         self.data_datums_offset = None
         """ initialize the data to store"""
@@ -324,11 +324,13 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
-        attr["next month midnight"] = self.next_month_midnight.strftime("%H:%M:%S %d/%m/%y")
+        attr["next month midnight"] = self.next_month_midnight.strftime(
+            "%H:%M:%S %d/%m/%y"
+        )
 
         attr["plot"] = self.curve_picture_filename
 
-        #attr["CreditCallUsedForInit"] = self.init_data["callCount"]
+        # attr["CreditCallUsedForInit"] = self.init_data["callCount"]
 
         attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = self._tide_station_distance
@@ -452,8 +454,12 @@ class WorldTidesInfoCustomSensor(Entity):
                             self.init_data_request_time = (
                                 TidesInfoData_read.init_data_request_time
                             )
-                            self.next_day_midnight = TidesInfoData_read.next_day_midnight
-                            self.next_month_midnight = TidesInfoData_read.next_month_midnight
+                            self.next_day_midnight = (
+                                TidesInfoData_read.next_day_midnight
+                            )
+                            self.next_month_midnight = (
+                                TidesInfoData_read.next_month_midnight
+                            )
                             """Ok!"""
                             previous_data_decode = True
 
@@ -467,20 +473,24 @@ class WorldTidesInfoCustomSensor(Entity):
                     self.data = None
                     self.data_request_time = None
                     self.init_data_request_time = None
-                    self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
-                        hour=0, minute=0, second=0, microsecond=0
-                    )
-                    self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (datetime.today()).replace(
-                        hour=0, minute=0, second=0, microsecond=0
-                    )
+                    self.next_day_midnight = timedelta(days=1) + (
+                        datetime.today()
+                    ).replace(hour=0, minute=0, second=0, microsecond=0)
+                    self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (
+                        datetime.today()
+                    ).replace(hour=0, minute=0, second=0, microsecond=0)
 
             if previous_data_decode == True:
                 """set data to store"""
                 """ the read file has been trusted """
-                self.TidesInfoData.store_init_info(self.init_data, self.init_data_request_time)
+                self.TidesInfoData.store_init_info(
+                    self.init_data, self.init_data_request_time
+                )
                 self.TidesInfoData.store_init_offset(self.data_datums_offset)
                 self.TidesInfoData.store_data_info(self.data, self.data_request_time)
-                self.TidesInfoData.store_next_midnight(self.next_day_midnight, self.next_month_midnight)
+                self.TidesInfoData.store_next_midnight(
+                    self.next_day_midnight, self.next_month_midnight
+                )
 
             if previous_data_decode == False or force_init_data_to_require == True:
                 """retrieve station"""
@@ -501,14 +511,16 @@ class WorldTidesInfoCustomSensor(Entity):
 
         if data_to_require:
             self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
-               hour=0, minute=0, second=0, microsecond=0
+                hour=0, minute=0, second=0, microsecond=0
             )
         if init_data_fetched:
-            self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (datetime.today()).replace(
-               hour=0, minute=0, second=0, microsecond=0
-            )
+            self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA) + (
+                datetime.today()
+            ).replace(hour=0, minute=0, second=0, microsecond=0)
         """store next midnight"""
-        self.TidesInfoData.store_next_midnight(self.next_day_midnight, self.next_month_midnight)
+        self.TidesInfoData.store_next_midnight(
+            self.next_day_midnight, self.next_month_midnight
+        )
 
         if data_to_require:
             self.retrieve_height_station()
@@ -538,7 +550,9 @@ class WorldTidesInfoCustomSensor(Entity):
         if data_has_been_received:
             self.credit_used = self.credit_used + self.init_data["callCount"]
             self.init_data_request_time = current_time
-            self.TidesInfoData.store_init_info(self.init_data, self.init_data_request_time)
+            self.TidesInfoData.store_init_info(
+                self.init_data, self.init_data_request_time
+            )
 
     def retrieve_height_station(self):
         """Get the latest data from WorldTidesInfo API v2."""
