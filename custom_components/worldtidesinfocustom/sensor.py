@@ -316,21 +316,22 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
         attr["CreditCallUsed"] = self.credit_used
-        attr["data_request_time"] = time.strftime(
+        # attr["CreditCallUsedForInit"] = self.init_data["callCount"]
+
+        attr["Tide_data_request_time"] = time.strftime(
             "%H:%M:%S %d/%m/%y", time.localtime(self.data_request_time)
         )
-        attr["init_data_request_time"] = time.strftime(
-            "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
-        )
+        # attr["Tide_Station_data_request_time"] = time.strftime(
+        #     "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
+        # )
 
-        attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
-        attr["next month midnight"] = self.next_month_midnight.strftime(
-            "%H:%M:%S %d/%m/%y"
-        )
+        # attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
+        # attr["next month midnight"] = self.next_month_midnight.strftime(
+        #     "%H:%M:%S %d/%m/%y"
+        # )
 
         attr["plot"] = self.curve_picture_filename
 
-        # attr["CreditCallUsedForInit"] = self.init_data["callCount"]
 
         attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = self._tide_station_distance
@@ -525,7 +526,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         if data_to_require:
-            self.retrieve_height_station()
+            self.retrieve_height_station(force_init_data_to_require)
         else:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
@@ -556,12 +557,12 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.init_data, self.init_data_request_time
             )
 
-    def retrieve_height_station(self):
+    def retrieve_height_station(self, force_init_data_to_require):
         """Get the latest data from WorldTidesInfo API v2."""
         data_has_been_received = False
         current_time = time.time()
         datums_string = ""
-        if self.data_datums_offset == None:
+        if self.data_datums_offset == None or force_init_data_to_require == True:
             datums_string = "&datums"
 
         """3 days --> to manage one day beyond midnight and one before midnight"""
