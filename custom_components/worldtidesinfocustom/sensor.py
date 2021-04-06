@@ -318,10 +318,10 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["CreditCallUsed"] = self.credit_used
         # attr["CreditCallUsedForInit"] = self.init_data["callCount"]
 
-        attr["Tide_data_request_time"] = time.strftime(
+        attr["Data_request_time"] = time.strftime(
             "%H:%M:%S %d/%m/%y", time.localtime(self.data_request_time)
         )
-        # attr["Tide_Station_data_request_time"] = time.strftime(
+        # attr["Init_data_request_time"] = time.strftime(
         #     "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
         # )
 
