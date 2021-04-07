@@ -266,8 +266,8 @@ class WorldTidesInfoCustomSensor(Entity):
             self._plot_background,
         )
         self.TidesInfoData.store_next_midnight(
-                    self.next_day_midnight,
-                    self.next_month_midnight )
+            self.next_day_midnight, self.next_month_midnight
+        )
 
     @property
     def name(self):
@@ -337,7 +337,6 @@ class WorldTidesInfoCustomSensor(Entity):
         # )
 
         attr["plot"] = self.curve_picture_filename
-
 
         attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = self._tide_station_distance
