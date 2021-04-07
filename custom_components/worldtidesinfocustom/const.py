@@ -33,3 +33,12 @@ CONF_PLOT_BACKGROUND = "plot_background"
 
 """www directory"""
 WWW_PATH = "www"
+
+"""imperial conversion"""
+FEET_IN_METER = 0.3048
+MILE_IN_KM = 1.609344
+
+CONF_UNIT = "unit"
+METRIC_CONF_UNIT = "metric"
+IMPERIAL_CONF_UNIT = "imperial"
+DEFAULT_CONF_UNIT = METRIC_CONF_UNIT
