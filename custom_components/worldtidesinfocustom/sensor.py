@@ -40,6 +40,7 @@ from .const import (
     FORCE_FETCH_INIT_DATA,
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
+    WWW_PATH,
 )
 
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -66,6 +67,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
     name = config.get(CONF_NAME)
@@ -76,7 +81,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     vertical_ref = config.get(CONF_VERTICAL_REF)
     worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
-    www_path = hass.config.path("www", name + ".png")
+    ensure_dir(hass.config.path(WWW_PATH))
+    www_path = hass.config.path(WWW_PATH, name + ".png")
     storage_path = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
     )
@@ -501,7 +507,9 @@ class WorldTidesInfoCustomSensor(Entity):
                 init_data_fetched = True
 
         """ normal process """
-        if self.data_request_time == None:
+        if init_data_fetched:
+            data_to_require = True
+        elif self.data_request_time == None:
             data_to_require = True
         elif current_time >= (
             self.data_request_time + self._worldides_request_interval
@@ -526,7 +534,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         if data_to_require:
-            self.retrieve_height_station(force_init_data_to_require)
+            self.retrieve_height_station(init_data_fetched)
         else:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
@@ -557,12 +565,12 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.init_data, self.init_data_request_time
             )
 
-    def retrieve_height_station(self, force_init_data_to_require):
+    def retrieve_height_station(self, init_data_fetched):
         """Get the latest data from WorldTidesInfo API v2."""
         data_has_been_received = False
         current_time = time.time()
         datums_string = ""
-        if self.data_datums_offset == None or force_init_data_to_require == True:
+        if self.data_datums_offset == None or init_data_fetched == True:
             datums_string = "&datums"
 
         """3 days --> to manage one day beyond midnight and one before midnight"""
