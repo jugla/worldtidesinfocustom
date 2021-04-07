@@ -30,3 +30,6 @@ CONF_PLOT_COLOR = "plot_color"
 """plot background"""
 DEFAULT_PLOT_BACKGROUND = "255,255,255"
 CONF_PLOT_BACKGROUND = "plot_background"
+
+"""www directory"""
+WWW_PATH = "www"
