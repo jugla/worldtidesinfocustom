@@ -26,12 +26,6 @@ _LOGGER = logging.getLogger(__name__)
 
 from .const import (
     ATTRIBUTION,
-    CONF_UNIT,
-    METRIC_CONF_UNIT,
-    IMPERIAL_CONF_UNIT,
-    DEFAULT_CONF_UNIT,
-    FEET_IN_METER,
-    MILE_IN_KM,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
