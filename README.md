@@ -66,7 +66,7 @@ where :
 
 and  optional parameter
 - unit: metric or imperial (to display height in meter or feet, to specify station_distance in km or miles)
-- station_distance: the radius in km from location to retrieve tide station
+- station_distance: the radius in km/miles from location to retrieve tide station
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
 - plot_color : the comma-separated RGB values for the tide graph foreground color
 - plot_background : the comma-separated RGB values for the tide graph background color
