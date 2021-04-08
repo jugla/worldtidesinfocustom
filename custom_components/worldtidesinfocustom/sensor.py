@@ -35,15 +35,21 @@ from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
+    CONF_UNIT,
     CONF_VERTICAL_REF,
     CONF_WORLDTIDES_REQUEST_INTERVAL,
+    DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
+    FEET_IN_METER,
     FORCE_FETCH_INIT_DATA,
+    IMPERIAL_CONF_UNIT,
+    METRIC_CONF_UNIT,
+    MILE_IN_KM,
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
     WWW_PATH,
@@ -78,6 +84,7 @@ def ensure_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
     name = config.get(CONF_NAME)
@@ -97,7 +104,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     plot_background = config.get(CONF_PLOT_BACKGROUND)
     unit_to_display = config.get(CONF_UNIT)
 
-
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
 
@@ -113,7 +119,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         storage_path,
         plot_color,
         plot_background,
-        unit_to_display
+        unit_to_display,
     )
     # tides.retrieve_tide_station()
     tides.update()
@@ -172,7 +178,7 @@ class TidesInfoData:
         tide_station_distance,
         plot_color,
         plot_background,
-        unit_to_display
+        unit_to_display,
     ):
         self._name = name
         self._lat = lat
@@ -207,7 +213,7 @@ class TidesInfoData:
         tide_station_distance,
         plot_color,
         plot_background,
-        unit_to_display
+        unit_to_display,
     ):
         if (
             self._name == name
@@ -217,7 +223,7 @@ class TidesInfoData:
             and self._tide_station_distance == tide_station_distance
             and self._plot_color == plot_color
             and self._plot_background == plot_background
-            and self._unit_to_display == unit_to_display 
+            and self._unit_to_display == unit_to_display
         ):
             return True
         else:
@@ -240,7 +246,7 @@ class WorldTidesInfoCustomSensor(Entity):
         storage_path,
         plot_color,
         plot_background,
-        unit_to_display 
+        unit_to_display,
     ):
         """Initialize the sensor."""
         self._name = name
@@ -284,7 +290,7 @@ class WorldTidesInfoCustomSensor(Entity):
             self._tide_station_distance,
             self._plot_color,
             self._plot_background,
-            self._unit_to_display
+            self._unit_to_display,
         )
         self.TidesInfoData.store_next_midnight(
             self.next_day_midnight, self.next_month_midnight
@@ -305,11 +311,12 @@ class WorldTidesInfoCustomSensor(Entity):
         diff_high_tide_next_low_tide = 0
 
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
-           convert_meter_to_feet = 1/FEET_IN_METER
-           convert_km_to_miles = 1/MILE_IN_KM
+            convert_meter_to_feet = 1 / FEET_IN_METER
+            convert_km_to_miles = 1 / MILE_IN_KM
         else:
-           convert_meter_to_feet = 1
-           convert_km_to_miles = 1
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
         attr["Unit displayed"] = self._unit_to_display
 
         next_tide = 0
@@ -322,18 +329,26 @@ class WorldTidesInfoCustomSensor(Entity):
 
         if "High" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
-            attr["high_tide_height"] = self.data["extremes"][next_tide]["height"]*convert_meter_to_feet
+            attr["high_tide_height"] = (
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet
+            )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
-            attr["low_tide_height"] = self.data["extremes"][next_tide + 1]["height"]*convert_meter_to_feet
+            attr["low_tide_height"] = (
+                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet
+            )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide]["height"]
                 - self.data["extremes"][next_tide + 1]["height"]
             )
         elif "Low" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
-            attr["high_tide_height"] = self.data["extremes"][next_tide + 1]["height"]*convert_meter_to_feet
+            attr["high_tide_height"] = (
+                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet
+            )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
-            attr["low_tide_height"] = self.data["extremes"][next_tide]["height"]*convert_meter_to_feet
+            attr["low_tide_height"] = (
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet
+            )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide + 1]["height"]
                 - self.data["extremes"][next_tide + 2]["height"]
@@ -347,7 +362,9 @@ class WorldTidesInfoCustomSensor(Entity):
         for height_index in range(len(self.data["heights"])):
             if self.data["heights"][height_index]["dt"] < current_time:
                 current_height = height_index
-        attr["current_height"] = (self.data["heights"][current_height]["height"])*convert_meter_to_feet
+        attr["current_height"] = (
+            self.data["heights"][current_height]["height"]
+        ) * convert_meter_to_feet
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
         attr["CreditCallUsed"] = self.credit_used
@@ -368,7 +385,7 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["plot"] = self.curve_picture_filename
 
         attr["station_around_nb"] = len(self.init_data["stations"])
-        attr["station_distance"] = self._tide_station_distance*convert_km_to_miles
+        attr["station_distance"] = self._tide_station_distance * convert_km_to_miles
         if len(self.init_data["stations"]) > 0:
             attr["station_around_name"] = ""
             for name_index in range(len(self.init_data["stations"])):
@@ -476,7 +493,7 @@ class WorldTidesInfoCustomSensor(Entity):
                             TidesInfoData_read._tide_station_distance,
                             TidesInfoData_read._plot_color,
                             TidesInfoData_read._plot_background,
-                            TidesInfoData_read._unit_to_display
+                            TidesInfoData_read._unit_to_display,
                         ):
                             """fetch data"""
                             self.init_data = TidesInfoData_read.init_data
