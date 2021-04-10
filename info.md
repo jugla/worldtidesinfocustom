@@ -1,4 +1,5 @@
 # worldtidesinfocustom
+## Description
 world tides info custom component for [Home Assistant](https://home-assistant.io/).
 
 
@@ -23,4 +24,6 @@ Please refer to [https://www.worldtides.info/developer](https://www.worldtides.i
 From behaviour point of view it's an enhancement of the 
 [integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
 
-
+## Breaking change
+Before version V2.6.1, the information given is by default in metric.
+After version V2.6.1, the information given is by default with unit system configured in HA (metric or imperial).
