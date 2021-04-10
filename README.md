@@ -50,7 +50,7 @@ sensor:
     api_key: YOUR_API_KEY
     latitude: 45.61949378902948
     longitude: -1.0318721687376207
-#    unit: metric
+#    unit: home_assistant
 #    station_distance: 50
 #    vertical_ref : LAT
 #    plot_color: 2,102,255
@@ -65,7 +65,7 @@ where :
 - latitude, longiude is the place you want to see (hereabove Royan,France)
 
 and  optional parameter
-- unit: metric or imperial (to display height in meter or feet, to specify station_distance in km or miles)
+- unit: the unit that you have chosen in *home_assistant* or *metric* or *imperial* (to display height in meter or feet, to specify station_distance in km or miles)
 - station_distance: the radius in km/miles from location to retrieve tide station
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
 - plot_color : the comma-separated RGB values for the tide graph foreground color
@@ -308,7 +308,7 @@ NB: watch out : in the code we use the camera_image keyword and not image
 | api_key           | string                                                         | **Required** | v1.0.0    | n.a | YAML                                                       | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
 | latitude          | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data . |
 | longitude         | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data .    |
-| unit              | string                                                         | **Optional** | V2.6.0    | metric | YAML | either unit are **metric** or **imperial** |
+| unit              | string                                                         | **Optional** | V2.6.0    | home_assistant | YAML | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
 | station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km/miles | YAML                                                                                                                                                                  | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
 | plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
