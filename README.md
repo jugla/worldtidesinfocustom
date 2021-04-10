@@ -39,6 +39,12 @@ link as)
 1. Place the downloaded directory on your Home Assistant machine in the `config/custom_components` folder (when there is no `custom_components` folder in the 
 folder where your `configuration.yaml` file is, create it and place the directory there) 
 1. restart HomeAssistant
+
+## Breaking change
+Before version V2.6.1, the information given is by default in metric.
+After version V2.6.1, the information given is by default with unit system configured in HA (metric or imperial).
+
+
 ## Using the component
 Get API key from https://www.worldtides.info/developer (buy prepaid)
 In configuration.yaml, declare :
