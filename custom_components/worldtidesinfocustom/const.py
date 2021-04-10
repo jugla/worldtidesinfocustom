@@ -13,7 +13,7 @@ DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
 
 """fetch init every 30 days"""
-FORCE_FETCH_INIT_DATA = 30
+FORCE_FETCH_INIT_DATA_INTERVAL = 30
 
 """LAT reference as default"""
 DEFAULT_VERTICAL_REF = "LAT"
@@ -35,10 +35,8 @@ CONF_PLOT_BACKGROUND = "plot_background"
 WWW_PATH = "www"
 
 """imperial conversion"""
-FEET_IN_METER = 0.3048
-MILE_IN_KM = 1.609344
-
 CONF_UNIT = "unit"
 METRIC_CONF_UNIT = "metric"
 IMPERIAL_CONF_UNIT = "imperial"
-DEFAULT_CONF_UNIT = METRIC_CONF_UNIT
+HA_CONF_UNIT = "home_assistant"
+DEFAULT_CONF_UNIT = HA_CONF_UNIT
