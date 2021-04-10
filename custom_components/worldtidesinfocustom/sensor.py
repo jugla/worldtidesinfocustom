@@ -18,9 +18,19 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
+    LENGTH_FEET,
+    LENGTH_KILOMETERS,
+    LENGTH_METERS,
+    LENGTH_MILES,
 )
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.storage import STORAGE_DIR
+from homeassistant.util.distance import convert as dist_convert
+from homeassistant.util.unit_system import IMPERIAL_SYSTEM
+
+KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
+MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
+FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 from homeassistant.const import (
     LENGTH_FEET,
@@ -112,11 +122,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     plot_color = config.get(CONF_PLOT_COLOR)
     plot_background = config.get(CONF_PLOT_BACKGROUND)
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
-       unit_to_display = IMPERIAL_CONF_UNIT
+        unit_to_display = IMPERIAL_CONF_UNIT
     elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
-       unit_to_display = IMPERIAL_CONF_UNIT
+        unit_to_display = IMPERIAL_CONF_UNIT
     else:
-       unit_to_display = METRIC_CONF_UNIT
+        unit_to_display = METRIC_CONF_UNIT
 
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
@@ -343,12 +353,13 @@ class WorldTidesInfoCustomSensor(Entity):
 
         if "High" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
-            attr["high_tide_height"] = (
-                round(self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,2)
+            attr["high_tide_height"] = round(
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 2
             )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
-            attr["low_tide_height"] = (
-                round(self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,2)
+            attr["low_tide_height"] = round(
+                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
+                2,
             )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide]["height"]
@@ -356,12 +367,13 @@ class WorldTidesInfoCustomSensor(Entity):
             )
         elif "Low" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
-            attr["high_tide_height"] = (
-                round(self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,2)
+            attr["high_tide_height"] = round(
+                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
+                2,
             )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
-            attr["low_tide_height"] = (
-                round(self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,2)
+            attr["low_tide_height"] = round(
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 2
             )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide + 1]["height"]
@@ -377,8 +389,8 @@ class WorldTidesInfoCustomSensor(Entity):
             if self.data["heights"][height_index]["dt"] < current_time:
                 current_height = height_index
         attr["current_height"] = round(
-            self.data["heights"][current_height]["height"] * convert_meter_to_feet ,
-        2)
+            self.data["heights"][current_height]["height"] * convert_meter_to_feet, 2
+        )
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
         attr["CreditCallUsed"] = self.credit_used
@@ -399,7 +411,9 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["plot"] = self.curve_picture_filename
 
         attr["station_around_nb"] = len(self.init_data["stations"])
-        attr["station_distance"] = round (self._tide_station_distance * convert_km_to_miles,2)
+        attr["station_distance"] = round(
+            self._tide_station_distance * convert_km_to_miles, 2
+        )
         if len(self.init_data["stations"]) > 0:
             attr["station_around_name"] = ""
             for name_index in range(len(self.init_data["stations"])):
@@ -431,8 +445,9 @@ class WorldTidesInfoCustomSensor(Entity):
                     - self.data_datums_offset[MLW_index]["height"]
                 )
             )
-            * 100
-        , 1 )
+            * 100,
+            1,
+        )
 
         return attr
 
@@ -543,9 +558,11 @@ class WorldTidesInfoCustomSensor(Entity):
                     self.next_day_midnight = timedelta(days=1) + (
                         datetime.today()
                     ).replace(hour=0, minute=0, second=0, microsecond=0)
-                    self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA_INTERVAL) + (
-                        datetime.today()
-                    ).replace(hour=0, minute=0, second=0, microsecond=0)
+                    self.next_month_midnight = timedelta(
+                        days=FORCE_FETCH_INIT_DATA_INTERVAL
+                    ) + (datetime.today()).replace(
+                        hour=0, minute=0, second=0, microsecond=0
+                    )
                     """ KO """
                     previous_data_decode = False
 
@@ -585,9 +602,9 @@ class WorldTidesInfoCustomSensor(Entity):
                 hour=0, minute=0, second=0, microsecond=0
             )
         if init_data_fetched:
-            self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA_INTERVAL) + (
-                datetime.today()
-            ).replace(hour=0, minute=0, second=0, microsecond=0)
+            self.next_month_midnight = timedelta(
+                days=FORCE_FETCH_INIT_DATA_INTERVAL
+            ) + (datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
         """store next midnight"""
         self.TidesInfoData.store_next_midnight(
             self.next_day_midnight, self.next_month_midnight
