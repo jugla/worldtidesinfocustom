@@ -32,22 +32,6 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
-from homeassistant.const import (
-    LENGTH_FEET,
-    LENGTH_KILOMETERS,
-    LENGTH_METERS,
-    LENGTH_MILES,
-)
-
-from homeassistant.util.distance import convert as dist_convert
-from homeassistant.util.unit_system import (
-    IMPERIAL_SYSTEM,
-    )
-
-KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
-MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
-FT_PER_M  = dist_convert(1, LENGTH_METERS, LENGTH_FEET) 
-
 _LOGGER = logging.getLogger(__name__)
 
 from .const import (
