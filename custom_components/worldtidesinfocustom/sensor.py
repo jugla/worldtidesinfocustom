@@ -45,6 +45,7 @@ from .const import (
     CONF_UNIT,
     CONF_VERTICAL_REF,
     CONF_WORLDTIDES_REQUEST_INTERVAL,
+    DEBUG_FLAG,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
@@ -390,9 +391,13 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["low_tide_height"] = round(
                 self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 2
             )
+            # diff_high_tide_next_low_tide = (
+            #    self.data["extremes"][next_tide + 1]["height"]
+            #    - self.data["extremes"][next_tide + 2]["height"]
+            # )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide + 1]["height"]
-                - self.data["extremes"][next_tide + 2]["height"]
+                - self.data["extremes"][next_tide]["height"]
             )
 
         # The height
@@ -405,6 +410,26 @@ class WorldTidesInfoCustomSensor(Entity):
         )
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
+        # The coeff tide_highlow_over the Wean Water Spring
+        MHW_index = 0
+        MLW_index = 0
+        for ref_index in range(len(self.data_datums_offset)):
+            if self.data_datums_offset[ref_index]["name"] == "MHWS":
+                MHW_index = ref_index
+            if self.data_datums_offset[ref_index]["name"] == "MLWS":
+                MLW_index = ref_index
+
+        attr["Coeff"] = round(
+            (
+                diff_high_tide_next_low_tide
+                / (
+                    self.data_datums_offset[MHW_index]["height"]
+                    - self.data_datums_offset[MLW_index]["height"]
+                )
+            )
+            * 100,
+            1,
+        )
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
@@ -414,14 +439,14 @@ class WorldTidesInfoCustomSensor(Entity):
             "%H:%M:%S %d/%m/%y", time.localtime(self.data_request_time)
         )
         # KEEP FOR DEBUG:
-        # attr["Init_data_request_time"] = time.strftime(
-        #     "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
-        # )
-
-        # attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
-        # attr["next month midnight"] = self.next_month_midnight.strftime(
-        #     "%H:%M:%S %d/%m/%y"
-        # )
+        if DEBUG_FLAG:
+           attr["Init_data_request_time"] = time.strftime(
+              "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
+           )
+           attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
+           attr["next month midnight"] = self.next_month_midnight.strftime(
+              "%H:%M:%S %d/%m/%y"
+           )
 
 
         # Filename of tide picture
@@ -444,27 +469,6 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             attr["station_around_name"] = "None"
             attr["station_around_time_zone"] = "None"
-
-        # The coeff tide_highlow_over the Wean Water Spring
-        MHW_index = 0
-        MLW_index = 0
-        for ref_index in range(len(self.data_datums_offset)):
-            if self.data_datums_offset[ref_index]["name"] == "MHWS":
-                MHW_index = ref_index
-            if self.data_datums_offset[ref_index]["name"] == "MLWS":
-                MLW_index = ref_index
-
-        attr["Coeff"] = round(
-            (
-                diff_high_tide_next_low_tide
-                / (
-                    self.data_datums_offset[MHW_index]["height"]
-                    - self.data_datums_offset[MLW_index]["height"]
-                )
-            )
-            * 100,
-            1,
-        )
 
         return attr
 
