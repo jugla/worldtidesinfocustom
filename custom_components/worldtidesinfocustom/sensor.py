@@ -1,4 +1,5 @@
 """Support for the worldtides.info API v2."""
+# Python library
 import base64
 import hashlib
 import hmac
@@ -8,6 +9,7 @@ import pickle
 import time
 from datetime import datetime, timedelta
 
+# HA library
 import homeassistant.helpers.config_validation as cv
 import requests
 import voluptuous as vol
@@ -34,6 +36,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 _LOGGER = logging.getLogger(__name__)
 
+# Component Library
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -58,6 +61,7 @@ from .const import (
     WWW_PATH,
 )
 
+# Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
 
@@ -142,9 +146,9 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
 
 class SignedPickle:
-    """ Class to save """
+    """Class to save."""
 
-    # this class will be save on disk
+    # This class will be save on disk
     def __init__(self, pickle_data, hmac):
         """Initialize the data."""
         self._pickle_data = pickle_data
@@ -152,9 +156,9 @@ class SignedPickle:
 
 
 class TidesInfoData:
-    """ Class to store  """
+    """Class to store."""
 
-    # this class will wrap up all data to be stored
+    # This class will wrap up all data to be stored
     def __init__(
         self,
         filename,
@@ -182,7 +186,7 @@ class TidesInfoData:
         self.next_month_midnight = None
 
     def filename(self):
-        """the filename"""
+        """The filename."""
         return self._filename
 
     def store_parameters(
@@ -343,13 +347,22 @@ class WorldTidesInfoCustomSensor(Entity):
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
 
+        # The vertical reference used : LAT, ...
+        attr["vertical_reference"] = self.data["responseDatum"]
+
+        # Tide station characteristics
+        if "station" in self.data:
+            attr["tidal_station_used"] = self.data["station"]
+        else:
+            attr["tidal_station_used"] = "no reference station used"
+
         # Next tide
         next_tide = 0
         for tide_index in range(len(self.data["extremes"])):
             if self.data["extremes"][tide_index]["dt"] < current_time:
                 next_tide = tide_index
 
-        # managed the case where next_tide has not been updated : if next_tide=0 perform a check
+        # Managed the case where next_tide has not been updated : if next_tide=0 perform a check
         if self.data["extremes"][next_tide]["dt"] < current_time:
             next_tide = next_tide + 1
 
@@ -382,16 +395,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 - self.data["extremes"][next_tide + 2]["height"]
             )
 
-        # the vertical reference used : LAT, ...
-        attr["vertical_reference"] = self.data["responseDatum"]
-
-        # tide station characteristics
-        if "station" in self.data:
-            attr["tidal_station_used"] = self.data["station"]
-        else:
-            attr["tidal_station_used"] = "no reference station used"
-
-        # the height
+        # The height
         current_height = 0
         for height_index in range(len(self.data["heights"])):
             if self.data["heights"][height_index]["dt"] < current_time:
@@ -402,13 +406,14 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
 
-        # the credit used to display the update
+        # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
 
-        # time where are trigerred the request
+        # Time where are trigerred the request
         attr["Data_request_time"] = time.strftime(
             "%H:%M:%S %d/%m/%y", time.localtime(self.data_request_time)
         )
+        # KEEP FOR DEBUG:
         # attr["Init_data_request_time"] = time.strftime(
         #     "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
         # )
@@ -419,10 +424,10 @@ class WorldTidesInfoCustomSensor(Entity):
         # )
 
 
-        # filename of tide picture
+        # Filename of tide picture
         attr["plot"] = self.curve_picture_filename
 
-        # tide detailed characteristic
+        # Tide detailed characteristic
         attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = round(
             self._tide_station_distance * convert_km_to_miles, 2
@@ -440,9 +445,7 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["station_around_name"] = "None"
             attr["station_around_time_zone"] = "None"
 
-        # attr["datums"] = self.data_datums_offset
-
-        # the coeff tide_highlow_over the Wean Water Spring
+        # The coeff tide_highlow_over the Wean Water Spring
         MHW_index = 0
         MLW_index = 0
         for ref_index in range(len(self.data_datums_offset)):
@@ -470,7 +473,7 @@ class WorldTidesInfoCustomSensor(Entity):
         """Return the state of the device."""
         if self.data:
 
-            # get next tide time
+            # Get next tide time
             current_time = int(time.time())
             next_tide = 0
             for tide_index in range(len(self.data["extremes"])):
@@ -493,7 +496,7 @@ class WorldTidesInfoCustomSensor(Entity):
         return None
 
     def update(self):
-        """Update of sensors"""
+        """Update of sensors."""
         data_to_require = False
         init_data_to_require = False
         force_init_data_to_require = False
@@ -501,7 +504,7 @@ class WorldTidesInfoCustomSensor(Entity):
         self.credit_used = 0
         current_time = time.time()
 
-        # init data (initialisation or refresh or retrieve from a file)
+        # Init data (initialisation or refresh or retrieve from a file)
         if self.init_data == None:
             init_data_to_require = True
         elif datetime.fromtimestamp(current_time) >= self.next_month_midnight:
@@ -514,7 +517,7 @@ class WorldTidesInfoCustomSensor(Entity):
             previous_data_fetched = False
             TidesInfoData_read = None
 
-            # read previous received data
+            # Read previous received data
             try:
                 data_to_read = open(self.TidesInfoData_filename, "rb")
                 unpickler = pickle.Unpickler(data_to_read)
@@ -524,7 +527,7 @@ class WorldTidesInfoCustomSensor(Entity):
             except:
                 _LOGGER.debug("Init to be performed at: %s", int(current_time))
 
-            # previous data exist
+            # Previous data exist
             previous_data_decode = False
             if previous_data_fetched:
                 try:
@@ -545,7 +548,7 @@ class WorldTidesInfoCustomSensor(Entity):
                             TidesInfoData_read._unit_to_display,
                         ):
 
-                            # fetch data from file
+                            # Fetch data from file
                             self.init_data = TidesInfoData_read.init_data
                             self.data_datums_offset = (
                                 TidesInfoData_read.data_datums_offset
@@ -591,8 +594,8 @@ class WorldTidesInfoCustomSensor(Entity):
 
             if previous_data_decode == True:
 
-                # set data to store
-                # the read file has been trusted
+                # Set data to store
+                # The read file has been trusted
 
                 self.TidesInfoData.store_init_info(
                     self.init_data, self.init_data_request_time
@@ -604,7 +607,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 )
 
             if previous_data_decode == False or force_init_data_to_require == True:
-                # retrieve station from server
+                # Retrieve station from server
                 self.retrieve_tide_station()
                 init_data_fetched = True
 
@@ -631,7 +634,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 days=FORCE_FETCH_INIT_DATA_INTERVAL
             ) + (datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
 
-        # store next midnight
+        # Store next midnight
         self.TidesInfoData.store_next_midnight(
             self.next_day_midnight, self.next_month_midnight
         )
@@ -725,13 +728,13 @@ class WorldTidesInfoCustomSensor(Entity):
             else:
                 if os.path.isfile(self.curve_picture_filename):
                     os.remove(self.curve_picture_filename)
-            # signed pickle with HMAC
+            # Signed pickle with HMAC
             data_pickle = pickle.dumps(self.TidesInfoData, pickle.HIGHEST_PROTOCOL)
             hmac_data = hmac.new(
                 self._key.encode("utf-8"), data_pickle, hashlib.sha1
             ).hexdigest()
             to_save = SignedPickle(data_pickle, hmac_data)
-            # dump : store received data
+            # Dump : store received data
             data_to_store = open(self.TidesInfoData_filename, "wb")
             pickler = pickle.Pickler(data_to_store, pickle.HIGHEST_PROTOCOL)
             pickler.dump(to_save)
