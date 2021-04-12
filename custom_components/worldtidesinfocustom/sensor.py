@@ -410,7 +410,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
-        # The coeff tide_highlow_over the Wean Water Spring
+        # The coeff tide_highlow_over the Mean Water Spring
         MHW_index = 0
         MLW_index = 0
         for ref_index in range(len(self.data_datums_offset)):
@@ -419,7 +419,7 @@ class WorldTidesInfoCustomSensor(Entity):
             if self.data_datums_offset[ref_index]["name"] == "MLWS":
                 MLW_index = ref_index
 
-        attr["Coeff"] = round(
+        attr["Coeff_resp_MWS"] = round(
             (
                 diff_high_tide_next_low_tide
                 / (
