@@ -431,6 +431,9 @@ class WorldTidesInfoCustomSensor(Entity):
             1,
         )
 
+        # Display the current
+        attr["tide_amplitude"] = diff_high_tide_next_low_tide
+
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
 
