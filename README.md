@@ -356,7 +356,7 @@ This sensor has a set of attributes describes hereafter
 | Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
 | Current height       | v1.0.0    |  float     | m/ft | current height (**HA local time**)     |
 | Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | **UTC**  | height sample used to compute current height     |
-| Coeff_resp_MWS       | v2.7.0    | float        | NA   | coeff that represents the current (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) |
+| Coeff_resp_MWS       | v2.7.0    | float        | %   | coeff that represents the current (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) . Nb this figure can be greater than 100%, if the tide amplitude is greater than MeanSpringWater : for instance during High Spring Water|
 | tide_amplitude | v2.7.0 | float    | m/ft | The current amplitude for (Hight Tide - Low Tide) (it is absolute) |
 | CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
 | Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | **HA local time** | time of last request to world tide info server |
