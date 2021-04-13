@@ -25,5 +25,7 @@ From behaviour point of view it's an enhancement of the
 [integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
 
 ## Breaking change
-Before version V2.6.1, the information given is by default in metric.
-After version V2.6.1, the information given is by default with unit system configured in HA (metric or imperial).
+**Version V2.6.1**: After this version, the information given is by default with unit system configured in HA (metric or imperial).
+NB: Before the information given is by default in metric.
+
+**Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS = mean water spring
