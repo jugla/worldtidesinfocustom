@@ -41,8 +41,10 @@ folder where your `configuration.yaml` file is, create it and place the director
 1. restart HomeAssistant
 
 ## Breaking change
-Before version V2.6.1, the information given is by default in metric.
-After version V2.6.1, the information given is by default with unit system configured in HA (metric or imperial).
+**Version V2.6.1**: After this version, the information given is by default with unit system configured in HA (metric or imperial).
+NB: Before the information given is by default in metric.
+
+**Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS = mean water spring
 
 
 ## Using the component
@@ -114,6 +116,16 @@ sensor:
       tide_royan_station:
         value_template: "{{ state_attr('sensor.royan_tides','tidal_station_used')  }}"
         friendly_name: "Royan Tide Station used"
+      tide_royan_coeff_mws:
+        value_template: "{{ state_attr('sensor.royan_tides','Coeff_resp_MWS')  }}"
+        friendly_name: "Royan Tide Coeff MWS"
+        unit_of_measurement: "%"
+      tide_royan_amplitude:
+        value_template: "{{ state_attr('sensor.royan_tides','tide_amplitude')  }}"
+        friendly_name: "Royan Tide Amplitude"
+        unit_of_measurement: m
+#change m into ft , if you are in imperial
+
 
 ## CAMERA
 camera:
@@ -344,18 +356,20 @@ This sensor has a set of attributes describes hereafter
 | Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
 | Current height       | v1.0.0    |  float     | m/ft | current height (**HA local time**)     |
 | Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | **UTC**  | height sample used to compute current height     |
+| Coeff_resp_MWS       | v2.7.0    | float        | NA   | coeff that represents the current (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) |
+| tide_amplitude | v2.7.0 | float    | m/ft | The current amplitude for (Hight Tide - Low Tide) (it is absolute) |
 | CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
 | Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | **HA local time** | time of last request to world tide info server |
 | Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in **local time of the tide location**. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
 | Station around nb    | v2.0.0    | int        | N/A  | number of tide station within radius specified in configuration.yaml |
-| Station distance     | v2.0.0    | int        | km/miles   | the radius used to retrieve tide station around location |
+| Station distance     | v2.0.0    | float        | km/miles   | the radius used to retrieve tide station around location |
 | Station around name  | v2.0.0    | string     | location name | tide station list separate by ";" |
 | Station around time zone | v2.0.0 | string    | time zone | Full timezone name (ex. America/Los_Angeles) |
-| Coeff                | v2.0.0    | int        | NA   | coeff that represents the ((next Hight Tide - next Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) |
+
 
 ## Wish/Todo list
-- implement UI instead of YAML
-- implement asynchoneous instead of polling
+- implement UI instead of YAML (planned in V3.0.0)
+- implement asynchoneous instead of polling (planned in V3.0.0)
 - make this integration as default in home assistant
 
 ## Contact
