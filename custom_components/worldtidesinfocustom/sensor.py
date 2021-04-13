@@ -372,7 +372,7 @@ class WorldTidesInfoCustomSensor(Entity):
         if "High" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
             attr["high_tide_height"] = round(
-                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
@@ -437,7 +437,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         # Display the current
-        attr["tide_amplitude"] = round(diff_high_tide_next_low_tide,ROUND_HEIGTH)
+        attr["tide_amplitude"] = round(diff_high_tide_next_low_tide, ROUND_HEIGTH)
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
@@ -448,14 +448,15 @@ class WorldTidesInfoCustomSensor(Entity):
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
-           attr["Init_data_request_time"] = time.strftime(
-              "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
-           )
-           attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
-           attr["next month midnight"] = self.next_month_midnight.strftime(
-              "%H:%M:%S %d/%m/%y"
-           )
-
+            attr["Init_data_request_time"] = time.strftime(
+                "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
+            )
+            attr["next day midnight"] = self.next_day_midnight.strftime(
+                "%H:%M:%S %d/%m/%y"
+            )
+            attr["next month midnight"] = self.next_month_midnight.strftime(
+                "%H:%M:%S %d/%m/%y"
+            )
 
         # Filename of tide picture
         attr["plot"] = self.curve_picture_filename
