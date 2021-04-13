@@ -57,6 +57,8 @@ from .const import (
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
+    ROUND_HEIGTH,
+    ROUND_STATION_DISTANCE,
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
     WWW_PATH,
@@ -370,12 +372,13 @@ class WorldTidesInfoCustomSensor(Entity):
         if "High" in str(self.data["extremes"][next_tide]["type"]):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
             attr["high_tide_height"] = round(
-                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 2
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,
+                ROUND_HEIGTH,
             )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
             attr["low_tide_height"] = round(
                 self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
-                2,
+                ROUND_HEIGTH,
             )
             diff_high_tide_next_low_tide = (
                 self.data["extremes"][next_tide]["height"]
@@ -385,11 +388,12 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["high_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
             attr["high_tide_height"] = round(
                 self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
-                2,
+                ROUND_HEIGTH,
             )
             attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
             attr["low_tide_height"] = round(
-                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet, 2
+                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,
+                ROUND_HEIGTH,
             )
             # diff_high_tide_next_low_tide = (
             #    self.data["extremes"][next_tide + 1]["height"]
@@ -406,7 +410,8 @@ class WorldTidesInfoCustomSensor(Entity):
             if self.data["heights"][height_index]["dt"] < current_time:
                 current_height = height_index
         attr["current_height"] = round(
-            self.data["heights"][current_height]["height"] * convert_meter_to_feet, 2
+            self.data["heights"][current_height]["height"] * convert_meter_to_feet,
+            ROUND_HEIGTH,
         )
         attr["current_height_utc"] = self.data["heights"][current_height]["date"]
 
@@ -432,7 +437,7 @@ class WorldTidesInfoCustomSensor(Entity):
         )
 
         # Display the current
-        attr["tide_amplitude"] = diff_high_tide_next_low_tide
+        attr["tide_amplitude"] = round(diff_high_tide_next_low_tide, ROUND_HEIGTH)
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
@@ -443,14 +448,15 @@ class WorldTidesInfoCustomSensor(Entity):
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
-           attr["Init_data_request_time"] = time.strftime(
-              "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
-           )
-           attr["next day midnight"] = self.next_day_midnight.strftime("%H:%M:%S %d/%m/%y")
-           attr["next month midnight"] = self.next_month_midnight.strftime(
-              "%H:%M:%S %d/%m/%y"
-           )
-
+            attr["Init_data_request_time"] = time.strftime(
+                "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
+            )
+            attr["next day midnight"] = self.next_day_midnight.strftime(
+                "%H:%M:%S %d/%m/%y"
+            )
+            attr["next month midnight"] = self.next_month_midnight.strftime(
+                "%H:%M:%S %d/%m/%y"
+            )
 
         # Filename of tide picture
         attr["plot"] = self.curve_picture_filename
@@ -458,7 +464,7 @@ class WorldTidesInfoCustomSensor(Entity):
         # Tide detailed characteristic
         attr["station_around_nb"] = len(self.init_data["stations"])
         attr["station_distance"] = round(
-            self._tide_station_distance * convert_km_to_miles, 2
+            self._tide_station_distance * convert_km_to_miles, ROUND_STATION_DISTANCE
         )
         if len(self.init_data["stations"]) > 0:
             attr["station_around_name"] = ""
