@@ -151,6 +151,12 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
+and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on several days
+
+<p align="center">
+  <img src="./doc/picture/RoyanTideAmplitude.jpg" alt="Size Limit CLI" width="300">
+</p>
+
 <details><summary>with source code</summary>
 
 ```yaml
