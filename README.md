@@ -151,12 +151,6 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
-and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on several days
-
-<p align="center">
-  <img src="./doc/picture/RoyanTideAmplitude.jpg" alt="Size Limit CLI" width="300">
-</p>
-
 <details><summary>with source code</summary>
 
 ```yaml
@@ -205,6 +199,28 @@ refresh_interval: 0
 title: royan credit used worldtide
 ```
 </details>
+
+and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on several days
+
+<p align="center">
+  <img src="./doc/picture/RoyanTideAmplitude.jpg" alt="Size Limit CLI" width="300">
+</p>
+
+<details><summary>with source code</summary>
+
+```yaml
+##UI interface example (can be entered via manual card)
+type: history-graph
+entities:
+  - entity: sensor.tide_royan_coeff_mws
+  - entity: sensor.tide_royan_amplitude
+refresh_interval: 0
+title: Royan Tide Coeff Week
+hours_to_show: 168
+```
+NB: in recorder, the number of days shall be set accordingly
+</details>
+
 
 Hereafter an example of picture element card under lovelace UI
 
