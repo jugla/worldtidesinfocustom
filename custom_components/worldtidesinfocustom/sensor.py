@@ -60,8 +60,7 @@ from .const import (
 
 # Component Library
 # import .storage_mngt
-from .storage_mngt import File_Picture
-from .storage_mngt import File_Data_Cache
+from .storage_mngt import File_Data_Cache, File_Picture
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -106,11 +105,12 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
     )
 
-    tide_cache_file = File_Data_Cache (
+    tide_cache_file = File_Data_Cache(
         hass.config.path(
-           STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
-        )
-        , key)
+            STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
+        ),
+        key,
+    )
     plot_color = config.get(CONF_PLOT_COLOR)
     plot_background = config.get(CONF_PLOT_BACKGROUND)
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
@@ -525,27 +525,21 @@ class WorldTidesInfoCustomSensor(Entity):
                         TidesInfoData_read._unit_to_display,
                     ):
 
-                       # Fetch data from file
-                       self.init_data = TidesInfoData_read.init_data
-                       self.data_datums_offset = (
-                          TidesInfoData_read.data_datums_offset
-                       )
-                       self.data = TidesInfoData_read.data
-                       self.data_request_time = (
-                          TidesInfoData_read.data_request_time
-                       )
-                       self.init_data_request_time = (
-                          TidesInfoData_read.init_data_request_time
-                       )
-                       self.next_day_midnight = (
-                          TidesInfoData_read.next_day_midnight
-                       )
-                       self.next_month_midnight = (
-                           TidesInfoData_read.next_month_midnight
-                       )
+                        # Fetch data from file
+                        self.init_data = TidesInfoData_read.init_data
+                        self.data_datums_offset = TidesInfoData_read.data_datums_offset
+                        self.data = TidesInfoData_read.data
+                        self.data_request_time = TidesInfoData_read.data_request_time
+                        self.init_data_request_time = (
+                            TidesInfoData_read.init_data_request_time
+                        )
+                        self.next_day_midnight = TidesInfoData_read.next_day_midnight
+                        self.next_month_midnight = (
+                            TidesInfoData_read.next_month_midnight
+                        )
 
-                       # Ok!
-                       previous_data_decode = True
+                        # Ok!
+                        previous_data_decode = True
 
                 except:
                     _LOGGER.debug(
@@ -703,4 +697,3 @@ class WorldTidesInfoCustomSensor(Entity):
             else:
                 self._tide_picture_file.remove_previous_picturefile()
             self._tide_cache_file.store_data(self.TidesInfoData)
-
