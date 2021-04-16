@@ -40,6 +40,7 @@ class File_Picture:
         if os.path.isfile(self._full_path_name):
             os.remove(self._full_path_name)
 
+
 class SignedPickle:
     """Class to save."""
 
@@ -48,6 +49,7 @@ class SignedPickle:
         """Initialize the data."""
         self._pickle_data = pickle_data
         self._hmac = hmac
+
 
 class File_Data_Cache:
     """Class to manage the data cache"""

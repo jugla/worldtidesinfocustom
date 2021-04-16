@@ -59,12 +59,15 @@ from .const import (
 
 # Component Library
 # import .storage_mngt
-from .py_worldtidesinfo import WorldTidesInfo_server,PLOT_CURVE_UNIT_FT,PLOT_CURVE_UNIT_M
+from .py_worldtidesinfo import (
+    PLOT_CURVE_UNIT_FT,
+    PLOT_CURVE_UNIT_M,
+    WorldTidesInfo_server,
+)
 from .storage_mngt import File_Data_Cache, File_Picture
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
-
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -86,7 +89,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): cv.string,
     }
 )
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
@@ -122,14 +124,22 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         unit_to_display = METRIC_CONF_UNIT
 
     if unit_to_display == IMPERIAL_CONF_UNIT:
-       server_tide_station_distance = tide_station_distance * KM_PER_MI
-       unit_curve_picture = PLOT_CURVE_UNIT_FT
+        server_tide_station_distance = tide_station_distance * KM_PER_MI
+        unit_curve_picture = PLOT_CURVE_UNIT_FT
     else:
-       server_tide_station_distance = tide_station_distance
-       unit_curve_picture = PLOT_CURVE_UNIT_M
+        server_tide_station_distance = tide_station_distance
+        unit_curve_picture = PLOT_CURVE_UNIT_M
 
-    worldtidesinfo_server = WorldTidesInfo_server (key, lat, lon, vertical_ref,
-       server_tide_station_distance, plot_color, plot_background, unit_curve_picture)
+    worldtidesinfo_server = WorldTidesInfo_server(
+        key,
+        lat,
+        lon,
+        vertical_ref,
+        server_tide_station_distance,
+        plot_color,
+        plot_background,
+        unit_curve_picture,
+    )
 
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
@@ -639,24 +649,45 @@ class WorldTidesInfoCustomSensor(Entity):
     def retrieve_tide_station(self):
         """TIDE STATION : Get the latest data from WorldTidesInfo."""
         if self._worldtidesinfo_server.retrieve_tide_station():
-            _LOGGER.debug("Init data queried at: %s", self._worldtidesinfo_server.retrieve_tide_station_request_time)
-            self.credit_used = self.credit_used + self._worldtidesinfo_server.retrieve_tide_station_credit()
-            self.init_data =  self._worldtidesinfo_server.retrieve_tide_station_raw_data()
-            self.init_data_request_time =  self._worldtidesinfo_server.retrieve_tide_station_request_time()
-            self.TidesInfoData.store_init_info(self.init_data, self.init_data_request_time)
+            _LOGGER.debug(
+                "Init data queried at: %s",
+                self._worldtidesinfo_server.retrieve_tide_station_request_time,
+            )
+            self.credit_used = (
+                self.credit_used
+                + self._worldtidesinfo_server.retrieve_tide_station_credit()
+            )
+            self.init_data = (
+                self._worldtidesinfo_server.retrieve_tide_station_raw_data()
+            )
+            self.init_data_request_time = (
+                self._worldtidesinfo_server.retrieve_tide_station_request_time()
+            )
+            self.TidesInfoData.store_init_info(
+                self.init_data, self.init_data_request_time
+            )
         else:
-            _LOGGER.error("Error retrieving data from WorldTidesInfo: %s",  self._worldtidesinfo_server.retrieve_tide_station_err_value)
-
+            _LOGGER.error(
+                "Error retrieving data from WorldTidesInfo: %s",
+                self._worldtidesinfo_server.retrieve_tide_station_err_value,
+            )
 
     def retrieve_height_station(self, init_data_fetched):
         """HEIGTH : Get the latest data from WorldTidesInfo."""
-        datum_flag = (self.data_datums_offset == None or init_data_fetched == True)
-        if  self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
-            _LOGGER.debug("Data queried at: %s",  self._worldtidesinfo_server.retrieve_tide_request_time)
-            self.data =  self._worldtidesinfo_server.retrieve_tide_raw_data()
-            self.data_request_time =  self._worldtidesinfo_server.retrieve_tide_request_time()
-            self.credit_used = self.credit_used +  self._worldtidesinfo_server.retrieve_tide_credit()
-            #process information
+        datum_flag = self.data_datums_offset == None or init_data_fetched == True
+        if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
+            _LOGGER.debug(
+                "Data queried at: %s",
+                self._worldtidesinfo_server.retrieve_tide_request_time,
+            )
+            self.data = self._worldtidesinfo_server.retrieve_tide_raw_data()
+            self.data_request_time = (
+                self._worldtidesinfo_server.retrieve_tide_request_time()
+            )
+            self.credit_used = (
+                self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
+            )
+            # process information
             self.TidesInfoData.store_data_info(self.data, self.data_request_time)
             if "datums" in self.data:
                 self.data_datums_offset = self.data["datums"]
@@ -672,5 +703,7 @@ class WorldTidesInfoCustomSensor(Entity):
             self._tide_cache_file.store_data(self.TidesInfoData)
 
         else:
-            _LOGGER.error("Error retrieving data from WorldTidesInfo: %s",  self._worldtidesinfo_server.retrieve_tide_err_value)
-
+            _LOGGER.error(
+                "Error retrieving data from WorldTidesInfo: %s",
+                self._worldtidesinfo_server.retrieve_tide_err_value,
+            )
