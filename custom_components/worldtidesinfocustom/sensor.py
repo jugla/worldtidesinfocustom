@@ -1,10 +1,8 @@
 """Support for the worldtides.info API v2."""
 # Python library
-import base64
 import hashlib
 import hmac
 import logging
-import os
 import pickle
 import time
 from datetime import datetime, timedelta
@@ -37,6 +35,9 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 _LOGGER = logging.getLogger(__name__)
 
 # Component Library
+#import .storage_mngt
+from .storage_mngt import File_Picture
+
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -90,10 +91,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
@@ -107,8 +104,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     vertical_ref = config.get(CONF_VERTICAL_REF)
     worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
-    ensure_dir(hass.config.path(WWW_PATH))
-    www_path = hass.config.path(WWW_PATH, name + ".png")
+    # prepare the tide picture management
+    tide_picture_file = File_Picture(
+          hass.config.path(WWW_PATH),
+          hass.config.path(WWW_PATH, name + ".png") )
+
     storage_path = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
     )
@@ -133,7 +133,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         vertical_ref,
         worldides_request_interval,
         tide_station_distance,
-        www_path,
+        tide_picture_file,
         storage_path,
         plot_color,
         plot_background,
@@ -271,7 +271,7 @@ class WorldTidesInfoCustomSensor(Entity):
         vertical_ref,
         worldides_request_interval,
         tide_station_distance,
-        www_path,
+        tide_picture_file,
         storage_path,
         plot_color,
         plot_background,
@@ -290,10 +290,12 @@ class WorldTidesInfoCustomSensor(Entity):
             self._tide_station_distance = tide_station_distance * KM_PER_MI
         else:
             self._tide_station_distance = tide_station_distance
-        self.curve_picture_filename = www_path
         self._plot_color = plot_color
         self._plot_background = plot_background
         self._unit_to_display = unit_to_display
+
+        # Picture data
+        self._tide_picture_file = tide_picture_file
 
         # Internal data use to manage request to server
         self.init_data = None
@@ -459,7 +461,7 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # Filename of tide picture
-        attr["plot"] = self.curve_picture_filename
+        attr["plot"] = self._tide_picture_file.full_filename()
 
         # Tide detailed characteristic
         attr["station_around_nb"] = len(self.init_data["stations"])
@@ -485,7 +487,6 @@ class WorldTidesInfoCustomSensor(Entity):
     def state(self):
         """Return the state of the device."""
         if self.data:
-
             # Get next tide time
             current_time = int(time.time())
             next_tide = 0
@@ -723,6 +724,8 @@ class WorldTidesInfoCustomSensor(Entity):
             self.data = None
 
         if data_has_been_received:
+            _LOGGER.debug("explicit data for %s",self._name)
+
             self.credit_used = self.credit_used + self.data["callCount"]
             self.data_request_time = current_time
             self.TidesInfoData.store_data_info(self.data, self.data_request_time)
@@ -730,17 +733,14 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.data_datums_offset = self.data["datums"]
                 self.TidesInfoData.store_init_offset(self.data_datums_offset)
             if "plot" in self.data:
-                filename = self.curve_picture_filename
+                #filename = self.curve_picture_filename
                 std_string = "data:image/png;base64,"
                 str_to_convert = self.data["plot"][
                     len(std_string) : len(self.data["plot"])
                 ]
-                imgdata = base64.b64decode(str_to_convert)
-                with open(filename, "wb") as filehandler:
-                    filehandler.write(imgdata)
+                self._tide_picture_file.store_picture_base64(str_to_convert)
             else:
-                if os.path.isfile(self.curve_picture_filename):
-                    os.remove(self.curve_picture_filename)
+                self._tide_picture_file.remove_previous_picturefile()
             # Signed pickle with HMAC
             data_pickle = pickle.dumps(self.TidesInfoData, pickle.HIGHEST_PROTOCOL)
             hmac_data = hmac.new(
