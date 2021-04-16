@@ -34,10 +34,6 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 _LOGGER = logging.getLogger(__name__)
 
-# Component Library
-#import .storage_mngt
-from .storage_mngt import File_Picture
-
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -65,6 +61,10 @@ from .const import (
     WWW_PATH,
 )
 
+# Component Library
+# import .storage_mngt
+from .storage_mngt import File_Picture
+
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
@@ -91,7 +91,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
 
@@ -106,8 +105,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
     # prepare the tide picture management
     tide_picture_file = File_Picture(
-          hass.config.path(WWW_PATH),
-          hass.config.path(WWW_PATH, name + ".png") )
+        hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
+    )
 
     storage_path = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
@@ -724,7 +723,7 @@ class WorldTidesInfoCustomSensor(Entity):
             self.data = None
 
         if data_has_been_received:
-            _LOGGER.debug("explicit data for %s",self._name)
+            _LOGGER.debug("explicit data for %s", self._name)
 
             self.credit_used = self.credit_used + self.data["callCount"]
             self.data_request_time = current_time
@@ -733,7 +732,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.data_datums_offset = self.data["datums"]
                 self.TidesInfoData.store_init_offset(self.data_datums_offset)
             if "plot" in self.data:
-                #filename = self.curve_picture_filename
+                # filename = self.curve_picture_filename
                 std_string = "data:image/png;base64,"
                 str_to_convert = self.data["plot"][
                     len(std_string) : len(self.data["plot"])
