@@ -61,6 +61,7 @@ from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
 )
+from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 from .server_request_scheduler import  WorldTidesInfo_server_scheduler
 
@@ -84,6 +85,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
 
@@ -94,7 +96,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
-        return 
+        return
 
     key = config.get(CONF_API_KEY)
     vertical_ref = config.get(CONF_VERTICAL_REF)
@@ -115,7 +117,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         key,
     )
 
-    #what is the unit used
+    # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
         unit_to_display = IMPERIAL_CONF_UNIT
     elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
@@ -161,7 +163,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     )
     # tides.retrieve_tide_station()
     tides.update()
-    if tides._worldtidesinfo_server_scheduler.no_data() :
+    if tides._worldtidesinfo_server_scheduler.no_data():
         _LOGGER.error("No data available for this location")
         return
 
@@ -200,7 +202,6 @@ class WorldTidesInfoCustomSensor(Entity):
 
         self.credit_used = 0
 
-
     @property
     def name(self):
         """Return the name of the sensor."""
@@ -228,9 +229,12 @@ class WorldTidesInfoCustomSensor(Entity):
         if self._worldtidesinfo_server_scheduler.no_data():
             return attr
 
+        # shorten used variable
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
         init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
-        data_datums_offset = self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
+        data_datums_offset = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
+        )
 
         # The vertical reference used : LAT, ...
         attr["vertical_reference"] = data["responseDatum"]
@@ -326,17 +330,27 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Time where are trigerred the request
         attr["Data_request_time"] = time.strftime(
-            "%H:%M:%S %d/%m/%y", time.localtime(self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time)
+            "%H:%M:%S %d/%m/%y",
+            time.localtime(
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time
+            ),
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
             attr["Init_data_request_time"] = time.strftime(
-                "%H:%M:%S %d/%m/%y", time.localtime(self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time)
+                "%H:%M:%S %d/%m/%y",
+                time.localtime(
+                    self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time
+                ),
             )
-            attr["next day midnight"] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight.strftime(
+            attr[
+                "next day midnight"
+            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight.strftime(
                 "%H:%M:%S %d/%m/%y"
             )
-            attr["next month midnight"] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight.strftime(
+            attr[
+                "next month midnight"
+            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight.strftime(
                 "%H:%M:%S %d/%m/%y"
             )
 
@@ -346,7 +360,9 @@ class WorldTidesInfoCustomSensor(Entity):
         # Tide detailed characteristic
         attr["station_around_nb"] = len(init_data["stations"])
         attr["station_distance"] = round(
-            self._worldtidesinfo_server_scheduler._Server_Parameter._tide_station_distance * convert_km_to_miles, ROUND_STATION_DISTANCE
+            self._worldtidesinfo_server_scheduler._Server_Parameter._tide_station_distance
+            * convert_km_to_miles,
+            ROUND_STATION_DISTANCE,
         )
         if len(init_data["stations"]) > 0:
             attr["station_around_name"] = ""
@@ -401,31 +417,38 @@ class WorldTidesInfoCustomSensor(Entity):
         if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
             if self._tide_cache_file.Fetch_Stored_Data():
                 SchedulerSnapshot = self._tide_cache_file.Data_Read()
-                _LOGGER.debug(
-                        "Snpashot retrieved data file at: %s ", int(current_time)
+                _LOGGER.debug("Snpashot retrieved data file at: %s ", int(current_time))
+                if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(
+                    SchedulerSnapshot
+                ):
+                    _LOGGER.debug("Snpashot decoding data file at: %s ", int(current_time))
+                    self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(
+                        SchedulerSnapshot
                     )
-                if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(SchedulerSnapshot):
-                      _LOGGER.debug(
-                          "Snpashot decoding data file at: %s ", int(current_time)
-                      )
-                      self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(SchedulerSnapshot)
                 else:
                     _LOGGER.debug(
                         "Error in decoding data file at: %s", int(current_time)
                     )
 
-        #the data read is empty (the snapshot retrieve is not useable) or too old
-        if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time) == True:
-             # Retrieve station from server
-             self.retrieve_tide_station()
-             self._worldtidesinfo_server_scheduler.setup_next_init_data_midnight()
-             init_data_fetched = True
+        # the data read is empty (the snapshot retrieve is not useable) or too old
+        if (
+            self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
+            == True
+        ):
+            # Retrieve station from server
+            self.retrieve_tide_station()
+            self._worldtidesinfo_server_scheduler.setup_next_init_data_midnight()
+            init_data_fetched = True
 
         # Update: normal process
-        if self._worldtidesinfo_server_scheduler.data_to_be_fetched(init_data_fetched,current_time):
+        if self._worldtidesinfo_server_scheduler.data_to_be_fetched(
+            init_data_fetched, current_time
+        ):
             self.retrieve_height_station(init_data_fetched)
             self._worldtidesinfo_server_scheduler.setup_next_data_midnight()
-            self._tide_cache_file.store_data(self._worldtidesinfo_server_scheduler.give_scheduler_image())
+            self._tide_cache_file.store_data(
+                self._worldtidesinfo_server_scheduler.give_scheduler_image()
+            )
         else:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
@@ -457,7 +480,10 @@ class WorldTidesInfoCustomSensor(Entity):
     def retrieve_height_station(self, init_data_fetched):
         """HEIGTH : Get the latest data from WorldTidesInfo."""
         data = None
-        datum_flag = self._worldtidesinfo_server_scheduler.no_datum() or init_data_fetched == True
+        datum_flag = (
+            self._worldtidesinfo_server_scheduler.no_datum()
+            or init_data_fetched == True
+        )
         if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
             _LOGGER.debug(
                 "Data queried at: %s",
@@ -473,12 +499,12 @@ class WorldTidesInfoCustomSensor(Entity):
             )
             # process information
             if "datums" in data:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = data["datums"]
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = data[
+                    "datums"
+                ]
             if "plot" in data:
                 std_string = "data:image/png;base64,"
-                str_to_convert = data["plot"][
-                    len(std_string) : len(data["plot"])
-                ]
+                str_to_convert = data["plot"][len(std_string) : len(data["plot"])]
                 self._tide_picture_file.store_picture_base64(str_to_convert)
             else:
                 self._tide_picture_file.remove_previous_picturefile()
