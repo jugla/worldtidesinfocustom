@@ -37,7 +37,6 @@ from .const import (
     CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
-    CONF_WORLDTIDES_REQUEST_INTERVAL,
     DEBUG_FLAG,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
@@ -45,8 +44,6 @@ from .const import (
     DEFAULT_PLOT_COLOR,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
-    DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
-    FORCE_FETCH_INIT_DATA_INTERVAL,
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
@@ -64,6 +61,7 @@ from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
 )
+from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
 # Sensor HA parameter
@@ -77,10 +75,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF): cv.string,
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Optional(
-            CONF_WORLDTIDES_REQUEST_INTERVAL,
-            default=DEFAULT_WORLDTIDES_REQUEST_INTERVAL,
-        ): cv.positive_int,
-        vol.Optional(
             CONF_STATION_DISTANCE,
             default=DEFAULT_STATION_DISTANCE,
         ): cv.positive_int,
@@ -90,18 +84,26 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
 
     # Get data from configuration.yaml
     name = config.get(CONF_NAME)
-
     lat = config.get(CONF_LATITUDE, hass.config.latitude)
     lon = config.get(CONF_LONGITUDE, hass.config.longitude)
+
+    if None in (lat, lon):
+        _LOGGER.error("Latitude or longitude not set in Home Assistant config")
+        return
+
     key = config.get(CONF_API_KEY)
     vertical_ref = config.get(CONF_VERTICAL_REF)
-    worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
+    plot_color = config.get(CONF_PLOT_COLOR)
+    plot_background = config.get(CONF_PLOT_BACKGROUND)
+    # worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
+
     # prepare the tide picture management
     tide_picture_file = File_Picture(
         hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
@@ -114,8 +116,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         key,
     )
 
-    plot_color = config.get(CONF_PLOT_COLOR)
-    plot_background = config.get(CONF_PLOT_BACKGROUND)
+    # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
         unit_to_display = IMPERIAL_CONF_UNIT
     elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
@@ -123,6 +124,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     else:
         unit_to_display = METRIC_CONF_UNIT
 
+    # unit used for display, and convert tide station distance
     if unit_to_display == IMPERIAL_CONF_UNIT:
         server_tide_station_distance = tide_station_distance * KM_PER_MI
         unit_curve_picture = PLOT_CURVE_UNIT_FT
@@ -130,6 +132,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         server_tide_station_distance = tide_station_distance
         unit_curve_picture = PLOT_CURVE_UNIT_M
 
+    # instanciate server front end
     worldtidesinfo_server = WorldTidesInfo_server(
         key,
         lat,
@@ -140,126 +143,30 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         plot_background,
         unit_curve_picture,
     )
+    worldtidesinfo_server_parameter = worldtidesinfo_server.give_parameter()
 
-    if None in (lat, lon):
-        _LOGGER.error("Latitude or longitude not set in Home Assistant config")
+    # instantiate scheduler front end
+    worldtidesinfo_server_scheduler = WorldTidesInfo_server_scheduler(
+        key,
+        worldtidesinfo_server_parameter,
+    )
 
     # create the sensor
     tides = WorldTidesInfoCustomSensor(
         name,
-        lat,
-        lon,
-        key,
-        vertical_ref,
-        worldides_request_interval,
-        tide_station_distance,
+        unit_to_display,
         tide_picture_file,
         tide_cache_file,
         worldtidesinfo_server,
-        plot_color,
-        plot_background,
-        unit_to_display,
+        worldtidesinfo_server_scheduler,
     )
     # tides.retrieve_tide_station()
     tides.update()
-    if tides.data == None:
+    if tides._worldtidesinfo_server_scheduler.no_data():
         _LOGGER.error("No data available for this location")
         return
 
     add_entities([tides])
-
-
-class TidesInfoData:
-    """Class to store."""
-
-    # This class will wrap up all data to be stored
-    def __init__(self):
-
-        # Initialize the data.
-        # Parameter i.e. configuration.yaml
-        self._name = None
-        self._lat = None
-        self._lon = None
-        self._vertical_ref = None
-        self._tide_station_distance = None
-        self._plot_color = None
-        self._plot_background = None
-        self._unit_to_display = None
-
-        # Data retrieve from server
-        self.init_data = None
-        self.data = None
-        self.data_request_time = None
-        self.init_data_request_time = None
-        self.data_datums_offset = None
-        self.next_day_midnight = None
-        self.next_month_midnight = None
-
-    def store_parameters(
-        self,
-        name,
-        lat,
-        lon,
-        vertical_ref,
-        tide_station_distance,
-        plot_color,
-        plot_background,
-        unit_to_display,
-    ):
-        """Store the parameters."""
-        self._name = name
-        self._lat = lat
-        self._lon = lon
-        self._vertical_ref = vertical_ref
-        self._tide_station_distance = tide_station_distance
-        self._plot_color = plot_color
-        self._plot_background = plot_background
-        self._unit_to_display = unit_to_display
-
-    def store_init_info(self, init_data, init_data_request_time):
-        """Store data use at initialisation : part 1/2."""
-        self.init_data = init_data
-        self.init_data_request_time = init_data_request_time
-
-    def store_init_offset(self, data_datums_offset):
-        """Store data use at initialisation : part 2/2."""
-        self.data_datums_offset = data_datums_offset
-
-    def store_data_info(self, data, data_request_time):
-        """Store periodic data."""
-        self.data = data
-        self.data_request_time = data_request_time
-
-    def store_next_midnight(self, next_day_midnight, next_month_midnight):
-        """Store next midnight trigger."""
-        self.next_day_midnight = next_day_midnight
-        self.next_month_midnight = next_month_midnight
-
-    def data_usable(
-        self,
-        name,
-        lat,
-        lon,
-        vertical_ref,
-        tide_station_distance,
-        plot_color,
-        plot_background,
-        unit_to_display,
-    ):
-        """Condition to say if retrieve data match the current parameter."""
-        if (
-            self._name == name
-            and self._lat == lat
-            and self._lon == lon
-            and self._vertical_ref == vertical_ref
-            and self._tide_station_distance == tide_station_distance
-            and self._plot_color == plot_color
-            and self._plot_background == plot_background
-            and self._unit_to_display == unit_to_display
-        ):
-            return True
-        else:
-            return False
 
 
 class WorldTidesInfoCustomSensor(Entity):
@@ -268,34 +175,16 @@ class WorldTidesInfoCustomSensor(Entity):
     def __init__(
         self,
         name,
-        lat,
-        lon,
-        key,
-        vertical_ref,
-        worldides_request_interval,
-        tide_station_distance,
+        unit_to_display,
         tide_picture_file,
         tide_cache_file,
         worldtidesinfo_server,
-        plot_color,
-        plot_background,
-        unit_to_display,
+        worldtidesinfo_server_scheduler,
     ):
         """Initialize the sensor."""
 
         # Parameters from configuration.yaml
         self._name = name
-        self._lat = lat
-        self._lon = lon
-        self._key = key
-        self._vertical_ref = vertical_ref
-        self._worldides_request_interval = worldides_request_interval
-        if unit_to_display == IMPERIAL_CONF_UNIT:
-            self._tide_station_distance = tide_station_distance * KM_PER_MI
-        else:
-            self._tide_station_distance = tide_station_distance
-        self._plot_color = plot_color
-        self._plot_background = plot_background
         self._unit_to_display = unit_to_display
 
         # Picture data
@@ -303,37 +192,14 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # World Tide Info Server
         self._worldtidesinfo_server = worldtidesinfo_server
-
-        # Internal data use to manage request to server
-        self.init_data = None
-        self.data = None
-        self.data_request_time = None
-        self.init_data_request_time = None
-        self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA_INTERVAL) + (
-            datetime.today()
-        ).replace(hour=0, minute=0, second=0, microsecond=0)
-        self.credit_used = 0
-        self.data_datums_offset = None
+        # the scheduler
+        self._worldtidesinfo_server_scheduler = worldtidesinfo_server_scheduler
+        # set first trigger of scheduler
+        self._worldtidesinfo_server_scheduler.setup_next_midnights()
         # Initialize the data to store
         self._tide_cache_file = tide_cache_file
-        self.TidesInfoData = TidesInfoData()
-        # Store parameter
-        self.TidesInfoData.store_parameters(
-            self._name,
-            self._lat,
-            self._lon,
-            self._vertical_ref,
-            self._tide_station_distance,
-            self._plot_color,
-            self._plot_background,
-            self._unit_to_display,
-        )
-        self.TidesInfoData.store_next_midnight(
-            self.next_day_midnight, self.next_month_midnight
-        )
+
+        self.credit_used = 0
 
     @property
     def name(self):
@@ -359,89 +225,95 @@ class WorldTidesInfoCustomSensor(Entity):
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
 
-        if self.data == None or self.init_data == None:
+        if self._worldtidesinfo_server_scheduler.no_data():
             return attr
 
+        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+        init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
+        data_datums_offset = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
+        )
+
         # The vertical reference used : LAT, ...
-        attr["vertical_reference"] = self.data["responseDatum"]
+        attr["vertical_reference"] = data["responseDatum"]
 
         # Tide station characteristics
-        if "station" in self.data:
-            attr["tidal_station_used"] = self.data["station"]
+        if "station" in data:
+            attr["tidal_station_used"] = data["station"]
         else:
             attr["tidal_station_used"] = "no reference station used"
 
         # Next tide
         next_tide = 0
-        for tide_index in range(len(self.data["extremes"])):
-            if self.data["extremes"][tide_index]["dt"] < current_time:
+        for tide_index in range(len(data["extremes"])):
+            if data["extremes"][tide_index]["dt"] < current_time:
                 next_tide = tide_index
 
         # Managed the case where next_tide has not been updated : if next_tide=0 perform a check
-        if self.data["extremes"][next_tide]["dt"] < current_time:
+        if data["extremes"][next_tide]["dt"] < current_time:
             next_tide = next_tide + 1
 
-        if "High" in str(self.data["extremes"][next_tide]["type"]):
-            attr["high_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
+        if "High" in str(data["extremes"][next_tide]["type"]):
+            attr["high_tide_time_utc"] = data["extremes"][next_tide]["date"]
             attr["high_tide_height"] = round(
-                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,
+                data["extremes"][next_tide]["height"] * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
-            attr["low_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
+            attr["low_tide_time_utc"] = data["extremes"][next_tide + 1]["date"]
             attr["low_tide_height"] = round(
-                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
+                data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
             diff_high_tide_next_low_tide = (
-                self.data["extremes"][next_tide]["height"]
-                - self.data["extremes"][next_tide + 1]["height"]
+                data["extremes"][next_tide]["height"]
+                - data["extremes"][next_tide + 1]["height"]
             )
-        elif "Low" in str(self.data["extremes"][next_tide]["type"]):
-            attr["high_tide_time_utc"] = self.data["extremes"][next_tide + 1]["date"]
+        elif "Low" in str(data["extremes"][next_tide]["type"]):
+            attr["high_tide_time_utc"] = data["extremes"][next_tide + 1]["date"]
             attr["high_tide_height"] = round(
-                self.data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
+                data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
-            attr["low_tide_time_utc"] = self.data["extremes"][next_tide]["date"]
+            attr["low_tide_time_utc"] = data["extremes"][next_tide]["date"]
             attr["low_tide_height"] = round(
-                self.data["extremes"][next_tide]["height"] * convert_meter_to_feet,
+                data["extremes"][next_tide]["height"] * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
             # diff_high_tide_next_low_tide = (
-            #    self.data["extremes"][next_tide + 1]["height"]
-            #    - self.data["extremes"][next_tide + 2]["height"]
+            #    data["extremes"][next_tide + 1]["height"]
+            #    - data["extremes"][next_tide + 2]["height"]
             # )
             diff_high_tide_next_low_tide = (
-                self.data["extremes"][next_tide + 1]["height"]
-                - self.data["extremes"][next_tide]["height"]
+                data["extremes"][next_tide + 1]["height"]
+                - data["extremes"][next_tide]["height"]
             )
 
         # The height
         current_height = 0
-        for height_index in range(len(self.data["heights"])):
-            if self.data["heights"][height_index]["dt"] < current_time:
+        for height_index in range(len(data["heights"])):
+            if data["heights"][height_index]["dt"] < current_time:
                 current_height = height_index
         attr["current_height"] = round(
-            self.data["heights"][current_height]["height"] * convert_meter_to_feet,
+            data["heights"][current_height]["height"] * convert_meter_to_feet,
             ROUND_HEIGTH,
         )
-        attr["current_height_utc"] = self.data["heights"][current_height]["date"]
+        attr["current_height_utc"] = data["heights"][current_height]["date"]
 
         # The coeff tide_highlow_over the Mean Water Spring
         MHW_index = 0
         MLW_index = 0
-        for ref_index in range(len(self.data_datums_offset)):
-            if self.data_datums_offset[ref_index]["name"] == "MHWS":
+        for ref_index in range(len(data_datums_offset)):
+            if data_datums_offset[ref_index]["name"] == "MHWS":
                 MHW_index = ref_index
-            if self.data_datums_offset[ref_index]["name"] == "MLWS":
+            if data_datums_offset[ref_index]["name"] == "MLWS":
                 MLW_index = ref_index
 
         attr["Coeff_resp_MWS"] = round(
             (
                 diff_high_tide_next_low_tide
                 / (
-                    self.data_datums_offset[MHW_index]["height"]
-                    - self.data_datums_offset[MLW_index]["height"]
+                    data_datums_offset[MHW_index]["height"]
+                    - data_datums_offset[MLW_index]["height"]
                 )
             )
             * 100,
@@ -456,17 +328,27 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Time where are trigerred the request
         attr["Data_request_time"] = time.strftime(
-            "%H:%M:%S %d/%m/%y", time.localtime(self.data_request_time)
+            "%H:%M:%S %d/%m/%y",
+            time.localtime(
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time
+            ),
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
             attr["Init_data_request_time"] = time.strftime(
-                "%H:%M:%S %d/%m/%y", time.localtime(self.init_data_request_time)
+                "%H:%M:%S %d/%m/%y",
+                time.localtime(
+                    self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time
+                ),
             )
-            attr["next day midnight"] = self.next_day_midnight.strftime(
+            attr[
+                "next day midnight"
+            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight.strftime(
                 "%H:%M:%S %d/%m/%y"
             )
-            attr["next month midnight"] = self.next_month_midnight.strftime(
+            attr[
+                "next month midnight"
+            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight.strftime(
                 "%H:%M:%S %d/%m/%y"
             )
 
@@ -474,19 +356,21 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["plot"] = self._tide_picture_file.full_filename()
 
         # Tide detailed characteristic
-        attr["station_around_nb"] = len(self.init_data["stations"])
+        attr["station_around_nb"] = len(init_data["stations"])
         attr["station_distance"] = round(
-            self._tide_station_distance * convert_km_to_miles, ROUND_STATION_DISTANCE
+            self._worldtidesinfo_server_scheduler._Server_Parameter._tide_station_distance
+            * convert_km_to_miles,
+            ROUND_STATION_DISTANCE,
         )
-        if len(self.init_data["stations"]) > 0:
+        if len(init_data["stations"]) > 0:
             attr["station_around_name"] = ""
-            for name_index in range(len(self.init_data["stations"])):
+            for name_index in range(len(init_data["stations"])):
                 attr["station_around_name"] = (
                     attr["station_around_name"]
                     + "; "
-                    + self.init_data["stations"][name_index]["name"]
+                    + init_data["stations"][name_index]["name"]
                 )
-            attr["station_around_time_zone"] = self.init_data["stations"][0]["timezone"]
+            attr["station_around_time_zone"] = init_data["stations"][0]["timezone"]
         else:
             attr["station_around_name"] = "None"
             attr["station_around_time_zone"] = "None"
@@ -496,24 +380,25 @@ class WorldTidesInfoCustomSensor(Entity):
     @property
     def state(self):
         """Return the state of the device."""
-        if self.data:
+        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+        if data:
             # Get next tide time
             current_time = int(time.time())
             next_tide = 0
-            for tide_index in range(len(self.data["extremes"])):
-                if self.data["extremes"][tide_index]["dt"] < current_time:
+            for tide_index in range(len(data["extremes"])):
+                if data["extremes"][tide_index]["dt"] < current_time:
                     next_tide = tide_index
-            if self.data["extremes"][next_tide]["dt"] < current_time:
+            if data["extremes"][next_tide]["dt"] < current_time:
                 next_tide = next_tide + 1
 
-            if "High" in str(self.data["extremes"][next_tide]["type"]):
+            if "High" in str(data["extremes"][next_tide]["type"]):
                 tidetime = time.strftime(
-                    "%H:%M", time.localtime(self.data["extremes"][next_tide]["dt"])
+                    "%H:%M", time.localtime(data["extremes"][next_tide]["dt"])
                 )
                 return f"High tide at {tidetime}"
-            if "Low" in str(self.data["extremes"][next_tide]["type"]):
+            if "Low" in str(data["extremes"][next_tide]["type"]):
                 tidetime = time.strftime(
-                    "%H:%M", time.localtime(self.data["extremes"][next_tide]["dt"])
+                    "%H:%M", time.localtime(data["extremes"][next_tide]["dt"])
                 )
                 return f"Low tide at {tidetime}"
             return None
@@ -521,126 +406,49 @@ class WorldTidesInfoCustomSensor(Entity):
 
     def update(self):
         """Update of sensors."""
-        data_to_require = False
-        init_data_to_require = False
-        force_init_data_to_require = False
         init_data_fetched = False
+
         self.credit_used = 0
         current_time = time.time()
 
         # Init data (initialisation or refresh or retrieve from a file)
-        if self.init_data == None:
-            init_data_to_require = True
-        elif datetime.fromtimestamp(current_time) >= self.next_month_midnight:
-            init_data_to_require = True
-            force_init_data_to_require = True
-        else:
-            init_data_to_require = False
-
-        if init_data_to_require:
-            previous_data_decode = False
+        if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
             if self._tide_cache_file.Fetch_Stored_Data():
-                TidesInfoData_read = self._tide_cache_file.Data_Read()
-                try:
-                    # The data is sure only after the following test
-                    if self.TidesInfoData.data_usable(
-                        TidesInfoData_read._name,
-                        TidesInfoData_read._lat,
-                        TidesInfoData_read._lon,
-                        TidesInfoData_read._vertical_ref,
-                        TidesInfoData_read._tide_station_distance,
-                        TidesInfoData_read._plot_color,
-                        TidesInfoData_read._plot_background,
-                        TidesInfoData_read._unit_to_display,
-                    ):
-
-                        # Fetch data from file
-                        self.init_data = TidesInfoData_read.init_data
-                        self.data_datums_offset = TidesInfoData_read.data_datums_offset
-                        self.data = TidesInfoData_read.data
-                        self.data_request_time = TidesInfoData_read.data_request_time
-                        self.init_data_request_time = (
-                            TidesInfoData_read.init_data_request_time
-                        )
-                        self.next_day_midnight = TidesInfoData_read.next_day_midnight
-                        self.next_month_midnight = (
-                            TidesInfoData_read.next_month_midnight
-                        )
-
-                        # Ok!
-                        previous_data_decode = True
-
-                except:
+                SchedulerSnapshot = self._tide_cache_file.Data_Read()
+                _LOGGER.debug("Snpashot retrieved data file at: %s ", int(current_time))
+                if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(
+                    SchedulerSnapshot
+                ):
+                    _LOGGER.debug(
+                        "Snpashot decoding data file at: %s ", int(current_time)
+                    )
+                    self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(
+                        SchedulerSnapshot
+                    )
+                else:
                     _LOGGER.debug(
                         "Error in decoding data file at: %s", int(current_time)
                     )
 
-                    # something is wrong : reinit data from server
-                    self.init_data = None
-                    self.data_datums_offset = None
-                    self.data = None
-                    self.data_request_time = None
-                    self.init_data_request_time = None
-                    self.next_day_midnight = timedelta(days=1) + (
-                        datetime.today()
-                    ).replace(hour=0, minute=0, second=0, microsecond=0)
-                    self.next_month_midnight = timedelta(
-                        days=FORCE_FETCH_INIT_DATA_INTERVAL
-                    ) + (datetime.today()).replace(
-                        hour=0, minute=0, second=0, microsecond=0
-                    )
-                    # KO !!
-                    previous_data_decode = False
-
-            if previous_data_decode == True:
-
-                # Set data to store
-                # The read file has been trusted
-
-                self.TidesInfoData.store_init_info(
-                    self.init_data, self.init_data_request_time
-                )
-                self.TidesInfoData.store_init_offset(self.data_datums_offset)
-                self.TidesInfoData.store_data_info(self.data, self.data_request_time)
-                self.TidesInfoData.store_next_midnight(
-                    self.next_day_midnight, self.next_month_midnight
-                )
-
-            if previous_data_decode == False or force_init_data_to_require == True:
-                # Retrieve station from server
-                self.retrieve_tide_station()
-                init_data_fetched = True
+        # the data read is empty (the snapshot retrieve is not useable) or too old
+        if (
+            self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
+            == True
+        ):
+            # Retrieve station from server
+            self.retrieve_tide_station()
+            self._worldtidesinfo_server_scheduler.setup_next_init_data_midnight()
+            init_data_fetched = True
 
         # Update: normal process
-        if init_data_fetched:
-            data_to_require = True
-        elif self.data_request_time == None:
-            data_to_require = True
-        elif current_time >= (
-            self.data_request_time + self._worldides_request_interval
+        if self._worldtidesinfo_server_scheduler.data_to_be_fetched(
+            init_data_fetched, current_time
         ):
-            data_to_require = True
-        elif datetime.fromtimestamp(current_time) >= self.next_day_midnight:
-            data_to_require = True
-        else:
-            data_to_require = False
-
-        if data_to_require:
-            self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-        if init_data_fetched:
-            self.next_month_midnight = timedelta(
-                days=FORCE_FETCH_INIT_DATA_INTERVAL
-            ) + (datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-
-        # Store next midnight
-        self.TidesInfoData.store_next_midnight(
-            self.next_day_midnight, self.next_month_midnight
-        )
-
-        if data_to_require:
             self.retrieve_height_station(init_data_fetched)
+            self._worldtidesinfo_server_scheduler.setup_next_data_midnight()
+            self._tide_cache_file.store_data(
+                self._worldtidesinfo_server_scheduler.give_scheduler_image()
+            )
         else:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
@@ -657,14 +465,11 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.credit_used
                 + self._worldtidesinfo_server.retrieve_tide_station_credit()
             )
-            self.init_data = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data = (
                 self._worldtidesinfo_server.retrieve_tide_station_raw_data()
             )
-            self.init_data_request_time = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time = (
                 self._worldtidesinfo_server.retrieve_tide_station_request_time()
-            )
-            self.TidesInfoData.store_init_info(
-                self.init_data, self.init_data_request_time
             )
         else:
             _LOGGER.error(
@@ -674,33 +479,35 @@ class WorldTidesInfoCustomSensor(Entity):
 
     def retrieve_height_station(self, init_data_fetched):
         """HEIGTH : Get the latest data from WorldTidesInfo."""
-        datum_flag = self.data_datums_offset == None or init_data_fetched == True
+        data = None
+        datum_flag = (
+            self._worldtidesinfo_server_scheduler.no_datum()
+            or init_data_fetched == True
+        )
         if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
             _LOGGER.debug(
                 "Data queried at: %s",
                 self._worldtidesinfo_server.retrieve_tide_request_time,
             )
-            self.data = self._worldtidesinfo_server.retrieve_tide_raw_data()
-            self.data_request_time = (
+            data = self._worldtidesinfo_server.retrieve_tide_raw_data()
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.data = data
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time = (
                 self._worldtidesinfo_server.retrieve_tide_request_time()
             )
             self.credit_used = (
                 self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )
             # process information
-            self.TidesInfoData.store_data_info(self.data, self.data_request_time)
-            if "datums" in self.data:
-                self.data_datums_offset = self.data["datums"]
-                self.TidesInfoData.store_init_offset(self.data_datums_offset)
-            if "plot" in self.data:
-                std_string = "data:image/png;base64,"
-                str_to_convert = self.data["plot"][
-                    len(std_string) : len(self.data["plot"])
+            if "datums" in data:
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = data[
+                    "datums"
                 ]
+            if "plot" in data:
+                std_string = "data:image/png;base64,"
+                str_to_convert = data["plot"][len(std_string) : len(data["plot"])]
                 self._tide_picture_file.store_picture_base64(str_to_convert)
             else:
                 self._tide_picture_file.remove_previous_picturefile()
-            self._tide_cache_file.store_data(self.TidesInfoData)
 
         else:
             _LOGGER.error(

@@ -8,6 +8,46 @@ import requests
 PLOT_CURVE_UNIT_FT = "feet"
 PLOT_CURVE_UNIT_M = "meters"
 
+
+class Server_Parameter:
+    """Parameter"""
+
+    def __init__(
+        self,
+        key,
+        lat,
+        lon,
+        vertical_ref,
+        tide_station_distance,
+        plot_color,
+        plot_background,
+        unit_curve_picture,
+    ):
+        self._key = key
+        self._lat = lat
+        self._lon = lon
+        self._vertical_ref = vertical_ref
+        self._tide_station_distance = tide_station_distance
+        self._plot_color = plot_color
+        self._plot_background = plot_background
+        self._unit_curve_picture = unit_curve_picture
+
+    def compare_parameter(self, parameter):
+        if (
+            parameter._key == self._key
+            and parameter._lat == self._lat
+            and parameter._lon == self._lon
+            and parameter._vertical_ref == self._vertical_ref
+            and parameter._tide_station_distance == self._tide_station_distance
+            and parameter._plot_color == self._plot_color
+            and parameter._plot_background == self._plot_background
+            and parameter._unit_curve_picture == self._unit_curve_picture
+        ):
+            return True
+        else:
+            return False
+
+
 class WorldTidesInfo_server:
     """Class to manage the Word Tide Info serer"""
 
@@ -23,14 +63,17 @@ class WorldTidesInfo_server:
         unit_curve_picture,
     ):
         # parameter
-        self._key = key
-        self._lat = lat
-        self._lon = lon
-        self._vertical_ref = vertical_ref
-        self._tide_station_distance = tide_station_distance
-        self._plot_color = plot_color
-        self._plot_background = plot_background
-        self._unit_curve_picture = unit_curve_picture
+        self._Server_Parameter = Server_Parameter(
+            key,
+            lat,
+            lon,
+            vertical_ref,
+            tide_station_distance,
+            plot_color,
+            plot_background,
+            unit_curve_picture,
+        )
+
         # information from server
         self.last_tide_station_raw_data = None
         self.last_tide_station_request_time = None
@@ -41,6 +84,9 @@ class WorldTidesInfo_server:
         self.last_tide_raw_data_request_time = None
         self.last_tide_request_credit = 0
         self.last_tide_request_error_value = None
+
+    def give_parameter(self):
+        return self._Server_Parameter
 
     def retrieve_tide_station_credit(self):
         return self.last_tide_station_request_credit
@@ -63,7 +109,12 @@ class WorldTidesInfo_server:
         resource = (
             "https://www.worldtides.info/api/v2?stations"
             "&key={}&lat={}&lon={}&stationDistance={}"
-        ).format(self._key, self._lat, self._lon, self._tide_station_distance)
+        ).format(
+            self._Server_Parameter._key,
+            self._Server_Parameter._lat,
+            self._Server_Parameter._lon,
+            self._Server_Parameter._tide_station_distance,
+        )
         try:
             data = requests.get(resource, timeout=10).json()
             data_has_been_received = True
@@ -112,14 +163,14 @@ class WorldTidesInfo_server:
             "https://www.worldtides.info/api/v2?extremes&days=3&date=today&heights&plot&timemode=24&step=900"
             "&key={}&lat={}&lon={}&datum={}&stationDistance={}&color={}&background={}&units={}{}"
         ).format(
-            self._key,
-            self._lat,
-            self._lon,
-            self._vertical_ref,
-            self._tide_station_distance,
-            self._plot_color,
-            self._plot_background,
-            self._unit_curve_picture,
+            self._Server_Parameter._key,
+            self._Server_Parameter._lat,
+            self._Server_Parameter._lon,
+            self._Server_Parameter._vertical_ref,
+            self._Server_Parameter._tide_station_distance,
+            self._Server_Parameter._plot_color,
+            self._Server_Parameter._plot_background,
+            self._Server_Parameter._unit_curve_picture,
             datums_string,
         )
         try:
