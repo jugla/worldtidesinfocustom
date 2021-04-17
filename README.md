@@ -48,6 +48,7 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 
 **Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*
 
+**Version V3.0.0**: After this version *worldtides_request_interval* configuration parameter is removed
 
 ## Using the component
 Get API key from https://www.worldtides.info/developer (buy prepaid)
@@ -66,7 +67,6 @@ sensor:
 #    plot_color: 2,102,255
 #    plot_background: 255,255,255
 #    scan_interval: 900
-#    worldtides_request_interval: 90000
 
 ``` 
 where :
@@ -81,7 +81,6 @@ and  optional parameter
 - plot_color : the comma-separated RGB values for the tide graph foreground color
 - plot_background : the comma-separated RGB values for the tide graph background color
 - scan_interval : the scan rate to refresh entity (should not be used)
-- worldtides_request_interval : the scan rate to fetch data on server (should not be used)
 
 One entity is declared with attibutes. To see them as sensor, please follow the example
 
@@ -356,7 +355,6 @@ NB: watch out : in the code we use the camera_image keyword and not image
 | plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
 | plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph background color |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
-| worldtides _request_interval     | positive int                                                   | **Optional** | v1.0.0    | 90000s | YAML                                                      | It's the time between 2 request from WorldTimeInfo serveur (each request request credit). One request is force around minight whatever the parameter value is |
 
 ## about vertical reference
 Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
@@ -392,8 +390,8 @@ This sensor has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- implement UI instead of YAML (planned in V3.0.0)
-- implement asynchoneous instead of polling (planned in V3.0.0)
+- implement UI instead of YAML (planned in V3.x.0)
+- implement asynchoneous instead of polling (planned in V3.x.0)
 - make this integration as default in home assistant
 
 ## Contact
