@@ -8,13 +8,6 @@ DEFAULT_NAME = "WorldTidesInfoCustom"
 
 SCAN_INTERVAL_SECONDS = 900
 
-# set 25h : wacth dog to retrieve data
-DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
-CONF_WORLDTIDES_REQUEST_INTERVAL = "worldtides_request_interval"
-
-# fetch init data every 30 days
-FORCE_FETCH_INIT_DATA_INTERVAL = 30
-
 # LAT reference as default
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
@@ -42,7 +35,7 @@ HA_CONF_UNIT = "home_assistant"
 DEFAULT_CONF_UNIT = HA_CONF_UNIT
 
 # Debug Flag
-DEBUG_FLAG = False
+DEBUG_FLAG = True
 
 # Round height
 ROUND_HEIGTH = 3
