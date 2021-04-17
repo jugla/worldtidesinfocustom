@@ -60,6 +60,8 @@ from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
+    give_info_from_raw_data,
+    give_info_from_raw_datums_data,
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
@@ -211,7 +213,7 @@ class WorldTidesInfoCustomSensor(Entity):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
 
-        current_time = int(time.time())
+        current_time = time.time()
 
         diff_high_tide_next_low_tide = 0
 
@@ -228,93 +230,59 @@ class WorldTidesInfoCustomSensor(Entity):
         if self._worldtidesinfo_server_scheduler.no_data():
             return attr
 
-        # shorten used variable
+        # retrieve tide data
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+        tide_info = give_info_from_raw_data(data)
+
         init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
+        init_tide_info = give_info_from_raw_data(init_data)
+
         data_datums_offset = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
         )
+        datums_info = give_info_from_raw_datums_data(data_datums_offset)
 
         # The vertical reference used : LAT, ...
-        attr["vertical_reference"] = data["responseDatum"]
+        attr["vertical_reference"] = tide_info.give_vertical_ref()
 
         # Tide station characteristics
-        if "station" in data:
-            attr["tidal_station_used"] = data["station"]
-        else:
-            attr["tidal_station_used"] = "no reference station used"
+        attr["tidal_station_used"] = tide_info.give_tidal_station_used()
 
         # Next tide
-        next_tide = 0
-        for tide_index in range(len(data["extremes"])):
-            if data["extremes"][tide_index]["dt"] < current_time:
-                next_tide = tide_index
-
-        # Managed the case where next_tide has not been updated : if next_tide=0 perform a check
-        if data["extremes"][next_tide]["dt"] < current_time:
-            next_tide = next_tide + 1
-
-        if "High" in str(data["extremes"][next_tide]["type"]):
-            attr["high_tide_time_utc"] = data["extremes"][next_tide]["date"]
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        diff_high_tide_next_low_tide = 0
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
             attr["high_tide_height"] = round(
-                data["extremes"][next_tide]["height"] * convert_meter_to_feet,
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
-            attr["low_tide_time_utc"] = data["extremes"][next_tide + 1]["date"]
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
             attr["low_tide_height"] = round(
-                data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
-            diff_high_tide_next_low_tide = (
-                data["extremes"][next_tide]["height"]
-                - data["extremes"][next_tide + 1]["height"]
-            )
-        elif "Low" in str(data["extremes"][next_tide]["type"]):
-            attr["high_tide_time_utc"] = data["extremes"][next_tide + 1]["date"]
-            attr["high_tide_height"] = round(
-                data["extremes"][next_tide + 1]["height"] * convert_meter_to_feet,
-                ROUND_HEIGTH,
-            )
-            attr["low_tide_time_utc"] = data["extremes"][next_tide]["date"]
-            attr["low_tide_height"] = round(
-                data["extremes"][next_tide]["height"] * convert_meter_to_feet,
-                ROUND_HEIGTH,
-            )
-            # diff_high_tide_next_low_tide = (
-            #    data["extremes"][next_tide + 1]["height"]
-            #    - data["extremes"][next_tide + 2]["height"]
-            # )
-            diff_high_tide_next_low_tide = (
-                data["extremes"][next_tide + 1]["height"]
-                - data["extremes"][next_tide]["height"]
+            diff_high_tide_next_low_tide = abs(
+                next_tide_UTC.get("high_tide_height")
+                - next_tide_UTC.get("low_tide_height")
             )
 
         # The height
-        current_height = 0
-        for height_index in range(len(data["heights"])):
-            if data["heights"][height_index]["dt"] < current_time:
-                current_height = height_index
+        current_height_value = tide_info.give_current_height_in_UTC(current_time)
         attr["current_height"] = round(
-            data["heights"][current_height]["height"] * convert_meter_to_feet,
+            current_height_value.get("current_height") * convert_meter_to_feet,
             ROUND_HEIGTH,
         )
-        attr["current_height_utc"] = data["heights"][current_height]["date"]
+        attr["current_height_utc"] = current_height_value.get("current_height_utc")
 
         # The coeff tide_highlow_over the Mean Water Spring
-        MHW_index = 0
-        MLW_index = 0
-        for ref_index in range(len(data_datums_offset)):
-            if data_datums_offset[ref_index]["name"] == "MHWS":
-                MHW_index = ref_index
-            if data_datums_offset[ref_index]["name"] == "MLWS":
-                MLW_index = ref_index
-
+        MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
         attr["Coeff_resp_MWS"] = round(
             (
                 diff_high_tide_next_low_tide
                 / (
-                    data_datums_offset[MHW_index]["height"]
-                    - data_datums_offset[MLW_index]["height"]
+                    MWS_datum_offset.get("datum_offset_MHWS")
+                    - MWS_datum_offset.get("datum_offset_MLWS")
                 )
             )
             * 100,
@@ -357,24 +325,18 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["plot"] = self._tide_picture_file.full_filename()
 
         # Tide detailed characteristic
-        attr["station_around_nb"] = len(init_data["stations"])
         attr["station_distance"] = round(
             self._worldtidesinfo_server_scheduler._Server_Parameter._tide_station_distance
             * convert_km_to_miles,
             ROUND_STATION_DISTANCE,
         )
-        if len(init_data["stations"]) > 0:
-            attr["station_around_name"] = ""
-            for name_index in range(len(init_data["stations"])):
-                attr["station_around_name"] = (
-                    attr["station_around_name"]
-                    + "; "
-                    + init_data["stations"][name_index]["name"]
-                )
-            attr["station_around_time_zone"] = init_data["stations"][0]["timezone"]
-        else:
-            attr["station_around_name"] = "None"
-            attr["station_around_time_zone"] = "None"
+        station_around = init_tide_info.give_station_around_info()
+        attr["station_around_nb"] = station_around.get("station_around_nb")
+        attr["station_around_name"] = station_around.get("station_around_name")
+
+        attr[
+            "station_around_time_zone"
+        ] = init_tide_info.give_nearest_station_time_zone()
 
         return attr
 
@@ -383,26 +345,16 @@ class WorldTidesInfoCustomSensor(Entity):
         """Return the state of the device."""
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
         if data:
+            tide_info = give_info_from_raw_data(data)
             # Get next tide time
-            current_time = int(time.time())
-            next_tide = 0
-            for tide_index in range(len(data["extremes"])):
-                if data["extremes"][tide_index]["dt"] < current_time:
-                    next_tide = tide_index
-            if data["extremes"][next_tide]["dt"] < current_time:
-                next_tide = next_tide + 1
-
-            if "High" in str(data["extremes"][next_tide]["type"]):
+            next_tide = tide_info.give_next_tide_in_epoch(time.time())
+            if next_tide.get("error") == None:
                 tidetime = time.strftime(
-                    "%H:%M", time.localtime(data["extremes"][next_tide]["dt"])
+                    "%H:%M", time.localtime(next_tide.get("tide_time"))
                 )
-                return f"High tide at {tidetime}"
-            if "Low" in str(data["extremes"][next_tide]["type"]):
-                tidetime = time.strftime(
-                    "%H:%M", time.localtime(data["extremes"][next_tide]["dt"])
-                )
-                return f"Low tide at {tidetime}"
-            return None
+                tidetype = next_tide.get("tide_type")
+                tide_string = f"{tidetype} tide at {tidetime}"
+                return tide_string
         return None
 
     def update(self):
@@ -492,6 +444,7 @@ class WorldTidesInfoCustomSensor(Entity):
             )
             data = self._worldtidesinfo_server.retrieve_tide_raw_data()
             self._worldtidesinfo_server_scheduler._Data_Retrieve.data = data
+            tide_info = give_info_from_raw_data(data)
             self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time = (
                 self._worldtidesinfo_server.retrieve_tide_request_time()
             )
@@ -499,14 +452,14 @@ class WorldTidesInfoCustomSensor(Entity):
                 self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )
             # process information
-            if "datums" in data:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = data[
-                    "datums"
-                ]
-            if "plot" in data:
-                std_string = "data:image/png;base64,"
-                str_to_convert = data["plot"][len(std_string) : len(data["plot"])]
-                self._tide_picture_file.store_picture_base64(str_to_convert)
+            datum_content = tide_info.give_datum()
+            if datum_content != None:
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = (
+                    datum_content
+                )
+            string_picture = tide_info.give_plot_picture_without_header()
+            if string_picture != None:
+                self._tide_picture_file.store_picture_base64(string_picture)
             else:
                 self._tide_picture_file.remove_previous_picturefile()
 

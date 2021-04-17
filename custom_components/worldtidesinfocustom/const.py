@@ -35,7 +35,7 @@ HA_CONF_UNIT = "home_assistant"
 DEFAULT_CONF_UNIT = HA_CONF_UNIT
 
 # Debug Flag
-DEBUG_FLAG = True
+DEBUG_FLAG = False
 
 # Round height
 ROUND_HEIGTH = 3
