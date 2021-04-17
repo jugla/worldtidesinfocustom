@@ -8,6 +8,7 @@ import requests
 PLOT_CURVE_UNIT_FT = "feet"
 PLOT_CURVE_UNIT_M = "meters"
 
+
 class Server_Parameter:
     """Parameter"""
 
@@ -63,14 +64,14 @@ class WorldTidesInfo_server:
     ):
         # parameter
         self._Server_Parameter = Server_Parameter(
-           key,
-           lat,
-           lon,
-           vertical_ref,
-           tide_station_distance,
-           plot_color,
-           plot_background,
-           unit_curve_picture,
+            key,
+            lat,
+            lon,
+            vertical_ref,
+            tide_station_distance,
+            plot_color,
+            plot_background,
+            unit_curve_picture,
         )
 
         # information from server

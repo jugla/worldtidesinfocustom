@@ -63,7 +63,6 @@ from .py_worldtidesinfo import (
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
-from .server_request_scheduler import  WorldTidesInfo_server_scheduler
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -421,7 +420,9 @@ class WorldTidesInfoCustomSensor(Entity):
                 if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(
                     SchedulerSnapshot
                 ):
-                    _LOGGER.debug("Snpashot decoding data file at: %s ", int(current_time))
+                    _LOGGER.debug(
+                        "Snpashot decoding data file at: %s ", int(current_time)
+                    )
                     self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(
                         SchedulerSnapshot
                     )

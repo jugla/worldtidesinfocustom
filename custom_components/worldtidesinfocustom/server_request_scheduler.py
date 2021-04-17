@@ -33,6 +33,7 @@ class Data_Retrieve:
         self.data = read_data.data
         self.data_request_time = read_data.data_request_time
 
+
 class Data_Scheduling:
     """ Scheduling """
 
@@ -61,6 +62,7 @@ class Data_Scheduling:
     def store_read_input(self, read_data):
         self.next_day_midnight = read_data.next_day_midnight
         self.next_month_midnight = read_data.next_month_midnight
+
 
 class WorldTidesInfo_server_scheduler:
     """Class to manage the schedule of Word Tide Info serer"""
