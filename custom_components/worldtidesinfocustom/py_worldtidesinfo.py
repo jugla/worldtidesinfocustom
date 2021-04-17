@@ -8,8 +8,10 @@ import requests
 PLOT_CURVE_UNIT_FT = "feet"
 PLOT_CURVE_UNIT_M = "meters"
 
+
 class Server_Parameter:
     """Parameter"""
+
     def __init__(
         self,
         key,
@@ -30,18 +32,20 @@ class Server_Parameter:
         self._plot_background = plot_background
         self._unit_curve_picture = unit_curve_picture
 
-    def compare_parameter(self,parameter):
-       if (parameter._key == self._key
-          and parameter._lat == self._lat
-          and parameter._lon == self._lon
-          and parameter._vertical_ref == self._vertical_ref
-          and parameter._tide_station_distance == self._tide_station_distance
-          and parameter._plot_color ==  self._plot_color
-          and parameter._plot_background ==  self._plot_background
-          and parameter._unit_curve_picture ==  self._unit_curve_picture):
-          return True
-       else:
-          return False
+    def compare_parameter(self, parameter):
+        if (
+            parameter._key == self._key
+            and parameter._lat == self._lat
+            and parameter._lon == self._lon
+            and parameter._vertical_ref == self._vertical_ref
+            and parameter._tide_station_distance == self._tide_station_distance
+            and parameter._plot_color == self._plot_color
+            and parameter._plot_background == self._plot_background
+            and parameter._unit_curve_picture == self._unit_curve_picture
+        ):
+            return True
+        else:
+            return False
 
 
 class WorldTidesInfo_server:
@@ -60,14 +64,14 @@ class WorldTidesInfo_server:
     ):
         # parameter
         self._Server_Parameter = Server_Parameter(
-           key,
-           lat,
-           lon,
-           vertical_ref,
-           tide_station_distance,
-           plot_color,
-           plot_background,
-           unit_curve_picture,
+            key,
+            lat,
+            lon,
+            vertical_ref,
+            tide_station_distance,
+            plot_color,
+            plot_background,
+            unit_curve_picture,
         )
 
         # information from server
@@ -109,7 +113,8 @@ class WorldTidesInfo_server:
             self._Server_Parameter._key,
             self._Server_Parameter._lat,
             self._Server_Parameter._lon,
-            self._Server_Parameter._tide_station_distance)
+            self._Server_Parameter._tide_station_distance,
+        )
         try:
             data = requests.get(resource, timeout=10).json()
             data_has_been_received = True
