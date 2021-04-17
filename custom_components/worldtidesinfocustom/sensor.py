@@ -62,6 +62,8 @@ from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
+    give_info_from_raw_data,
+    give_info_from_raw_datums_data,
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
@@ -262,10 +264,11 @@ class WorldTidesInfoCustomSensor(Entity):
                 next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
-            diff_high_tide_next_low_tide = abs( 
-               next_tide_UTC.get("high_tide_height")
-               - next_tide_UTC.get("low_tide_height")
-               )
+
+            diff_high_tide_next_low_tide = abs(
+                next_tide_UTC.get("high_tide_height")
+                - next_tide_UTC.get("low_tide_height")
+            )
 
         # The height
         current_height_value = tide_info.give_current_height_in_UTC(current_time)
@@ -334,7 +337,9 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["station_around_nb"] = station_around.get("station_around_nb")
         attr["station_around_name"] = station_around.get("station_around_name")
 
-        attr["station_around_time_zone"] = init_tide_info.give_nearest_station_time_zone()
+        attr[
+            "station_around_time_zone"
+        ] = init_tide_info.give_nearest_station_time_zone()
 
         return attr
 
@@ -347,12 +352,12 @@ class WorldTidesInfoCustomSensor(Entity):
             # Get next tide time
             next_tide = tide_info.give_next_tide_in_epoch(time.time())
             if next_tide.get("error") == None:
-               tidetime = time.strftime(
+                tidetime = time.strftime(
                     "%H:%M", time.localtime(next_tide.get("tide_time"))
-               )
-               tidetype = next_tide.get("tide_type")
-               tide_string = f"{tidetype} tide at {tidetime}"
-               return tide_string
+                )
+                tidetype = next_tide.get("tide_type")
+                tide_string = f"{tidetype} tide at {tidetime}"
+                return tide_string
         return None
 
     def update(self):
@@ -452,7 +457,9 @@ class WorldTidesInfoCustomSensor(Entity):
             # process information
             datum_content = tide_info.give_datum()
             if datum_content != None:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = datum_content
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = (
+                    datum_content
+                )
             string_picture = tide_info.give_plot_picture_without_header()
             if string_picture != None:
                 self._tide_picture_file.store_picture_base64(string_picture)

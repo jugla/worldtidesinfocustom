@@ -195,50 +195,48 @@ class WorldTidesInfo_server:
 
 class give_info_from_raw_data:
 
-    def __init__(
-        self,
-        data):
+    def __init__(self, data):
         self._data = data
 
     def give_next_tide_in_epoch(self, current_epoch_time):
-       """ give info from X seconds from epoch"""
-       current_time = int (current_epoch_time)
-       next_tide = 0
-       for tide_index in range(len(self._data["extremes"])):
-           if self._data["extremes"][tide_index]["dt"] < current_time:
-               next_tide = tide_index
-       if self._data["extremes"][next_tide]["dt"] < current_time:
-           next_tide = next_tide + 1
-       if next_tide >= len(self._data["extremes"]):
-          return {"error":"no date in future"}
+        """ give info from X seconds from epoch"""
+        current_time = int(current_epoch_time)
+        next_tide = 0
+        for tide_index in range(len(self._data["extremes"])):
+            if self._data["extremes"][tide_index]["dt"] < current_time:
+                next_tide = tide_index
+        if self._data["extremes"][next_tide]["dt"] < current_time:
+            next_tide = next_tide + 1
+        if next_tide >= len(self._data["extremes"]):
+            return {"error": "no date in future"}
 
-       tide_time = self._data["extremes"][next_tide]["dt"]
+        tide_time = self._data["extremes"][next_tide]["dt"]
 
-       tide_type = "None"
-       if "High" in str(self._data["extremes"][next_tide]["type"]):
-           tide_type = "High"
-       elif "Low" in str(self._data["extremes"][next_tide]["type"]):
-           tide_type = "Low"
-       else:
-           tide_type = "None"
+        tide_type = "None"
+        if "High" in str(self._data["extremes"][next_tide]["type"]):
+            tide_type = "High"
+        elif "Low" in str(self._data["extremes"][next_tide]["type"]):
+            tide_type = "Low"
+        else:
+            tide_type = "None"
 
-       return {"tide_type" : tide_type, "tide_time" : tide_time}
+        return {"tide_type": tide_type, "tide_time": tide_time}
 
     def give_vertical_ref(self):
-       if "responseDatum" in self._data:
-           return self._data["responseDatum"]
-       else:
-           return "no vertical ref"
+        if "responseDatum" in self._data:
+            return self._data["responseDatum"]
+        else:
+            return "no vertical ref"
 
     def give_tidal_station_used(self):
-       if "station" in self._data:
+        if "station" in self._data:
             return self._data["station"]
-       else:
+        else:
             return "no reference station used"
 
     def give_next_high_low_tide_in_UTC(self, current_epoch_time):
         """ give info from X seconds from epoch"""
-        current_time = int (current_epoch_time)
+        current_time = int(current_epoch_time)
 
         # Next tide
         next_tide = 0
@@ -251,7 +249,7 @@ class give_info_from_raw_data:
             next_tide = next_tide + 1
 
         if next_tide >= len(self._data["extremes"]):
-            return {"error":"no date in future"}
+            return {"error": "no date in future"}
 
         if "High" in str(self._data["extremes"][next_tide]["type"]):
             high_tide_time_utc = self._data["extremes"][next_tide]["date"]
@@ -267,14 +265,16 @@ class give_info_from_raw_data:
             low_tide_time_utc = self._data["extremes"][next_tide]["date"]
             low_tide_height = self._data["extremes"][next_tide]["height"]
 
-        return { "high_tide_time_utc" : high_tide_time_utc,
-                 "high_tide_height" : high_tide_height,
-                 "low_tide_time_utc" : low_tide_time_utc,
-                 "low_tide_height" : low_tide_height }
+        return {
+            "high_tide_time_utc": high_tide_time_utc,
+            "high_tide_height": high_tide_height,
+            "low_tide_time_utc": low_tide_time_utc,
+            "low_tide_height": low_tide_height,
+        }
 
     def give_current_height_in_UTC(self, current_epoch_time):
         """ give info from X seconds from epoch"""
-        current_time = int (current_epoch_time)
+        current_time = int(current_epoch_time)
         # The height
         current_height_index = 0
         for height_index in range(len(self._data["heights"])):
@@ -282,8 +282,11 @@ class give_info_from_raw_data:
                 current_height_index = height_index
         current_height = self._data["heights"][current_height_index]["height"]
         current_height_utc = self._data["heights"][current_height_index]["date"]
-        return { "current_height" : current_height,
-                 "current_height_utc" : current_height_utc}
+
+        return {
+            "current_height": current_height,
+            "current_height_utc": current_height_utc,
+        }
 
     def give_station_around_info(self):
         """give tidal station around info"""
@@ -299,7 +302,11 @@ class give_info_from_raw_data:
                 )
         else:
             station_around_name = "None"
-        return { "station_around_nb" : station_around_nb, "station_around_name" : station_around_name}
+
+        return {
+            "station_around_nb": station_around_nb,
+            "station_around_name": station_around_name,
+        }
 
     def give_nearest_station_time_zone(self):
         """give the nearest tide station time zone"""
@@ -311,24 +318,25 @@ class give_info_from_raw_data:
 
     def give_datum(self):
         if "datums" in self._data:
-           return self._data["datums"]
+            return self._data["datums"]
         else:
-           return None
+            return None
 
     def give_plot_picture_without_header(self):
         if "plot" in self._data:
-           std_string = "data:image/png;base64,"
-           str_to_convert = self._data["plot"][len(std_string) : len(self._data["plot"])]
+            std_string = "data:image/png;base64,"
+            str_to_convert = self._data["plot"][
+                len(std_string) : len(self._data["plot"])
+            ]
         else:
-           str_to_convert = None
+            str_to_convert = None
         return str_to_convert
+
 
 class give_info_from_raw_datums_data:
     """retrive datum information"""
 
-    def __init__(
-        self,
-        datums_data):
+    def __init__(self, datums_data):
         self._datums_data = datums_data
 
     def give_mean_water_spring_datums_offset(self):
@@ -342,5 +350,7 @@ class give_info_from_raw_datums_data:
         datum_offset_MHWS = self._datums_data[MHW_index]["height"]
         datum_offset_MLWS = self._datums_data[MLW_index]["height"]
 
-        return {"datum_offset_MHWS" : datum_offset_MHWS, "datum_offset_MLWS" : datum_offset_MLWS}
-
+        return {
+            "datum_offset_MHWS": datum_offset_MHWS,
+            "datum_offset_MLWS": datum_offset_MLWS,
+        }
