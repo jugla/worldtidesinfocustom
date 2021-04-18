@@ -46,9 +46,9 @@ folder where your `configuration.yaml` file is, create it and place the director
 **Version V2.6.1**: After this version, the information given is by default with unit system configured in HA (metric or imperial).
 NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the information given is by default in metric.
 
-**Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*
+**Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*.
 
-**Version V3.0.0**: After this version *worldtides_request_interval* configuration parameter is removed
+**Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
 
 ## Using the component
 Get API key from https://www.worldtides.info/developer (buy prepaid)
