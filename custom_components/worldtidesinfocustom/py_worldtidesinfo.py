@@ -7,6 +7,7 @@ import requests
 # Component library
 PLOT_CURVE_UNIT_FT = "feet"
 PLOT_CURVE_UNIT_M = "meters"
+SERVER_API_VERSION = "V2"
 
 
 class Server_Parameter:
@@ -23,6 +24,7 @@ class Server_Parameter:
         plot_background,
         unit_curve_picture,
     ):
+        self._version = SERVER_API_VERSION
         self._key = key
         self._lat = lat
         self._lon = lon
@@ -33,20 +35,25 @@ class Server_Parameter:
         self._unit_curve_picture = unit_curve_picture
 
     def compare_parameter(self, parameter):
-        if (
-            parameter._key == self._key
-            and parameter._lat == self._lat
-            and parameter._lon == self._lon
-            and parameter._vertical_ref == self._vertical_ref
-            and parameter._tide_station_distance == self._tide_station_distance
-            and parameter._plot_color == self._plot_color
-            and parameter._plot_background == self._plot_background
-            and parameter._unit_curve_picture == self._unit_curve_picture
-        ):
-            return True
-        else:
-            return False
-
+        result = False
+        try:
+            if (
+                parameter._version == self._version
+                and parameter._key == self._key
+                and parameter._lat == self._lat
+                and parameter._lon == self._lon
+                and parameter._vertical_ref == self._vertical_ref
+                and parameter._tide_station_distance == self._tide_station_distance
+                and parameter._plot_color == self._plot_color
+                and parameter._plot_background == self._plot_background
+                and parameter._unit_curve_picture == self._unit_curve_picture
+            ):
+                result = True
+            else:
+                result = False
+        except:
+            result = False
+        return result
 
 class WorldTidesInfo_server:
     """Class to manage the Word Tide Info serer"""
