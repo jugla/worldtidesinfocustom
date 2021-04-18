@@ -215,7 +215,7 @@ class WorldTidesInfoCustomSensor(Entity):
 
         current_time = time.time()
 
-        diff_high_tide_next_low_tide = 0
+        diff_current_high_tide_low_tide = 0
 
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             convert_meter_to_feet = FT_PER_M
@@ -241,6 +241,8 @@ class WorldTidesInfoCustomSensor(Entity):
             self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
         )
         datums_info = give_info_from_raw_datums_data(data_datums_offset)
+        # comput he Mean Water Spring offset
+        MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
 
         # The vertical reference used : LAT, ...
         attr["vertical_reference"] = tide_info.give_vertical_ref()
@@ -250,7 +252,6 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Next tide
         next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
-        diff_high_tide_next_low_tide = 0
         if next_tide_UTC.get("error") == None:
             attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
             attr["high_tide_height"] = round(
@@ -263,24 +264,19 @@ class WorldTidesInfoCustomSensor(Entity):
                 ROUND_HEIGTH,
             )
 
-            diff_high_tide_next_low_tide = abs(
+        # Display the next amplitude
+        diff_next_high_tide_low_tide = 0
+        if next_tide_UTC.get("error") == None:
+            diff_next_high_tide_low_tide = abs(
                 next_tide_UTC.get("high_tide_height")
                 - next_tide_UTC.get("low_tide_height")
             )
+        attr["next_tide_amplitude"] = round(diff_next_high_tide_low_tide, ROUND_HEIGTH)
 
-        # The height
-        current_height_value = tide_info.give_current_height_in_UTC(current_time)
-        attr["current_height"] = round(
-            current_height_value.get("current_height") * convert_meter_to_feet,
-            ROUND_HEIGTH,
-        )
-        attr["current_height_utc"] = current_height_value.get("current_height_utc")
-
-        # The coeff tide_highlow_over the Mean Water Spring
-        MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
-        attr["Coeff_resp_MWS"] = round(
+        # The next coeff tide_highlow_over the Mean Water Spring
+        attr["next_Coeff_resp_MWS"] = round(
             (
-                diff_high_tide_next_low_tide
+                diff_next_high_tide_low_tide
                 / (
                     MWS_datum_offset.get("datum_offset_MHWS")
                     - MWS_datum_offset.get("datum_offset_MLWS")
@@ -290,8 +286,36 @@ class WorldTidesInfoCustomSensor(Entity):
             1,
         )
 
-        # Display the current
-        attr["tide_amplitude"] = round(diff_high_tide_next_low_tide, ROUND_HEIGTH)
+        # The height
+        current_height_value = tide_info.give_current_height_in_UTC(current_time)
+        attr["current_height_utc"] = current_height_value.get("current_height_utc")
+        attr["current_height"] = round(
+            current_height_value.get("current_height") * convert_meter_to_feet,
+            ROUND_HEIGTH,
+        )
+
+        # Display the current amplitude
+        current_tide_UTC = tide_info.give_current_high_low_tide_in_UTC(current_time)
+        diff_current_high_tide_low_tide = 0
+        if current_tide_UTC.get("error") == None:
+            diff_current_high_tide_low_tide = abs(
+                current_tide_UTC.get("high_tide_height")
+                - current_tide_UTC.get("low_tide_height")
+            )
+        attr["tide_amplitude"] = round(diff_current_high_tide_low_tide, ROUND_HEIGTH)
+
+        # The coeff tide_highlow_over the Mean Water Spring
+        attr["Coeff_resp_MWS"] = round(
+            (
+                diff_current_high_tide_low_tide
+                / (
+                    MWS_datum_offset.get("datum_offset_MHWS")
+                    - MWS_datum_offset.get("datum_offset_MLWS")
+                )
+            )
+            * 100,
+            1,
+        )
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used

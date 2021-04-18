@@ -241,7 +241,7 @@ class give_info_from_raw_data:
         else:
             return "no reference station used"
 
-    def give_next_high_low_tide_in_UTC(self, current_epoch_time):
+    def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
         current_time = int(current_epoch_time)
 
@@ -252,8 +252,9 @@ class give_info_from_raw_data:
                 next_tide = tide_index
 
         # Managed the case where next_tide has not been updated : if next_tide=0 perform a check
-        if self._data["extremes"][next_tide]["dt"] < current_time:
-            next_tide = next_tide + 1
+        if next_tide_flag:
+            if self._data["extremes"][next_tide]["dt"] < current_time:
+                next_tide = next_tide + 1
 
         if next_tide >= len(self._data["extremes"]):
             return {"error": "no date in future"}
@@ -278,6 +279,16 @@ class give_info_from_raw_data:
             "low_tide_time_utc": low_tide_time_utc,
             "low_tide_height": low_tide_height,
         }
+
+    def give_next_high_low_tide_in_UTC(self, current_epoch_time):
+        next_tide_flag = True
+        return self.give_high_low_tide_in_UTC(current_epoch_time,next_tide_flag)
+
+    def give_current_high_low_tide_in_UTC(self, current_epoch_time):
+        next_tide_flag = False
+        return self.give_high_low_tide_in_UTC(current_epoch_time,next_tide_flag)
+
+
 
     def give_current_height_in_UTC(self, current_epoch_time):
         """ give info from X seconds from epoch"""
