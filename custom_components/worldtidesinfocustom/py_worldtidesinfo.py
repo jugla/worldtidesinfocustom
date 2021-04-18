@@ -55,6 +55,7 @@ class Server_Parameter:
             result = False
         return result
 
+
 class WorldTidesInfo_server:
     """Class to manage the Word Tide Info serer"""
 
@@ -201,7 +202,6 @@ class WorldTidesInfo_server:
 
 
 class give_info_from_raw_data:
-
     def __init__(self, data):
         self._data = data
 
