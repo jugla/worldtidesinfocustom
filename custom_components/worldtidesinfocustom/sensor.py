@@ -47,6 +47,7 @@ from .const import (
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
+    ROUND_COEFF,
     ROUND_HEIGTH,
     ROUND_STATION_DISTANCE,
     SCAN_INTERVAL_SECONDS,
@@ -215,8 +216,6 @@ class WorldTidesInfoCustomSensor(Entity):
 
         current_time = time.time()
 
-        diff_current_high_tide_low_tide = 0
-
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             convert_meter_to_feet = FT_PER_M
             convert_km_to_miles = MI_PER_KM
@@ -283,7 +282,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 )
             )
             * 100,
-            1,
+            ROUND_COEFF,
         )
 
         # The height
@@ -314,7 +313,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 )
             )
             * 100,
-            1,
+            ROUND_COEFF,
         )
 
         # The credit used to display the update

@@ -37,6 +37,7 @@ DEFAULT_CONF_UNIT = HA_CONF_UNIT
 # Debug Flag
 DEBUG_FLAG = False
 
-# Round height
+# Round height, distance, coeff
 ROUND_HEIGTH = 3
 ROUND_STATION_DISTANCE = 2
+ROUND_COEFF = 1
