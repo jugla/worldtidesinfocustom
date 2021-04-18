@@ -370,16 +370,18 @@ This sensor has a set of attributes describes hereafter
 | Name                 | Supported | format     | unit | Description                                                                                                   |
 |----------------------|-----------|------------|------|---------------------------------------------------------------------------------------------------------------|
 | Unit displayed       |  V2.6.0   | string     | N/A  | either **metric** or **imperial** |
+| Vertical reference   |  v1.0.0   |  string    | NA   |  string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums)    |
+| Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
 | High tide time utc   |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next High tide in UTC     |
 | High tide height     |  v1.0.0   |  float     | m/ft | Next High tide height     |
 | Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next Low tide in UTC     |
 | Low tide height      |  v1.0.0   |  float     | m/ft | Next Low tide heiht     |
-| Vertical reference   |  v1.0.0   |  string    | NA   |  string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums)    |
-| Tidal station used   | v2.0.0    |  string    | NA   | strings that gives the tidal station used for data   |
-| Current height       | v1.0.0    |  float     | m/ft | current height (**HA local time**)     |
+| next_tide_amplitude  |  v3.0.0   |  float     | m/ft | The next amplitude for (Hight Tide - Low Tide) (it is absolute) |
+| next_Coeff_resp_MWS  |  v3.0.0   |  float     | %    | coeff that represents the next (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) . Nb this figure can be greater than 100%, if the tide amplitude is greater than MeanSpringWater : for instance during High Spring Water|
 | Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | **UTC**  | height sample used to compute current height     |
-| Coeff_resp_MWS       | v2.7.0    | float        | %   | coeff that represents the current (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) . Nb this figure can be greater than 100%, if the tide amplitude is greater than MeanSpringWater : for instance during High Spring Water|
-| tide_amplitude | v2.7.0 | float    | m/ft | The current amplitude for (Hight Tide - Low Tide) (it is absolute) |
+| Current height       | v1.0.0    |  float     | m/ft | current height (**HA local time**)     |
+| tide_amplitude       | v2.7.0    |  float     | m/ft | The current amplitude for (Hight Tide - Low Tide) (it is absolute) |
+| Coeff_resp_MWS       | v2.7.0    |  float     | %   | coeff that represents the current (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) . Nb this figure can be greater than 100%, if the tide amplitude is greater than MeanSpringWater : for instance during High Spring Water|
 | CreditCallUsed       | v1.0.0    | int        | credit | number of credit used between 1 scan interval |
 | Data request time    | v1.0.0    | string like "01:02:39 17/01/21" | **HA local time** | time of last request to world tide info server |
 | Plot                 | v1.0.0    | string     | unix path | name of the file that contains the tide curve picture. NB: the curve is given in **local time of the tide location**. It can be a shift of 1 hour if data is not provided by tide station but satellite data |
