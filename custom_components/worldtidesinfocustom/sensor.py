@@ -57,8 +57,6 @@ from .const import (
 # Component Library
 # import .storage_mngt
 from .py_worldtidesinfo import (
-    give_info_from_raw_data,
-    give_info_from_raw_datums_data,
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
