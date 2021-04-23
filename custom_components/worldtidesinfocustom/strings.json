@@ -1,0 +1,56 @@
+{
+  "title": "World Tide Info Custom",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure WorldTidesInfoCustom",
+        "description": "Indicate if standard or expert config definition",
+        "data": {
+           "type": "Type of configuration"
+        }
+      },
+      "config_def_std": {
+        "title": "Configure standard",
+        "description": "Use the WorldTidesInfo cloud API to monitor a latitude/longitude.",
+        "data": {
+          "name": "name",
+          "api_key": "api key of world tides info",
+          "latitude": "location latitude",
+          "longitude": "location longitude"
+        }
+      },
+      "config_def_expert": {
+        "title": "Configure expert",
+        "description": "Use the WorldTidesInfo cloud API to monitor a latitude/longitude with additional parameters.",
+        "data": {
+          "name": "name",
+          "api_key": "api key of world tides info",
+          "latitude": "location latitude",
+          "longitude": "location longitude",
+          "vertical_ref" : "vertical reference",
+          "station_distance" : "tidal station distance",
+          "plot_color": "plot curve color",
+          "plot_background": "plot curve background color",
+          "unit" : "metric HA imperial"
+        }
+      },
+    },
+    "error": {
+      "general_error": "unknown error",
+    },
+    "abort": {
+      "already_configured": "Already configured",
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure WorldTidesInfoCustom",
+        "data": {
+          "show_on_map": "Show monitored geography on the map"
+        }
+      }
+    }
+  }
+}
+

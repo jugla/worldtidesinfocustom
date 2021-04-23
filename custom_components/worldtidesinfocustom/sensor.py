@@ -10,6 +10,8 @@ import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
+    ATTR_LATITUDE,
+    ATTR_LONGITUDE,
     CONF_API_KEY,
     CONF_LATITUDE,
     CONF_LONGITUDE,
@@ -37,6 +39,7 @@ from .const import (
     CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
+    DATA_COORDINATOR,
     DEBUG_FLAG,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
@@ -44,6 +47,7 @@ from .const import (
     DEFAULT_PLOT_COLOR,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
+    DOMAIN,
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
@@ -156,6 +160,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     # create the sensor
     tides = WorldTidesInfoCustomSensor(
+        hass,
         name,
         unit_to_display,
         tide_picture_file,
@@ -163,13 +168,103 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         worldtidesinfo_server,
         worldtidesinfo_server_scheduler,
     )
-    # tides.retrieve_tide_station()
+
     tides.update()
     if tides._worldtidesinfo_server_scheduler.no_data():
-        _LOGGER.error("No data available for this location")
+        _LOGGER.error(f"No data available for this location: {name}")
         return
 
     add_entities([tides])
+
+
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Set up AirVisual sensors based on a config entry."""
+    coordinator = hass.data[DOMAIN][DATA_COORDINATOR][config_entry.entry_id]
+
+    config = config_entry.data
+
+    # Get data from config flow
+    name = config.get(CONF_NAME)
+    lat = config.get(CONF_LATITUDE)
+    lon = config.get(CONF_LONGITUDE)
+
+    #shall not occur
+    if None in (lat, lon):
+        _LOGGER.error("Latitude or longitude not set in Home Assistant config")
+        return
+
+    key = config.get(CONF_API_KEY)
+    vertical_ref = config.get(CONF_VERTICAL_REF)
+    plot_color = config.get(CONF_PLOT_COLOR)
+    plot_background = config.get(CONF_PLOT_BACKGROUND)
+    tide_station_distance = config.get(CONF_STATION_DISTANCE)
+
+    # prepare the tide picture management
+    tide_picture_file = File_Picture(
+        hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
+    )
+
+    tide_cache_file = File_Data_Cache(
+        hass.config.path(
+            STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
+        ),
+        key,
+    )
+
+    # what is the unit used
+    if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
+        unit_to_display = IMPERIAL_CONF_UNIT
+    elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
+        unit_to_display = IMPERIAL_CONF_UNIT
+    else:
+        unit_to_display = METRIC_CONF_UNIT
+
+    # unit used for display, and convert tide station distance
+    if unit_to_display == IMPERIAL_CONF_UNIT:
+        server_tide_station_distance = tide_station_distance * KM_PER_MI
+        unit_curve_picture = PLOT_CURVE_UNIT_FT
+    else:
+        server_tide_station_distance = tide_station_distance
+        unit_curve_picture = PLOT_CURVE_UNIT_M
+
+    # instanciate server front end
+    worldtidesinfo_server = WorldTidesInfo_server(
+        key,
+        lat,
+        lon,
+        vertical_ref,
+        server_tide_station_distance,
+        plot_color,
+        plot_background,
+        unit_curve_picture,
+    )
+    worldtidesinfo_server_parameter = worldtidesinfo_server.give_parameter()
+
+    # instantiate scheduler front end
+    worldtidesinfo_server_scheduler = WorldTidesInfo_server_scheduler(
+        key,
+        worldtidesinfo_server_parameter,
+    )
+
+    # create the sensor
+    tides = WorldTidesInfoCustomSensor(
+        hass,
+        name,
+        unit_to_display,
+        tide_picture_file,
+        tide_cache_file,
+        worldtidesinfo_server,
+        worldtidesinfo_server_scheduler,
+    )
+
+    _LOGGER.debug(f"Launch fetching data available for this location: {name}")
+    tides.async_update()
+
+    #if tides._worldtidesinfo_server_scheduler.no_data():
+    #    _LOGGER.error(f"No data available for this location: {name}")
+    #    return
+
+    async_add_entities([tides])
 
 
 class WorldTidesInfoCustomSensor(Entity):
@@ -177,6 +272,7 @@ class WorldTidesInfoCustomSensor(Entity):
 
     def __init__(
         self,
+        hass,
         name,
         unit_to_display,
         tide_picture_file,
@@ -186,6 +282,7 @@ class WorldTidesInfoCustomSensor(Entity):
     ):
         """Initialize the sensor."""
 
+        self._hass = hass
         # Parameters from configuration.yaml
         self._name = name
         self._unit_to_display = unit_to_display
@@ -362,6 +459,12 @@ class WorldTidesInfoCustomSensor(Entity):
             "station_around_time_zone"
         ] = init_tide_info.give_nearest_station_time_zone()
 
+
+        # Displaying the geography on the map relies upon putting the latitude/longitude
+        # in the entity attributes with "latitude" and "longitude" as the keys.
+        attr[ATTR_LATITUDE] = self._worldtidesinfo_server._Server_Parameter._lat
+        attr[ATTR_LONGITUDE] = self._worldtidesinfo_server._Server_Parameter._lon
+
         return attr
 
     @property
@@ -380,6 +483,17 @@ class WorldTidesInfoCustomSensor(Entity):
                 tide_string = f"{tidetype} tide at {tidetime}"
                 return tide_string
         return None
+
+    async def async_update(self):
+        """Fetch new state data for this sensor."""
+        _LOGGER.debug("Async Update Tides sensor %s", self._name)
+        await self._hass.async_add_executor_job(self.update())
+        #await self.update()
+        #try:
+        #    await self.update()
+        #except:
+        #    _LOGGER.error("Sensor data no retrieve %s", self._name)
+
 
     def update(self):
         """Update of sensors."""

@@ -1,12 +1,15 @@
 """Constants for World Tide Info Custom integration."""
 
 WORLD_TIDES_INFO_CUSTOM_DOMAIN = "worldtidesinfocustom"
+DOMAIN = WORLD_TIDES_INFO_CUSTOM_DOMAIN
 
 ATTRIBUTION = "Data provided by WorldTides"
 
 DEFAULT_NAME = "WorldTidesInfoCustom"
 
 SCAN_INTERVAL_SECONDS = 900
+
+DATA_COORDINATOR = "coordinator"
 
 # LAT reference as default
 DEFAULT_VERTICAL_REF = "LAT"

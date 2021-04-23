@@ -70,6 +70,7 @@ class WorldTidesInfo_server:
         plot_background,
         unit_curve_picture,
     ):
+
         # parameter
         self._Server_Parameter = Server_Parameter(
             key,
