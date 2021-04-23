@@ -22,11 +22,6 @@ So for one location: 20000 credits will last ~18 years
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
 
-From behaviour point of view it's an enhancement of the 
-[integration worldtidesinfo](https://www.home-assistant.io/integrations/worldtidesinfo/) 
-
-
-
 ## Installation
 ### [HACS](https://hacs.xyz/) (Home Assistant Community Store) 
 1. Go to HACS page on your Home Assistant instance 
