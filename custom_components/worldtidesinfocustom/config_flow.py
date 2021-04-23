@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
+    CONF_SHOW_ON_MAP,
 )
 
 from .const import (

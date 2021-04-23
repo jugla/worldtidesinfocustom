@@ -1,15 +1,13 @@
 """The worldtidesinfo custom component."""
+import asyncio
 
 from homeassistant.config_entries import SOURCE_REAUTH
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
     CONF_API_KEY,
-    CONF_IP_ADDRESS,
     CONF_LATITUDE,
     CONF_LONGITUDE,
-    CONF_PASSWORD,
     CONF_SHOW_ON_MAP,
-    CONF_STATE,
 )
 
 from homeassistant.core import callback
