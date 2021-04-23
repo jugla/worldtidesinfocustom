@@ -13,6 +13,7 @@ This component allows to :
 - display the tide curve (height)
 - give the current height
 - give the next tide
+- display location on default map
 
 Refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 

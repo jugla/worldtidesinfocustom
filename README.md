@@ -12,6 +12,7 @@ This component allows to :
 - display the tide curve (height)
 - give the current height
 - give the next tide
+- display location on default map
 
 Refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 
@@ -52,7 +53,9 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 
 ## Using the component
 Get API key from https://www.worldtides.info/developer (buy prepaid)
-In configuration.yaml, declare :
+Either 
+- use UI 
+- or in configuration.yaml, declare :
 ```yaml
 ##configuration.yaml example
 sensor:
@@ -82,7 +85,9 @@ and  optional parameter
 - plot_background : the comma-separated RGB values for the tide graph background color
 - scan_interval : the scan rate to refresh entity (should not be used)
 
-One entity is declared with attibutes. To see them as sensor, please follow the example
+One entity is declared with attibutes. 
+To see them as sensor, you have to declare them inside `configuration.yaml`. 
+Please follow the hereafter example
 
 ```yaml
 ##configuration.yaml example
@@ -345,15 +350,15 @@ NB: watch out : in the code we use the camera_image keyword and not image
 
 | Name              | Type                                                           | Requirement  | Supported | Default value        | Config                             | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|--------------|-----------|----------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| name              | string                                                         | **Optional** | v1.0.0    | worldtidesinfocustom | YAML / UI -under construction -                                                                                                                                                              | name for sensor entity                                               |
-| api_key           | string                                                         | **Required** | v1.0.0    | n.a | YAML  / UI -under construction -                                                      | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
-| latitude          | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML  / UI -under construction -                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data . |
-| longitude         | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML  / UI -under construction -                                                                                                                                                                 | Latitude (in decimal degrees) of the location for which to return the tidal data .    |
-| unit              | string                                                         | **Optional** | V2.6.0    | home_assistant | YAML / UI -under construction - | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
-| station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km/miles | YAML / UI -under construction -                                                                                                                                                                 | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
-| vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML  / UI -under construction -                                                                                                                                                                 | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
-| plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML  / UI -under construction -                                                                                                                                                                 | string that represents the comma-separated RGB values for the tide graph foreground color |  
-| plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI -under construction -                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph background color |  
+| name              | string                                                         | **Optional** | v1.0.0    | worldtidesinfocustom | YAML / UI                                                                                                                                                               | name for sensor entity  (Nb: under UI, this parameter is required, under YAML only one declaration can be made with default value)                                             |
+| api_key           | string                                                         | **Required** | v1.0.0    | n.a | YAML  / UI                                                       | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
+| latitude          | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML  / UI                                                                                                                                                                   | Latitude (in decimal degrees) of the location for which to return the tidal data . |
+| longitude         | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML  / UI                                                                                                                                                                  | Latitude (in decimal degrees) of the location for which to return the tidal data .    |
+| unit              | string                                                         | **Optional** | V2.6.0    | home_assistant | YAML / UI  | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
+| station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km/miles | YAML / UI                                                                                                                                                                  | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
+| vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML  / UI                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
+| plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML  / UI                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
+| plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI                                                                                                                                                                   | string that represents the comma-separated RGB values for the tide graph background color |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 
 ## about vertical reference
@@ -392,8 +397,8 @@ This sensor has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- implement UI instead of YAML (planned in V3.x.0)
-- implement asynchoneous instead of polling (planned in V3.x.0)
+- split in several sensors
+- add tide tendancy and remaining tide respect to the next one
 - make this integration as default in home assistant
 
 ## Contact
@@ -402,5 +407,7 @@ This sensor has a set of attributes describes hereafter
 Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
 
 Thanks for all contributors !
+
+Thanks home-assitant community !
 
 ## Support
