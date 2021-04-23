@@ -486,15 +486,14 @@ class WorldTidesInfoCustomSensor(Entity):
     async def async_update(self):
         """Fetch new state data for this sensor."""
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
-        await self._hass.async_add_executor_job(self.update())
-        # await self.update()
-        # try:
-        #    await self.update()
-        # except:
-        #    _LOGGER.error("Sensor data no retrieve %s", self._name)
+        try:
+            await self.update()
+        except:
+            _LOGGER.error("Sensor data no retrieve %s", self._name)
 
     def update(self):
         """Update of sensors."""
+        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
         init_data_fetched = False
 
         self.credit_used = 0
