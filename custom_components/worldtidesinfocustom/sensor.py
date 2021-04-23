@@ -178,7 +178,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up AirVisual sensors based on a config entry."""
+    """Set up WorldTidesInfo sensors based on a config entry."""
     coordinator = hass.data[DOMAIN][DATA_COORDINATOR][config_entry.entry_id]
 
     config = config_entry.data

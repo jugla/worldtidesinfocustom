@@ -107,7 +107,7 @@ def _standardize_config_entry(hass, config_entry):
 
 
 async def async_setup_entry(hass, config_entry):
-    """Set up AirVisual as config entry."""
+    """Set up WorldTidesInfo as config entry."""
     _standardize_config_entry(hass, config_entry)
 
     #just to initialize (this code will be replace by evolution to have global count)
@@ -129,7 +129,7 @@ async def async_setup_entry(hass, config_entry):
 
 
 async def async_unload_entry(hass, config_entry):
-    """Unload an AirVisual config entry."""
+    """Unload an WorldTidesInfo config entry."""
     unload_ok = all(
         await asyncio.gather(
             *[
