@@ -47,7 +47,7 @@
       "init": {
         "title": "Configure WorldTidesInfoCustom",
         "data": {
-          "show_on_map": "Show monitored geography on the map"
+          "show_on_map": "Show monitored tides on the map"
         }
       }
     }
