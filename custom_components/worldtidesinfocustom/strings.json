@@ -33,7 +33,7 @@
           "plot_background": "plot curve background color",
           "unit" : "metric HA imperial"
         }
-      },
+      }
     },
     "error": {
       "general_error": "unknown error",
