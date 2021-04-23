@@ -37,6 +37,8 @@ folder where your `configuration.yaml` file is, create it and place the director
 1. restart HomeAssistant
 
 ## Breaking change
+<details><summary>detail description</summary>
+
 **Version V2.5.0**: Remove *CreditCallUsedForInit* attribute as init data are also refresh periodically (1 month)
 
 **Version V2.6.1**: After this version, the information given is by default with unit system configured in HA (metric or imperial).
@@ -45,6 +47,7 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 **Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*.
 
 **Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
+</details>
 
 ## Using the component
 Get API key from https://www.worldtides.info/developer (buy prepaid)
