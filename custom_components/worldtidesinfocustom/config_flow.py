@@ -1,12 +1,7 @@
 """Define a config flow manager for WorldTidesInfoCustom."""
 
 import voluptuous as vol
-
-from homeassistant.helpers import  config_validation as cv
 from homeassistant import config_entries
-
-from homeassistant.core import callback
-
 from homeassistant.const import (
     CONF_API_KEY,
     CONF_LATITUDE,
@@ -14,7 +9,10 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
 )
+from homeassistant.core import callback
+from homeassistant.helpers import config_validation as cv
 
+from . import async_get_config_id
 from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
@@ -30,8 +28,6 @@ from .const import (
     DOMAIN,
 )
 
-from . import async_get_config_id
-
 CONF_INTEGRATION_TYPE = "integration_type"
 
 INTEGRATION_TYPE_STD = "standard_definition"
@@ -43,7 +39,6 @@ BASIC_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_API_KEY): cv.string,
     }
 )
-
 
 
 INTEGRATION_TYPE_SCHEMA = vol.Schema(
@@ -98,15 +93,11 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(
                     CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
                 ): cv.positive_int,
-                vol.Optional(
-                    CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
-                ): cv.string,
+                vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
                 vol.Optional(
                     CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
                 ): cv.string,
-                vol.Optional(
-                    CONF_UNIT, default=DEFAULT_CONF_UNIT
-                ): cv.string,
+                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): cv.string,
             }
         )
 
@@ -130,7 +121,6 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._abort_if_unique_id_configured()
         return await self._async_finish_config_definition(user_input, integration_type)
 
-
     async def _async_set_unique_id(self, unique_id):
         """Set the unique ID of the config flow and abort if it already exists."""
         await self.async_set_unique_id(unique_id)
@@ -141,7 +131,6 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry):
         """Define the config flow to handle options."""
         return WorldTidesInfoCustomOptionsFlowHandler(config_entry)
-
 
     async def async_step_config_def_std(self, user_input=None):
         """Handle the initialization of the cloud API based on latitude/longitude."""
@@ -178,10 +167,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_config_def_std()
         elif user_input["type"] == INTEGRATION_TYPE_EXPERT:
             return await self.async_step_config_def_expert()
-        #shall not occur
+        # shall not occur
         else:
             return await self.async_step_config_def_expert()
-
 
 
 class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
@@ -207,4 +195,3 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                 }
             ),
         )
-

@@ -283,13 +283,11 @@ class give_info_from_raw_data:
 
     def give_next_high_low_tide_in_UTC(self, current_epoch_time):
         next_tide_flag = True
-        return self.give_high_low_tide_in_UTC(current_epoch_time,next_tide_flag)
+        return self.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
 
     def give_current_high_low_tide_in_UTC(self, current_epoch_time):
         next_tide_flag = False
-        return self.give_high_low_tide_in_UTC(current_epoch_time,next_tide_flag)
-
-
+        return self.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
 
     def give_current_height_in_UTC(self, current_epoch_time):
         """ give info from X seconds from epoch"""

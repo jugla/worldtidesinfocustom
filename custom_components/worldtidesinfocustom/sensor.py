@@ -188,7 +188,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     lat = config.get(CONF_LATITUDE)
     lon = config.get(CONF_LONGITUDE)
 
-    #shall not occur
+    # shall not occur
     if None in (lat, lon):
         _LOGGER.error("Latitude or longitude not set in Home Assistant config")
         return
@@ -260,7 +260,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
     tides.async_update()
 
-    #if tides._worldtidesinfo_server_scheduler.no_data():
+    # if tides._worldtidesinfo_server_scheduler.no_data():
     #    _LOGGER.error(f"No data available for this location: {name}")
     #    return
 
@@ -459,7 +459,6 @@ class WorldTidesInfoCustomSensor(Entity):
             "station_around_time_zone"
         ] = init_tide_info.give_nearest_station_time_zone()
 
-
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
         attr[ATTR_LATITUDE] = self._worldtidesinfo_server._Server_Parameter._lat
@@ -488,12 +487,11 @@ class WorldTidesInfoCustomSensor(Entity):
         """Fetch new state data for this sensor."""
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
         await self._hass.async_add_executor_job(self.update())
-        #await self.update()
-        #try:
+        # await self.update()
+        # try:
         #    await self.update()
-        #except:
+        # except:
         #    _LOGGER.error("Sensor data no retrieve %s", self._name)
-
 
     def update(self):
         """Update of sensors."""

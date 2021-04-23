@@ -9,16 +9,13 @@ from homeassistant.const import (
     CONF_LONGITUDE,
     CONF_SHOW_ON_MAP,
 )
-
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
-
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
     UpdateFailed,
 )
-
 
 from .const import (
     CONF_PLOT_BACKGROUND,
@@ -36,10 +33,10 @@ from .const import (
     DOMAIN,
 )
 
-
 PLATFORMS = ["sensor"]
 
 DATA_LISTENER = "listener"
+
 
 class WorldTidesInfoCoordinator:
     """Define the coordinator."""
@@ -69,17 +66,18 @@ async def async_setup(hass, config):
     hass.data[DOMAIN] = {DATA_COORDINATOR: {}, DATA_LISTENER: {}}
     return True
 
+
 @callback
 def _standardize_config_entry(hass, config_entry):
     """Ensure that geography config entries have appropriate properties."""
     entry_updates = {}
 
-    #Shall not occur
+    # Shall not occur
     if not config_entry.unique_id:
         # If the config entry doesn't already have a unique ID, set one:
         entry_updates["unique_id"] = config_entry.data[CONF_API_KEY]
 
-    #Set every field with default value
+    # Set every field with default value
     if not config_entry.options:
         # If the config entry doesn't already have any options set, set defaults:
         entry_updates["options"] = {CONF_SHOW_ON_MAP: True}
@@ -98,7 +96,7 @@ def _standardize_config_entry(hass, config_entry):
         entry_updates["data"][CONF_UNIT] = DEFAULT_CONF_UNIT
 
     if not entry_updates:
-        #Do no thing !
+        # Do no thing !
         return
 
     hass.config_entries.async_update_entry(config_entry, **entry_updates)
@@ -108,13 +106,13 @@ async def async_setup_entry(hass, config_entry):
     """Set up WorldTidesInfo as config entry."""
     _standardize_config_entry(hass, config_entry)
 
-    #just to initialize (this code will be replace by evolution to have global count)
-    coordinator = WorldTidesInfoCoordinator(config_entry.entry_id) 
+    # just to initialize (this code will be replace by evolution to have global count)
+    coordinator = WorldTidesInfoCoordinator(config_entry.entry_id)
 
     # To manage options
     hass.data[DOMAIN][DATA_LISTENER][
-            config_entry.entry_id
-        ] = config_entry.add_update_listener(async_reload_entry)
+        config_entry.entry_id
+    ] = config_entry.add_update_listener(async_reload_entry)
 
     hass.data[DOMAIN][DATA_COORDINATOR][config_entry.entry_id] = coordinator
 
@@ -147,6 +145,3 @@ async def async_unload_entry(hass, config_entry):
 async def async_reload_entry(hass, config_entry):
     """Handle an options update."""
     await hass.config_entries.async_reload(config_entry.entry_id)
-
-
-
