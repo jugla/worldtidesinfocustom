@@ -340,10 +340,15 @@ camera_image: camera.royan_tides_curve
 type: picture-elements
 
 ```
-
 NB: watch out : in the code we use the camera_image keyword and not image
 
 </details>
+
+Hereafter an example of the default map under lovelace UI
+
+<p align="center">
+  <img src="./doc/picture/MAPtide.jpg" alt="Size Limit CLI" width="400">
+</p>
 
 
 ## Detail Configuration parameter
