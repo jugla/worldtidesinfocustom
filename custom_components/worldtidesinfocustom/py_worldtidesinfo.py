@@ -206,7 +206,7 @@ class give_info_from_raw_data:
     def __init__(self, data):
         self._data = data
 
-    def give_tide_in_epoch(self, current_epoch_time,next_tide_flag):
+    def give_tide_in_epoch(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
         current_time = int(current_epoch_time)
         next_tide = 0
@@ -230,7 +230,6 @@ class give_info_from_raw_data:
             tide_type = "None"
 
         return {"tide_type": tide_type, "tide_time": tide_time}
-
 
     def give_next_tide_in_epoch(self, current_epoch_time):
         next_tide_flag = True

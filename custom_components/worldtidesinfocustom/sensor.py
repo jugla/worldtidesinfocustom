@@ -94,7 +94,19 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def setup_sensor (hass, name, lat, lon, key, vertical_ref, plot_color, plot_background, tide_station_distance, unit_to_display, show_on_map):
+def setup_sensor(
+    hass,
+    name,
+    lat,
+    lon,
+    key,
+    vertical_ref,
+    plot_color,
+    plot_background,
+    tide_station_distance,
+    unit_to_display,
+    show_on_map,
+):
     """setup sensor with server, server scheduler in async or sync configuration"""
 
     # prepare the tide picture management
@@ -179,7 +191,19 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     show_on_map = True
 
-    tides = setup_sensor (hass, name, lat, lon, key, vertical_ref, plot_color, plot_background, tide_station_distance, unit_to_display, show_on_map)
+    tides = setup_sensor(
+        hass,
+        name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        plot_color,
+        plot_background,
+        tide_station_distance,
+        unit_to_display,
+        show_on_map,
+    )
 
     tides.update()
     if tides._worldtidesinfo_server_scheduler.no_data():
@@ -220,11 +244,23 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         unit_to_display = METRIC_CONF_UNIT
 
     if config_entry.options[CONF_SHOW_ON_MAP]:
-       show_on_map = True
+        show_on_map = True
     else:
-       show_on_map = False
+        show_on_map = False
 
-    tides = setup_sensor (hass, name, lat, lon, key, vertical_ref, plot_color, plot_background, tide_station_distance, unit_to_display, show_on_map)
+    tides = setup_sensor(
+        hass,
+        name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        plot_color,
+        plot_background,
+        tide_station_distance,
+        unit_to_display,
+        show_on_map,
+    )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
     await tides.async_update()
@@ -336,15 +372,27 @@ class WorldTidesInfoCustomSensor(Entity):
         previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(time.time())
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
-        if next_tide_in_epoch.get("error") == None and previous_tide_in_epoch.get("error") == None:
-            delta_current_time_to_next = next_tide_in_epoch.get("tide_time") - current_time
-            delta_current_time_from_previous = current_time - previous_tide_in_epoch.get("tide_time")
-        attr["time_to_next_tide"] = "(hours) {}".format(timedelta(seconds=delta_current_time_to_next))
+
+        if (
+            next_tide_in_epoch.get("error") == None
+            or previous_tide_in_epoch.get("error") == None
+        ):
+            delta_current_time_to_next = (
+                next_tide_in_epoch.get("tide_time") - current_time
+            )
+            delta_current_time_from_previous = (
+                current_time - previous_tide_in_epoch.get("tide_time")
+            )
+        attr["time_to_next_tide"] = "(hours) {}".format(
+            timedelta(seconds=delta_current_time_to_next)
+        )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
-            attr["time_from_previous_tide"] = "(hours) {}".format(timedelta(seconds=delta_current_time_from_previous))
+            attr["time_from_previous_tide"] = "(hours) {}".format(
+                timedelta(seconds=delta_current_time_from_previous)
+            )
         # compute tide tendancy
-        tide_tendancy =""
+        tide_tendancy = ""
         if next_tide_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
@@ -359,7 +407,7 @@ class WorldTidesInfoCustomSensor(Entity):
                 tide_tendancy = "Tides Slack (Down)"
             else:
                 tide_tendancy = "Tides Down"
-        attr["tide_tendancy"] =  f"{tide_tendancy}"
+        attr["tide_tendancy"] = f"{tide_tendancy}"
 
         # Display the next amplitude
         diff_next_high_tide_low_tide = 0
