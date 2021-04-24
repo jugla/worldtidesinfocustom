@@ -375,7 +375,7 @@ class WorldTidesInfoCustomSensor(Entity):
 
         if (
             next_tide_in_epoch.get("error") == None
-            or previous_tide_in_epoch.get("error") == None
+            and previous_tide_in_epoch.get("error") == None
         ):
             delta_current_time_to_next = (
                 next_tide_in_epoch.get("tide_time") - current_time
