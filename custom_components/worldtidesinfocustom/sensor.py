@@ -517,6 +517,51 @@ class WorldTidesInfoCustomSensor(Entity):
         return attr
 
     @property
+    def icon(self):
+        """return icon tendancy"""
+        current_time = time.time()
+
+        # retrieve tide data
+        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+        tide_info = give_info_from_raw_data(data)
+
+        # Tide Tendancy and time_to_next_tide
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(time.time())
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(time.time())
+        delta_current_time_to_next = 0
+        delta_current_time_from_previous = 0
+
+        if (
+            next_tide_in_epoch.get("error") == None
+            and previous_tide_in_epoch.get("error") == None
+        ):
+            delta_current_time_to_next = (
+                next_tide_in_epoch.get("tide_time") - current_time
+            )
+            delta_current_time_from_previous = (
+                current_time - previous_tide_in_epoch.get("tide_time")
+            )
+
+        # compute tide tendancy
+        tide_tendancy = "mdi:shore"
+        if next_tide_in_epoch.get("tide_type") == "High":
+            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "mdi:chevron-up"
+            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "mdi:mdi-chevron-up"
+            else:
+                tide_tendancy = "mdi:chevron-triple-up"
+        else:
+            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "mdi:chevron-down"
+            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "mdi:chevron-down"
+            else:
+                tide_tendancy = "mdi:chevron-triple-down"
+        return tide_tendancy
+
+
+    @property
     def state(self):
         """Return the state of the device."""
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
