@@ -89,9 +89,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(
                     CONF_LONGITUDE, default=self.hass.config.longitude
                 ): cv.longitude,
-                vol.Optional(
-                    CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
-                ): vol.In (CONF_VERTICAL_REF_TYPES),
+                vol.Optional(CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF): vol.In(
+                    CONF_VERTICAL_REF_TYPES
+                ),
                 vol.Optional(
                     CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
                 ): cv.positive_int,
@@ -99,8 +99,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(
                     CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
                 ): cv.string,
-                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT
-                ): vol.In(CONF_UNIT_TYPES),
+                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
+                    CONF_UNIT_TYPES
+                ),
             }
         )
 
