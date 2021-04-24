@@ -386,7 +386,7 @@ This sensor has a set of attributes describes hereafter
 | Low tide time utc    |  v1.0.0   |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000 | **UTC**  | Next Low tide in UTC     |
 | Low tide height      |  v1.0.0   |  float     | m/ft | Next Low tide heiht     |
 | time_to_next_tide    |  v3.2.0   |  delta  time in H:M:S.xx | **delta time**  | Time to Next Tide     |
-| tide_tendancy        |  v3.2.0   |  string | **delta time**  | Up, Down,Slack (Up), Slack (Down). Slack is the period within +/- 1 hour around tide (high or low)      |
+| tide_tendancy        |  v3.2.0   |  string | NA  | Up, Down,Slack (Up), Slack (Down). Slack is the period within +/- 1 hour around tide (high or low)      |
 | next_tide_amplitude  |  v3.0.0   |  float     | m/ft | The next amplitude for (Hight Tide - Low Tide) (it is absolute) |
 | next_Coeff_resp_MWS  |  v3.0.0   |  float     | %    | coeff that represents the next (absolute(Hight Tide - Low Tide) / (MHWS - MLWS) * 100) See [datum ref](https://www.worldtides.info/datums) . Nb this figure can be greater than 100%, if the tide amplitude is greater than MeanSpringWater : for instance during High Spring Water|
 | Current height utc   | v1.0.0    |  in ISO 8601 standard date and time format, e.g.: 2017-06-12T19:47+0000) | **UTC**  | height sample used to compute current height     |
