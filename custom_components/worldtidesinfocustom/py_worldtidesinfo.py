@@ -206,15 +206,16 @@ class give_info_from_raw_data:
     def __init__(self, data):
         self._data = data
 
-    def give_next_tide_in_epoch(self, current_epoch_time):
+    def give_tide_in_epoch(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
         current_time = int(current_epoch_time)
         next_tide = 0
         for tide_index in range(len(self._data["extremes"])):
             if self._data["extremes"][tide_index]["dt"] < current_time:
                 next_tide = tide_index
-        if self._data["extremes"][next_tide]["dt"] < current_time:
-            next_tide = next_tide + 1
+        if next_tide_flag:
+            if self._data["extremes"][next_tide]["dt"] < current_time:
+                next_tide = next_tide + 1
         if next_tide >= len(self._data["extremes"]):
             return {"error": "no date in future"}
 
@@ -229,6 +230,14 @@ class give_info_from_raw_data:
             tide_type = "None"
 
         return {"tide_type": tide_type, "tide_time": tide_time}
+
+    def give_next_tide_in_epoch(self, current_epoch_time):
+        next_tide_flag = True
+        return self.give_tide_in_epoch(current_epoch_time, next_tide_flag)
+
+    def give_previous_tide_in_epoch(self, current_epoch_time):
+        next_tide_flag = False
+        return self.give_tide_in_epoch(current_epoch_time, next_tide_flag)
 
     def give_vertical_ref(self):
         if "responseDatum" in self._data:

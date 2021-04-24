@@ -16,6 +16,7 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
+    CONF_SHOW_ON_MAP,
     LENGTH_FEET,
     LENGTH_KILOMETERS,
     LENGTH_METERS,
@@ -49,6 +50,7 @@ from .const import (
     DEFAULT_VERTICAL_REF,
     DOMAIN,
     HA_CONF_UNIT,
+    HALF_TIDE_SLACK_DURATION,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
     ROUND_COEFF,
@@ -92,24 +94,20 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Set up the WorldTidesInfo Custom sensor."""
-
-    # Get data from configuration.yaml
-    name = config.get(CONF_NAME)
-    lat = config.get(CONF_LATITUDE, hass.config.latitude)
-    lon = config.get(CONF_LONGITUDE, hass.config.longitude)
-
-    if None in (lat, lon):
-        _LOGGER.error("Latitude or longitude not set in Home Assistant config")
-        return
-
-    key = config.get(CONF_API_KEY)
-    vertical_ref = config.get(CONF_VERTICAL_REF)
-    plot_color = config.get(CONF_PLOT_COLOR)
-    plot_background = config.get(CONF_PLOT_BACKGROUND)
-    # worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
-    tide_station_distance = config.get(CONF_STATION_DISTANCE)
+def setup_sensor(
+    hass,
+    name,
+    lat,
+    lon,
+    key,
+    vertical_ref,
+    plot_color,
+    plot_background,
+    tide_station_distance,
+    unit_to_display,
+    show_on_map,
+):
+    """setup sensor with server, server scheduler in async or sync configuration"""
 
     # prepare the tide picture management
     tide_picture_file = File_Picture(
@@ -122,14 +120,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         ),
         key,
     )
-
-    # what is the unit used
-    if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
-        unit_to_display = IMPERIAL_CONF_UNIT
-    elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
-        unit_to_display = IMPERIAL_CONF_UNIT
-    else:
-        unit_to_display = METRIC_CONF_UNIT
 
     # unit used for display, and convert tide station distance
     if unit_to_display == IMPERIAL_CONF_UNIT:
@@ -163,10 +153,57 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         hass,
         name,
         unit_to_display,
+        show_on_map,
         tide_picture_file,
         tide_cache_file,
         worldtidesinfo_server,
         worldtidesinfo_server_scheduler,
+    )
+
+    return tides
+
+
+def setup_platform(hass, config, add_entities, discovery_info=None):
+    """Set up the WorldTidesInfo Custom sensor."""
+
+    # Get data from configuration.yaml
+    name = config.get(CONF_NAME)
+    lat = config.get(CONF_LATITUDE, hass.config.latitude)
+    lon = config.get(CONF_LONGITUDE, hass.config.longitude)
+
+    if None in (lat, lon):
+        _LOGGER.error("Latitude or longitude not set in Home Assistant config")
+        return
+
+    key = config.get(CONF_API_KEY)
+    vertical_ref = config.get(CONF_VERTICAL_REF)
+    plot_color = config.get(CONF_PLOT_COLOR)
+    plot_background = config.get(CONF_PLOT_BACKGROUND)
+    # worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
+    tide_station_distance = config.get(CONF_STATION_DISTANCE)
+
+    # what is the unit used
+    if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
+        unit_to_display = IMPERIAL_CONF_UNIT
+    elif config.get(CONF_UNIT) == IMPERIAL_CONF_UNIT:
+        unit_to_display = IMPERIAL_CONF_UNIT
+    else:
+        unit_to_display = METRIC_CONF_UNIT
+
+    show_on_map = True
+
+    tides = setup_sensor(
+        hass,
+        name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        plot_color,
+        plot_background,
+        tide_station_distance,
+        unit_to_display,
+        show_on_map,
     )
 
     tides.update()
@@ -199,18 +236,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     plot_background = config.get(CONF_PLOT_BACKGROUND)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
 
-    # prepare the tide picture management
-    tide_picture_file = File_Picture(
-        hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
-    )
-
-    tide_cache_file = File_Data_Cache(
-        hass.config.path(
-            STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
-        ),
-        key,
-    )
-
     # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
         unit_to_display = IMPERIAL_CONF_UNIT
@@ -219,42 +244,23 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     else:
         unit_to_display = METRIC_CONF_UNIT
 
-    # unit used for display, and convert tide station distance
-    if unit_to_display == IMPERIAL_CONF_UNIT:
-        server_tide_station_distance = tide_station_distance * KM_PER_MI
-        unit_curve_picture = PLOT_CURVE_UNIT_FT
+    if config_entry.options[CONF_SHOW_ON_MAP]:
+        show_on_map = True
     else:
-        server_tide_station_distance = tide_station_distance
-        unit_curve_picture = PLOT_CURVE_UNIT_M
+        show_on_map = False
 
-    # instanciate server front end
-    worldtidesinfo_server = WorldTidesInfo_server(
-        key,
-        lat,
-        lon,
-        vertical_ref,
-        server_tide_station_distance,
-        plot_color,
-        plot_background,
-        unit_curve_picture,
-    )
-    worldtidesinfo_server_parameter = worldtidesinfo_server.give_parameter()
-
-    # instantiate scheduler front end
-    worldtidesinfo_server_scheduler = WorldTidesInfo_server_scheduler(
-        key,
-        worldtidesinfo_server_parameter,
-    )
-
-    # create the sensor
-    tides = WorldTidesInfoCustomSensor(
+    tides = setup_sensor(
         hass,
         name,
+        lat,
+        lon,
+        key,
+        vertical_ref,
+        plot_color,
+        plot_background,
+        tide_station_distance,
         unit_to_display,
-        tide_picture_file,
-        tide_cache_file,
-        worldtidesinfo_server,
-        worldtidesinfo_server_scheduler,
+        show_on_map,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
@@ -275,6 +281,7 @@ class WorldTidesInfoCustomSensor(Entity):
         hass,
         name,
         unit_to_display,
+        show_on_map,
         tide_picture_file,
         tide_cache_file,
         worldtidesinfo_server,
@@ -286,6 +293,7 @@ class WorldTidesInfoCustomSensor(Entity):
         # Parameters from configuration.yaml
         self._name = name
         self._unit_to_display = unit_to_display
+        self._show_on_map = show_on_map
 
         # Picture data
         self._tide_picture_file = tide_picture_file
@@ -359,6 +367,47 @@ class WorldTidesInfoCustomSensor(Entity):
                 next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
+
+        # Tide Tendancy and time_to_next_tide
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(time.time())
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(time.time())
+        delta_current_time_to_next = 0
+        delta_current_time_from_previous = 0
+        if (
+            next_tide_in_epoch.get("error") == None
+            and previous_tide_in_epoch.get("error") == None
+        ):
+            delta_current_time_to_next = (
+                next_tide_in_epoch.get("tide_time") - current_time
+            )
+            delta_current_time_from_previous = (
+                current_time - previous_tide_in_epoch.get("tide_time")
+            )
+        attr["time_to_next_tide"] = "(hours) {}".format(
+            timedelta(seconds=delta_current_time_to_next)
+        )
+        # KEEP FOR DEBUG:
+        if DEBUG_FLAG:
+            attr["time_from_previous_tide"] = "(hours) {}".format(
+                timedelta(seconds=delta_current_time_from_previous)
+            )
+        # compute tide tendancy
+        tide_tendancy = ""
+        if next_tide_in_epoch.get("tide_type") == "High":
+            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "Tides Slack (Up)"
+            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "Tides Slack (Up)"
+            else:
+                tide_tendancy = "Tides Up"
+        else:
+            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "Tides Slack (Down)"
+            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
+                tide_tendancy = "Tides Slack (Down)"
+            else:
+                tide_tendancy = "Tides Down"
+        attr["tide_tendancy"] = f"{tide_tendancy}"
 
         # Display the next amplitude
         diff_next_high_tide_low_tide = 0
@@ -461,8 +510,9 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
-        attr[ATTR_LATITUDE] = self._worldtidesinfo_server._Server_Parameter._lat
-        attr[ATTR_LONGITUDE] = self._worldtidesinfo_server._Server_Parameter._lon
+        if self._show_on_map:
+            attr[ATTR_LATITUDE] = self._worldtidesinfo_server._Server_Parameter._lat
+            attr[ATTR_LONGITUDE] = self._worldtidesinfo_server._Server_Parameter._lon
 
         return attr
 
@@ -486,6 +536,7 @@ class WorldTidesInfoCustomSensor(Entity):
     async def async_update(self):
         """Fetch new state data for this sensor."""
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
+        ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
         # try:
         #    await self.update()
