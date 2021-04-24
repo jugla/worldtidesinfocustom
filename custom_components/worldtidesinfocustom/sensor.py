@@ -162,6 +162,7 @@ def setup_sensor(
 
     return tides
 
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
 
@@ -373,15 +374,11 @@ class WorldTidesInfoCustomSensor(Entity):
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
-        if (
-            next_tide_in_epoch.get("error") == None
-        ):
+        if next_tide_in_epoch.get("error") == None:
             delta_current_time_to_next = (
                 next_tide_in_epoch.get("tide_time") - current_time
             )
-        if (
-            previous_tide_in_epoch.get("error") == None
-        ):
+        if previous_tide_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
                 current_time - previous_tide_in_epoch.get("tide_time")
             )
@@ -538,15 +535,11 @@ class WorldTidesInfoCustomSensor(Entity):
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
-        if (
-            next_tide_in_epoch.get("error") == None
-        ):
+        if next_tide_in_epoch.get("error") == None:
             delta_current_time_to_next = (
                 next_tide_in_epoch.get("tide_time") - current_time
             )
-        if (
-            previous_tide_in_epoch.get("error") == None
-        ):
+        if previous_tide_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
                 current_time - previous_tide_in_epoch.get("tide_time")
             )
@@ -572,7 +565,6 @@ class WorldTidesInfoCustomSensor(Entity):
             else:
                 tide_tendancy = "mdi:chevron-triple-down"
         return tide_tendancy
-
 
     @property
     def state(self):
