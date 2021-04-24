@@ -368,18 +368,20 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(time.time())
-        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(time.time())
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
         if (
             next_tide_in_epoch.get("error") == None
-            and previous_tide_in_epoch.get("error") == None
         ):
             delta_current_time_to_next = (
                 next_tide_in_epoch.get("tide_time") - current_time
             )
+        if (
+            previous_tide_in_epoch.get("error") == None
+        ):
             delta_current_time_from_previous = (
                 current_time - previous_tide_in_epoch.get("tide_time")
             )
@@ -391,11 +393,14 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["time_from_previous_tide"] = "(hours) {}".format(
                 timedelta(seconds=delta_current_time_from_previous)
             )
+
         # compute tide tendancy
         tide_tendancy = ""
         if next_tide_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
+            elif previous_tide_in_epoch.get("error") != None:
+                tide_tendancy = "Tides Up"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
             else:
@@ -403,6 +408,8 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Down)"
+            elif previous_tide_in_epoch.get("error") != None:
+                tide_tendancy = "Tides Down"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Down)"
             else:
@@ -526,18 +533,20 @@ class WorldTidesInfoCustomSensor(Entity):
         tide_info = give_info_from_raw_data(data)
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(time.time())
-        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(time.time())
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
         if (
             next_tide_in_epoch.get("error") == None
-            and previous_tide_in_epoch.get("error") == None
         ):
             delta_current_time_to_next = (
                 next_tide_in_epoch.get("tide_time") - current_time
             )
+        if (
+            previous_tide_in_epoch.get("error") == None
+        ):
             delta_current_time_from_previous = (
                 current_time - previous_tide_in_epoch.get("tide_time")
             )
@@ -547,13 +556,17 @@ class WorldTidesInfoCustomSensor(Entity):
         if next_tide_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-up"
+            elif previous_tide_in_epoch.get("error") != None:
+                tide_tendancy = "mdi:chevron-triple-up"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
-                tide_tendancy = "mdi:mdi-chevron-up"
+                tide_tendancy = "mdi:chevron-up"
             else:
                 tide_tendancy = "mdi:chevron-triple-up"
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
+            elif previous_tide_in_epoch.get("error") != None:
+                tide_tendancy = "mdi:chevron-triple-down"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
             else:

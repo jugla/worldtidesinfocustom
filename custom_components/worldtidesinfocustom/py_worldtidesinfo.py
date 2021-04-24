@@ -218,6 +218,9 @@ class give_info_from_raw_data:
                 next_tide = next_tide + 1
         if next_tide >= len(self._data["extremes"]):
             return {"error": "no date in future"}
+        if next_tide_flag == False:
+            if  self._data["extremes"][next_tide]["dt"] > current_time:
+                return  {"error": "no date in past"}
 
         tide_time = self._data["extremes"][next_tide]["dt"]
 
