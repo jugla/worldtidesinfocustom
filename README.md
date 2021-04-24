@@ -413,4 +413,6 @@ Thanks for all contributors !
 
 Thanks home-assitant community !
 
+Thanks Home-assistant project !
+
 ## Support

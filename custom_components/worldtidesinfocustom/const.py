@@ -15,10 +15,35 @@ DATA_COORDINATOR = "coordinator"
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
 
-CONF_VERTICAL_REF_TYPES = ["LAT", "MLLWS", "MLWS", "MHLWS", "MLLW", "MLW",
- "MHLW", "MLLWN", "MLWN", "MHLWN", "MTL", "MSL", "MLHWN", "MHWN", "MHHWN",
- "MLHW", "MHW", "MHHW", "MLHWS", "MHWS", "MHHWS", "HAT","NAVD", "STND", "CD",
- "NN1954", "NN2000"]
+CONF_VERTICAL_REF_TYPES = [
+    "LAT",
+    "MLLWS",
+    "MLWS",
+    "MHLWS",
+    "MLLW",
+    "MLW",
+    "MHLW",
+    "MLLWN",
+    "MLWN",
+    "MHLWN",
+    "MTL",
+    "MSL",
+    "MLHWN",
+    "MHWN",
+    "MHHWN",
+    "MLHW",
+    "MHW",
+    "MHHW",
+    "MLHWS",
+    "MHWS",
+    "MHHWS",
+    "HAT",
+    "NAVD",
+    "STND",
+    "CD",
+    "NN1954",
+    "NN2000",
+]
 
 # in km/mile depending of unit used
 DEFAULT_STATION_DISTANCE = 50
@@ -42,7 +67,6 @@ IMPERIAL_CONF_UNIT = "imperial"
 HA_CONF_UNIT = "home_assistant"
 DEFAULT_CONF_UNIT = HA_CONF_UNIT
 CONF_UNIT_TYPES = [HA_CONF_UNIT, METRIC_CONF_UNIT, IMPERIAL_CONF_UNIT]
-
 
 
 # Debug Flag
