@@ -18,7 +18,9 @@ from .const import (
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
     CONF_UNIT,
+    CONF_UNIT_TYPES,
     CONF_VERTICAL_REF,
+    CONF_VERTICAL_REF_TYPES,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
@@ -89,7 +91,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 ): cv.longitude,
                 vol.Optional(
                     CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
-                ): cv.string,
+                ): vol.In (CONF_VERTICAL_REF_TYPES),
                 vol.Optional(
                     CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
                 ): cv.positive_int,
@@ -97,7 +99,8 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(
                     CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
                 ): cv.string,
-                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): cv.string,
+                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT
+                ): vol.In(CONF_UNIT_TYPES),
             }
         )
 

@@ -29,8 +29,8 @@
           "longitude": "location longitude",
           "vertical_ref" : "vertical reference",
           "station_distance" : "tidal station distance",
-          "plot_color": "plot curve color",
-          "plot_background": "plot curve background color",
+          "plot_color": "plot curve color in comma-separated RGB values",
+          "plot_background": "plot curve background color in comma-separated RGB values",
           "unit" : "metric HA imperial"
         }
       }
