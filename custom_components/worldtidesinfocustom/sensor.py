@@ -337,15 +337,22 @@ class WorldTidesInfoCustomSensor(Entity):
         # retrieve tide data
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
         tide_info = give_info_from_raw_data(data)
+        # retrieve previous tide data in case
+        previous_data = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
+        )
+        previous_tide_info = give_info_from_raw_data(previous_data)
 
+        # retrieve init data
         init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
         init_tide_info = give_info_from_raw_data(init_data)
-
+        # retrieve the datum
         data_datums_offset = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
         )
         datums_info = give_info_from_raw_datums_data(data_datums_offset)
-        # comput he Mean Water Spring offset
+
+        # compute the Mean Water Spring offset
         MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
 
         # The vertical reference used : LAT, ...
@@ -369,22 +376,45 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
-        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
+        next_tide_from_current_data_in_epoch = tide_info.give_next_tide_in_epoch(
+            current_time
+        )
+        previous_tide_from_current_data_in_epoch = (
+            tide_info.give_previous_tide_in_epoch(current_time)
+        )
+        # Tide from previous data in case of previous data not found
+        previous_tide_from_previous_data_in_epoch = (
+            previous_tide_info.give_previous_tide_in_epoch(current_time)
+        )
+
+        # initialize data for delta time
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
-        if next_tide_in_epoch.get("error") == None:
+        # compute delta tide to next tide
+        if next_tide_from_current_data_in_epoch.get("error") == None:
             delta_current_time_to_next = (
-                next_tide_in_epoch.get("tide_time") - current_time
+                next_tide_from_current_data_in_epoch.get("tide_time") - current_time
             )
-        if previous_tide_in_epoch.get("error") == None:
+
+        # compute delta time from previous tide
+        error_in_retrieve_previous_tide_info = False
+        if previous_tide_from_current_data_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
-                current_time - previous_tide_in_epoch.get("tide_time")
+                current_time - previous_tide_from_current_data_in_epoch.get("tide_time")
             )
+        elif previous_tide_from_previous_data_in_epoch.get("error") == None:
+            delta_current_time_from_previous = (
+                current_time
+                - previous_tide_from_previous_data_in_epoch.get("tide_time")
+            )
+        else:
+            error_in_retrieve_previous_tide_info = True
+
         attr["time_to_next_tide"] = "(hours) {}".format(
             timedelta(seconds=delta_current_time_to_next)
         )
+
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
             attr["time_from_previous_tide"] = "(hours) {}".format(
@@ -393,10 +423,12 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # compute tide tendancy
         tide_tendancy = ""
-        if next_tide_in_epoch.get("tide_type") == "High":
+        if next_tide_from_current_data_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
-            elif previous_tide_in_epoch.get("error") != None:
+            elif error_in_retrieve_previous_tide_info == True:
+                # if the previous tide is not found, assume that
+                # we are not in slack
                 tide_tendancy = "Tides Up"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
@@ -405,7 +437,9 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Down)"
-            elif previous_tide_in_epoch.get("error") != None:
+            elif error_in_retrieve_previous_tide_info == True:
+                # if the previous tide is not found, assume that
+                # we are not in slack
                 tide_tendancy = "Tides Down"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Down)"
@@ -445,12 +479,21 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Display the current amplitude
         current_tide_UTC = tide_info.give_current_high_low_tide_in_UTC(current_time)
+        current_tide_UTC_from_previous = (
+            previous_tide_info.give_current_high_low_tide_in_UTC(current_time)
+        )
         diff_current_high_tide_low_tide = 0
         if current_tide_UTC.get("error") == None:
             diff_current_high_tide_low_tide = abs(
                 current_tide_UTC.get("high_tide_height")
                 - current_tide_UTC.get("low_tide_height")
             )
+        elif current_tide_UTC_from_previous.get("error") == None:
+            diff_current_high_tide_low_tide = abs(
+                current_tide_UTC_from_previous.get("high_tide_height")
+                - current_tide_UTC_from_previous.get("low_tide_height")
+            )
+
         attr["tide_amplitude"] = round(diff_current_high_tide_low_tide, ROUND_HEIGTH)
 
         # The coeff tide_highlow_over the Mean Water Spring
@@ -528,28 +571,54 @@ class WorldTidesInfoCustomSensor(Entity):
         # retrieve tide data
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
         tide_info = give_info_from_raw_data(data)
+        # retrieve previous tide data in case of error
+        previous_data = (
+            self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
+        )
+        previous_tide_info = give_info_from_raw_data(previous_data)
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
-        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
+        next_tide_from_current_data_in_epoch = tide_info.give_next_tide_in_epoch(
+            current_time
+        )
+        previous_tide_from_current_data_in_epoch = (
+            tide_info.give_previous_tide_in_epoch(current_time)
+        )
+        previous_tide_from_previous_data_in_epoch = (
+            previous_tide_info.give_previous_tide_in_epoch(current_time)
+        )
+        # delta time to next tide and from previous tide are set to zero
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
-        if next_tide_in_epoch.get("error") == None:
+        # delta time to next tide
+        if next_tide_from_current_data_in_epoch.get("error") == None:
             delta_current_time_to_next = (
-                next_tide_in_epoch.get("tide_time") - current_time
+                next_tide_from_current_data_in_epoch.get("tide_time") - current_time
             )
-        if previous_tide_in_epoch.get("error") == None:
+
+        # delta time from previous tide
+        error_in_retrieve_previous_tide_info = False
+        if previous_tide_from_current_data_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
-                current_time - previous_tide_in_epoch.get("tide_time")
+                current_time - previous_tide_from_current_data_in_epoch.get("tide_time")
             )
+        elif previous_tide_from_previous_data_in_epoch.get("error") == None:
+            delta_current_time_from_previous = (
+                current_time
+                - previous_tide_from_previous_data_in_epoch.get("tide_time")
+            )
+        else:
+            error_in_retrieve_previous_tide_info = True
 
         # compute tide tendancy
         tide_tendancy = "mdi:shore"
-        if next_tide_in_epoch.get("tide_type") == "High":
+        if next_tide_from_current_data_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-up"
-            elif previous_tide_in_epoch.get("error") != None:
+            elif error_in_retrieve_previous_tide_info == True:
+                # if delta time from previous tide cannot be computed, assume that
+                # we are not in slack
                 tide_tendancy = "mdi:chevron-triple-up"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-up"
@@ -558,7 +627,7 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
-            elif previous_tide_in_epoch.get("error") != None:
+            elif error_in_retrieve_previous_tide_info == True:
                 tide_tendancy = "mdi:chevron-triple-down"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
@@ -679,16 +748,18 @@ class WorldTidesInfoCustomSensor(Entity):
                 "Data queried at: %s",
                 self._worldtidesinfo_server.retrieve_tide_request_time,
             )
+            # update store data
             data = self._worldtidesinfo_server.retrieve_tide_raw_data()
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.data = data
-            tide_info = give_info_from_raw_data(data)
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time = (
-                self._worldtidesinfo_server.retrieve_tide_request_time()
+            self._worldtidesinfo_server_scheduler.store_new_data(
+                data, self._worldtidesinfo_server.retrieve_tide_request_time()
             )
+
             self.credit_used = (
                 self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )
+
             # process information
+            tide_info = give_info_from_raw_data(data)
             datum_content = tide_info.give_datum()
             if datum_content != None:
                 self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = (

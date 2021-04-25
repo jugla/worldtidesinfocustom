@@ -208,6 +208,10 @@ class give_info_from_raw_data:
 
     def give_tide_in_epoch(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
+
+        if self._data == None:
+            return {"error": "no data"}
+
         current_time = int(current_epoch_time)
         next_tide = 0
         for tide_index in range(len(self._data["extremes"])):
@@ -256,6 +260,9 @@ class give_info_from_raw_data:
 
     def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
+        if self._data == None:
+            return {"error": "no data"}
+
         current_time = int(current_epoch_time)
 
         # Next tide
@@ -271,6 +278,10 @@ class give_info_from_raw_data:
 
         if next_tide >= len(self._data["extremes"]):
             return {"error": "no date in future"}
+
+        if next_tide_flag == False:
+            if self._data["extremes"][next_tide]["dt"] > current_time:
+                return {"error": "no date in past"}
 
         if "High" in str(self._data["extremes"][next_tide]["type"]):
             high_tide_time_utc = self._data["extremes"][next_tide]["date"]

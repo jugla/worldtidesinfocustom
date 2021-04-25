@@ -13,7 +13,9 @@ FORCE_FETCH_INIT_DATA_INTERVAL = 30
 DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 
 # snapshot_version
-snapshot_version = 1
+# snapshot 1 : 1rst one
+# snapshot 2 : add previous data
+snapshot_version = 2
 
 
 class Data_Retrieve:
@@ -25,6 +27,9 @@ class Data_Retrieve:
         self.data_datums_offset = None
         self.data = None
         self.data_request_time = None
+        # in order to manage midnight (ie. switch between 2 requests)
+        self.previous_data = None
+        self.previous_data_request_time = None
 
     def store_read_input(self, read_data):
         self.init_data = read_data.init_data
@@ -32,6 +37,9 @@ class Data_Retrieve:
         self.data_datums_offset = read_data.data_datums_offset
         self.data = read_data.data
         self.data_request_time = read_data.data_request_time
+        # in order to manage midnight (ie. switch between 2 requests)
+        self.previous_data = read_data.previous_data
+        self.previous_data_request_time = read_data.previous_data_request_time
 
 
 class Data_Scheduling:
@@ -83,6 +91,14 @@ class WorldTidesInfo_server_scheduler:
 
     def no_datum(self):
         return self._Data_Retrieve.data_datums_offset == None
+
+    def store_new_data(self, data, data_request_time):
+        # in order to manage midnight (ie. switch between 2 requests)
+        self.previous_data = self._Data_Retrieve.data
+        self.previous_data_request_time = self._Data_Retrieve.data_request_time
+        # normal process
+        self._Data_Retrieve.data = data
+        self._Data_Retrieve.data_request_time = data_request_time
 
     def setup_next_midnights(self):
         """update all midnights"""
