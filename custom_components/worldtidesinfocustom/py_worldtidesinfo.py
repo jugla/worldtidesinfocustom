@@ -210,7 +210,7 @@ class give_info_from_raw_data:
         """ give info from X seconds from epoch"""
 
         if self._data == None:
-            return {"error" : "no data"}
+            return {"error": "no data"}
 
         current_time = int(current_epoch_time)
         next_tide = 0
@@ -261,8 +261,7 @@ class give_info_from_raw_data:
     def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
         """ give info from X seconds from epoch"""
         if self._data == None:
-            return {"error" : "no data"}
-
+            return {"error": "no data"}
 
         current_time = int(current_epoch_time)
 
