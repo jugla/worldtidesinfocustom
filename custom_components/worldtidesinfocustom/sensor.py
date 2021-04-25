@@ -493,6 +493,12 @@ class WorldTidesInfoCustomSensor(Entity):
                 current_tide_UTC_from_previous.get("high_tide_height")
                 - current_tide_UTC_from_previous.get("low_tide_height")
             )
+        else:
+           _LOGGER.debug("No previous data for {}: current data error : {} or previous data error : {}".format(
+               self._name,
+               current_tide_UTC.get("error"),
+               current_tide_UTC_from_previous.get("error")
+           ))
 
         attr["tide_amplitude"] = round(diff_current_high_tide_low_tide, ROUND_HEIGTH)
 
