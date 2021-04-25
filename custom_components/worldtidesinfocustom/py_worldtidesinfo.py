@@ -207,7 +207,7 @@ class give_info_from_raw_data:
         self._data = data
 
     def give_tide_in_epoch(self, current_epoch_time, next_tide_flag):
-        """ give info from X seconds from epoch"""
+        """give info from X seconds from epoch"""
 
         if self._data == None:
             return {"error": "no data"}
@@ -259,7 +259,7 @@ class give_info_from_raw_data:
             return "no reference station used"
 
     def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
-        """ give info from X seconds from epoch"""
+        """give info from X seconds from epoch"""
         if self._data == None:
             return {"error": "no data"}
 
@@ -313,7 +313,7 @@ class give_info_from_raw_data:
         return self.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
 
     def give_current_height_in_UTC(self, current_epoch_time):
-        """ give info from X seconds from epoch"""
+        """give info from X seconds from epoch"""
         current_time = int(current_epoch_time)
         # The height
         current_height_index = 0
