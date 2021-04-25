@@ -94,8 +94,8 @@ class WorldTidesInfo_server_scheduler:
 
     def store_new_data(self, data, data_request_time):
         # in order to manage midnight (ie. switch between 2 requests)
-        self.previous_data = self._Data_Retrieve.data
-        self.previous_data_request_time = self._Data_Retrieve.data_request_time
+        self._Data_Retrieve.previous_data = self._Data_Retrieve.data
+        self._Data_Retrieve.previous_data_request_time = self._Data_Retrieve.data_request_time
         # normal process
         self._Data_Retrieve.data = data
         self._Data_Retrieve.data_request_time = data_request_time
