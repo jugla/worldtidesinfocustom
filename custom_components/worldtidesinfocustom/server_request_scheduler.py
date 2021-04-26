@@ -112,7 +112,7 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Scheduling.setup_next_init_data_midnight()
 
     def init_data_to_be_fetched(self, current_time):
-        """Decide whether or not Init Data has to be retrieved """
+        """Decide whether or not Init Data has to be retrieved"""
         init_data_to_require = False
         if self._Data_Retrieve.init_data == None:
             init_data_to_require = True
@@ -148,7 +148,7 @@ class WorldTidesInfo_server_scheduler:
         return Usable
 
     def use_scheduler_image_if_possible(self, snapshot_read):
-        """Use saved data to re-initialized the scheduler """
+        """Use saved data to re-initialized the scheduler"""
         scheduler_image_usable = False
         scheduler_image_used = False
         try:
@@ -165,7 +165,7 @@ class WorldTidesInfo_server_scheduler:
         return scheduler_image_used
 
     def data_to_be_fetched(self, init_data_has_been_fetched, current_time):
-        """Decide whether or not data has to be retrieved """
+        """Decide whether or not data has to be retrieved"""
         data_to_require = False
         if init_data_has_been_fetched:
             data_to_require = True

@@ -1,6 +1,6 @@
 """Define a config flow manager for WorldTidesInfoCustom."""
 
-#HA library
+# HA library
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import (
@@ -13,7 +13,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 
-#component library
+# component library
 from . import async_get_config_id
 from .const import (
     CONF_PLOT_BACKGROUND,

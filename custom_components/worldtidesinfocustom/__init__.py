@@ -1,8 +1,9 @@
 """The worldtidesinfo custom component."""
-#python library
+
+# python library
 import asyncio
 
-#HA python
+# HA python
 from homeassistant.config_entries import SOURCE_REAUTH
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
@@ -19,7 +20,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-#internal library
+# internal library
 from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,

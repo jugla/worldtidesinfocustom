@@ -205,6 +205,7 @@ class WorldTidesInfo_server:
 
 class give_info_from_raw_data:
     """Give a set of function to decode retrieved data"""
+
     def __init__(self, data):
         self._data = data
 
