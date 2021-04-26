@@ -68,6 +68,7 @@ class File_Data_Cache:
         return self._data_read
 
     def Fetch_Stored_Data(self):
+        """Fetch the data save on disk and check HMAC"""
         # Read previous received data
         # 1) Fetch on disk
         Fetch_Data_status = False
@@ -107,7 +108,9 @@ class File_Data_Cache:
         return Data_Read_Status
 
     def store_data(self, data_to_store):
-        # pickle and comput HMAC
+        """Store data on disk and compute HAMC"""
+
+        # pickle and compute HMAC
         data_pickle = pickle.dumps(data_to_store, pickle.HIGHEST_PROTOCOL)
         hmac_data = hmac.new(
             self._key.encode("utf-8"), data_pickle, hashlib.sha1
