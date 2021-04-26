@@ -32,6 +32,7 @@ class Data_Retrieve:
         self.previous_data_request_time = None
 
     def store_read_input(self, read_data):
+        """Update data from cloud server"""
         self.init_data = read_data.init_data
         self.init_data_request_time = read_data.init_data_request_time
         self.data_datums_offset = read_data.data_datums_offset
@@ -60,12 +61,8 @@ class Data_Scheduling:
         ).replace(hour=0, minute=0, second=0, microsecond=0)
 
     def setup_next_midnights(self):
-        self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        self.next_month_midnight = timedelta(days=FORCE_FETCH_INIT_DATA_INTERVAL) + (
-            datetime.today()
-        ).replace(hour=0, minute=0, second=0, microsecond=0)
+        self.setup_next_data_midnight()
+        self.setup_next_init_data_midnight()
 
     def store_read_input(self, read_data):
         self.next_day_midnight = read_data.next_day_midnight
@@ -93,6 +90,8 @@ class WorldTidesInfo_server_scheduler:
         return self._Data_Retrieve.data_datums_offset == None
 
     def store_new_data(self, data, data_request_time):
+        """Store new data and backup previous"""
+
         # in order to manage midnight (ie. switch between 2 requests)
         self._Data_Retrieve.previous_data = self._Data_Retrieve.data
         self._Data_Retrieve.previous_data_request_time = (
@@ -113,6 +112,7 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Scheduling.setup_next_init_data_midnight()
 
     def init_data_to_be_fetched(self, current_time):
+        """Decide whether or not Init Data has to be retrieved"""
         init_data_to_require = False
         if self._Data_Retrieve.init_data == None:
             init_data_to_require = True
@@ -126,6 +126,7 @@ class WorldTidesInfo_server_scheduler:
         return init_data_to_require
 
     def give_scheduler_image(self):
+        """Give Scheduler snapshot intended to be saved on disk"""
         snapshot = {"Version": snapshot_version}
         snapshot["Parameter"] = self._Server_Parameter
         snapshot["Scheduling"] = self._Data_Scheduling
@@ -147,6 +148,7 @@ class WorldTidesInfo_server_scheduler:
         return Usable
 
     def use_scheduler_image_if_possible(self, snapshot_read):
+        """Use saved data to re-initialized the scheduler"""
         scheduler_image_usable = False
         scheduler_image_used = False
         try:
@@ -163,6 +165,7 @@ class WorldTidesInfo_server_scheduler:
         return scheduler_image_used
 
     def data_to_be_fetched(self, init_data_has_been_fetched, current_time):
+        """Decide whether or not data has to be retrieved"""
         data_to_require = False
         if init_data_has_been_fetched:
             data_to_require = True

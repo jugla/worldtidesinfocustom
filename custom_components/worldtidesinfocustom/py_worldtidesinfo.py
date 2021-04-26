@@ -35,6 +35,7 @@ class Server_Parameter:
         self._unit_curve_picture = unit_curve_picture
 
     def compare_parameter(self, parameter):
+        """compare the parameter given to the stored ones"""
         result = False
         try:
             if (
@@ -203,6 +204,8 @@ class WorldTidesInfo_server:
 
 
 class give_info_from_raw_data:
+    """Give a set of function to decode retrieved data"""
+
     def __init__(self, data):
         self._data = data
 
@@ -363,6 +366,7 @@ class give_info_from_raw_data:
             return None
 
     def give_plot_picture_without_header(self):
+        """Give picture in base 64 without the format header"""
         if "plot" in self._data:
             std_string = "data:image/png;base64,"
             str_to_convert = self._data["plot"][
@@ -374,7 +378,7 @@ class give_info_from_raw_data:
 
 
 class give_info_from_raw_datums_data:
-    """retrive datum information"""
+    """Decode datum information"""
 
     def __init__(self, datums_data):
         self._datums_data = datums_data

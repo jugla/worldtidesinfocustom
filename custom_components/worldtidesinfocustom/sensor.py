@@ -33,6 +33,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 _LOGGER = logging.getLogger(__name__)
 
+# Component Library
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -61,7 +62,6 @@ from .const import (
     WWW_PATH,
 )
 
-# Component Library
 # import .storage_mngt
 from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,

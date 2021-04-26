@@ -15,6 +15,7 @@ DATA_COORDINATOR = "coordinator"
 DEFAULT_VERTICAL_REF = "LAT"
 CONF_VERTICAL_REF = "vertical_ref"
 
+# All vertical ref available from worldtides server
 CONF_VERTICAL_REF_TYPES = [
     "LAT",
     "MLLWS",
