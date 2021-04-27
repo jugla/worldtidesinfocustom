@@ -68,6 +68,7 @@ from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,
     give_info_from_raw_data,
+    give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
@@ -336,12 +337,12 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # retrieve tide data
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-        tide_info = give_info_from_raw_data(data)
         # retrieve previous tide data in case
         previous_data = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
         )
-        previous_tide_info = give_info_from_raw_data(previous_data)
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
 
         # retrieve init data
         init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
@@ -356,10 +357,18 @@ class WorldTidesInfoCustomSensor(Entity):
         MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
 
         # The vertical reference used : LAT, ...
-        attr["vertical_reference"] = tide_info.give_vertical_ref()
+        vertical_ref = tide_info.give_vertical_ref()
+        if vertical_ref.get("error") == None:
+            attr["vertical_reference"] = vertical_ref.get("vertical_ref")
+        else:
+            attr["vertical_reference"] = "No vertical ref"
 
         # Tide station characteristics
-        attr["tidal_station_used"] = tide_info.give_tidal_station_used()
+        tide_station_used = tide_info.give_tidal_station_used()
+        if tide_station_used.get("error") == None:
+            attr["tidal_station_used"] = tide_station_used.get("station")
+        else:
+            attr["tidal_station_used"] = "No Tide station used"
 
         # Next tide
         next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
@@ -376,40 +385,24 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_from_current_data_in_epoch = tide_info.give_next_tide_in_epoch(
-            current_time
-        )
-        previous_tide_from_current_data_in_epoch = (
-            tide_info.give_previous_tide_in_epoch(current_time)
-        )
-        # Tide from previous data in case of previous data not found
-        previous_tide_from_previous_data_in_epoch = (
-            previous_tide_info.give_previous_tide_in_epoch(current_time)
-        )
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
 
         # initialize data for delta time
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
         # compute delta tide to next tide
-        if next_tide_from_current_data_in_epoch.get("error") == None:
+        if next_tide_in_epoch.get("error") == None:
             delta_current_time_to_next = (
-                next_tide_from_current_data_in_epoch.get("tide_time") - current_time
+                next_tide_in_epoch.get("tide_time") - current_time
             )
 
         # compute delta time from previous tide
-        error_in_retrieve_previous_tide_info = False
-        if previous_tide_from_current_data_in_epoch.get("error") == None:
+        if previous_tide_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
-                current_time - previous_tide_from_current_data_in_epoch.get("tide_time")
+                current_time - previous_tide_in_epoch.get("tide_time")
             )
-        elif previous_tide_from_previous_data_in_epoch.get("error") == None:
-            delta_current_time_from_previous = (
-                current_time
-                - previous_tide_from_previous_data_in_epoch.get("tide_time")
-            )
-        else:
-            error_in_retrieve_previous_tide_info = True
 
         attr["time_to_next_tide"] = "(hours) {}".format(
             timedelta(seconds=delta_current_time_to_next)
@@ -423,10 +416,10 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # compute tide tendancy
         tide_tendancy = ""
-        if next_tide_from_current_data_in_epoch.get("tide_type") == "High":
+        if next_tide_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Up)"
-            elif error_in_retrieve_previous_tide_info == True:
+            elif previous_tide_in_epoch.get("error") != None:
                 # if the previous tide is not found, assume that
                 # we are not in slack
                 tide_tendancy = "Tides Up"
@@ -437,7 +430,7 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "Tides Slack (Down)"
-            elif error_in_retrieve_previous_tide_info == True:
+            elif previous_tide_in_epoch.get("error") != None:
                 # if the previous tide is not found, assume that
                 # we are not in slack
                 tide_tendancy = "Tides Down"
@@ -457,65 +450,59 @@ class WorldTidesInfoCustomSensor(Entity):
         attr["next_tide_amplitude"] = round(diff_next_high_tide_low_tide, ROUND_HEIGTH)
 
         # The next coeff tide_highlow_over the Mean Water Spring
-        attr["next_Coeff_resp_MWS"] = round(
-            (
-                diff_next_high_tide_low_tide
-                / (
-                    MWS_datum_offset.get("datum_offset_MHWS")
-                    - MWS_datum_offset.get("datum_offset_MLWS")
+        if MWS_datum_offset.get("error") == None:
+            attr["next_Coeff_resp_MWS"] = round(
+                (
+                    diff_next_high_tide_low_tide
+                    / (
+                        MWS_datum_offset.get("datum_offset_MHWS")
+                        - MWS_datum_offset.get("datum_offset_MLWS")
+                    )
                 )
+                * 100,
+                ROUND_COEFF,
             )
-            * 100,
-            ROUND_COEFF,
-        )
 
         # The height
         current_height_value = tide_info.give_current_height_in_UTC(current_time)
-        attr["current_height_utc"] = current_height_value.get("current_height_utc")
-        attr["current_height"] = round(
-            current_height_value.get("current_height") * convert_meter_to_feet,
-            ROUND_HEIGTH,
-        )
+        if current_height_value.get("error") == None:
+            attr["current_height_utc"] = current_height_value.get("current_height_utc")
+            attr["current_height"] = round(
+                current_height_value.get("current_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
 
         # Display the current amplitude
         current_tide_UTC = tide_info.give_current_high_low_tide_in_UTC(current_time)
-        current_tide_UTC_from_previous = (
-            previous_tide_info.give_current_high_low_tide_in_UTC(current_time)
-        )
         diff_current_high_tide_low_tide = 0
         if current_tide_UTC.get("error") == None:
             diff_current_high_tide_low_tide = abs(
                 current_tide_UTC.get("high_tide_height")
                 - current_tide_UTC.get("low_tide_height")
             )
-        elif current_tide_UTC_from_previous.get("error") == None:
-            diff_current_high_tide_low_tide = abs(
-                current_tide_UTC_from_previous.get("high_tide_height")
-                - current_tide_UTC_from_previous.get("low_tide_height")
-            )
         else:
             _LOGGER.debug(
-                "No previous data for {}: current data error : {} or previous data error : {}".format(
+                "No previous data for {}:  {}".format(
                     self._name,
                     current_tide_UTC.get("error"),
-                    current_tide_UTC_from_previous.get("error"),
                 )
             )
 
         attr["tide_amplitude"] = round(diff_current_high_tide_low_tide, ROUND_HEIGTH)
 
         # The coeff tide_highlow_over the Mean Water Spring
-        attr["Coeff_resp_MWS"] = round(
-            (
-                diff_current_high_tide_low_tide
-                / (
-                    MWS_datum_offset.get("datum_offset_MHWS")
-                    - MWS_datum_offset.get("datum_offset_MLWS")
+        if MWS_datum_offset.get("error") == None:
+            attr["Coeff_resp_MWS"] = round(
+                (
+                    diff_current_high_tide_low_tide
+                    / (
+                        MWS_datum_offset.get("datum_offset_MHWS")
+                        - MWS_datum_offset.get("datum_offset_MLWS")
+                    )
                 )
+                * 100,
+                ROUND_COEFF,
             )
-            * 100,
-            ROUND_COEFF,
-        )
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self.credit_used
@@ -556,12 +543,18 @@ class WorldTidesInfoCustomSensor(Entity):
             ROUND_STATION_DISTANCE,
         )
         station_around = init_tide_info.give_station_around_info()
-        attr["station_around_nb"] = station_around.get("station_around_nb")
-        attr["station_around_name"] = station_around.get("station_around_name")
+        if station_around.get("error") == None:
+            attr["station_around_nb"] = station_around.get("station_around_nb")
+            attr["station_around_name"] = station_around.get("station_around_name")
+        else:
+            attr["station_around_nb"] = 0
+            attr["station_around_name"] = "No Station"
 
-        attr[
-            "station_around_time_zone"
-        ] = init_tide_info.give_nearest_station_time_zone()
+        time_zone = init_tide_info.give_nearest_station_time_zone()
+        if time_zone.get("error") == None:
+            attr["station_around_time_zone"] = time_zone.get("time_zone")
+        else:
+            attr["station_around_time_zone"] = "No station time zone"
 
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
@@ -578,54 +571,39 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # retrieve tide data
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-        tide_info = give_info_from_raw_data(data)
         # retrieve previous tide data in case of error
         previous_data = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
         )
-        previous_tide_info = give_info_from_raw_data(previous_data)
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_from_current_data_in_epoch = tide_info.give_next_tide_in_epoch(
-            current_time
-        )
-        previous_tide_from_current_data_in_epoch = (
-            tide_info.give_previous_tide_in_epoch(current_time)
-        )
-        previous_tide_from_previous_data_in_epoch = (
-            previous_tide_info.give_previous_tide_in_epoch(current_time)
-        )
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
 
         # delta time to next tide and from previous tide are set to zero
         delta_current_time_to_next = 0
         delta_current_time_from_previous = 0
 
         # delta time to next tide
-        if next_tide_from_current_data_in_epoch.get("error") == None:
+        if next_tide_in_epoch.get("error") == None:
             delta_current_time_to_next = (
-                next_tide_from_current_data_in_epoch.get("tide_time") - current_time
+                next_tide_in_epoch.get("tide_time") - current_time
             )
 
         # delta time from previous tide
-        error_in_retrieve_previous_tide_info = False
-        if previous_tide_from_current_data_in_epoch.get("error") == None:
+        if previous_tide_in_epoch.get("error") == None:
             delta_current_time_from_previous = (
-                current_time - previous_tide_from_current_data_in_epoch.get("tide_time")
+                current_time - previous_tide_in_epoch.get("tide_time")
             )
-        elif previous_tide_from_previous_data_in_epoch.get("error") == None:
-            delta_current_time_from_previous = (
-                current_time
-                - previous_tide_from_previous_data_in_epoch.get("tide_time")
-            )
-        else:
-            error_in_retrieve_previous_tide_info = True
 
         # compute tide tendancy
         tide_tendancy = "mdi:shore"
-        if next_tide_from_current_data_in_epoch.get("tide_type") == "High":
+        if next_tide_in_epoch.get("tide_type") == "High":
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-up"
-            elif error_in_retrieve_previous_tide_info == True:
+            elif previous_tide_in_epoch.get("error") != None:
                 # if delta time from previous tide cannot be computed, assume that
                 # we are not in slack
                 tide_tendancy = "mdi:chevron-triple-up"
@@ -636,7 +614,7 @@ class WorldTidesInfoCustomSensor(Entity):
         else:
             if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
-            elif error_in_retrieve_previous_tide_info == True:
+            elif previous_tide_in_epoch.get("error") != None:
                 tide_tendancy = "mdi:chevron-triple-down"
             elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
                 tide_tendancy = "mdi:chevron-down"
@@ -770,13 +748,15 @@ class WorldTidesInfoCustomSensor(Entity):
             # process information
             tide_info = give_info_from_raw_data(data)
             datum_content = tide_info.give_datum()
-            if datum_content != None:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = (
-                    datum_content
+            if datum_content.get("error") == None:
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = datum_content.get(
+                    "datums"
                 )
             string_picture = tide_info.give_plot_picture_without_header()
-            if string_picture != None:
-                self._tide_picture_file.store_picture_base64(string_picture)
+            if string_picture.get("error") == None:
+                self._tide_picture_file.store_picture_base64(
+                    string_picture.get("image")
+                )
             else:
                 self._tide_picture_file.remove_previous_picturefile()
 
