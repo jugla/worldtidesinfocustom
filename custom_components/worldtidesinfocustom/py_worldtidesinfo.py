@@ -250,16 +250,20 @@ class give_info_from_raw_data:
         return self.give_tide_in_epoch(current_epoch_time, next_tide_flag)
 
     def give_vertical_ref(self):
-        if "responseDatum" in self._data:
-            return self._data["responseDatum"]
+        if self._data == None:
+            return { "error" : "no data"}
+        elif "responseDatum" in self._data:
+            return { "vertical_ref" : self._data["responseDatum"] }
         else:
-            return "no vertical ref"
+            return { "error" : "no vertical ref"}
 
     def give_tidal_station_used(self):
-        if "station" in self._data:
-            return self._data["station"]
+        if self._data == None:
+            return { "error" : "no data"}
+        elif "station" in self._data:
+            return { "station" : self._data["station"] }
         else:
-            return "no reference station used"
+            return { "error" : "no reference station used"}
 
     def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
         """give info from X seconds from epoch"""
@@ -318,6 +322,10 @@ class give_info_from_raw_data:
     def give_current_height_in_UTC(self, current_epoch_time):
         """give info from X seconds from epoch"""
         current_time = int(current_epoch_time)
+
+        if self._data == None:
+            return { "error" : "no data" }
+
         # The height
         current_height_index = 0
         for height_index in range(len(self._data["heights"])):
@@ -333,6 +341,9 @@ class give_info_from_raw_data:
 
     def give_station_around_info(self):
         """give tidal station around info"""
+        if self._data == None:
+            return {"error" : "no_data"}
+
         station_around_nb = len(self._data["stations"])
         station_around_name = ""
         if len(self._data["stations"]) > 0:
@@ -354,16 +365,16 @@ class give_info_from_raw_data:
     def give_nearest_station_time_zone(self):
         """give the nearest tide station time zone"""
         if len(self._data["stations"]) > 0:
-            station_around_time_zone = self._data["stations"][0]["timezone"]
+            station_around_time_zone = { "time_zone" : self._data["stations"][0]["timezone"]}
         else:
-            station_around_time_zone = "None"
+            station_around_time_zone = { "error" : "no station around" }
         return station_around_time_zone
 
     def give_datum(self):
         if "datums" in self._data:
-            return self._data["datums"]
+            return { "datums" : self._data["datums"]}
         else:
-            return None
+            return { "error" : "no_datums" }
 
     def give_plot_picture_without_header(self):
         """Give picture in base 64 without the format header"""
@@ -372,10 +383,9 @@ class give_info_from_raw_data:
             str_to_convert = self._data["plot"][
                 len(std_string) : len(self._data["plot"])
             ]
+            return { "image" : str_to_convert}
         else:
-            str_to_convert = None
-        return str_to_convert
-
+            return { "error" : "no_image"}
 
 class give_info_from_raw_datums_data:
     """Decode datum information"""
@@ -384,6 +394,8 @@ class give_info_from_raw_datums_data:
         self._datums_data = datums_data
 
     def give_mean_water_spring_datums_offset(self):
+        if self._datums_data == None:
+           return {"error" : "no data"}
         MHW_index = 0
         MLW_index = 0
         for ref_index in range(len(self._datums_data)):
@@ -398,3 +410,93 @@ class give_info_from_raw_datums_data:
             "datum_offset_MHWS": datum_offset_MHWS,
             "datum_offset_MLWS": datum_offset_MLWS,
         }
+
+
+class give_info_from_raw_data_N_and_N_1:
+    """Give a set of function to decode info from current or previous data"""
+
+    def __init__(self, data, previous_data):
+        self._info = give_info_from_raw_data(data)
+        self._previous_info = give_info_from_raw_data(previous_data)
+
+    def give_current_height_in_UTC(self, current_epoch_time):
+        result = self._info.give_current_height_in_UTC(current_epoch_time)
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_current_height_in_UTC(current_epoch_time)
+            return previous_result
+
+
+    def give_high_low_tide_in_UTC(self, current_epoch_time, next_tide_flag):
+        result = self._info.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
+            return previous_result
+
+    def give_next_high_low_tide_in_UTC(self, current_epoch_time):
+        next_tide_flag = True
+        return self.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
+
+    def give_current_high_low_tide_in_UTC(self, current_epoch_time):
+        next_tide_flag = False
+        return self.give_high_low_tide_in_UTC(current_epoch_time, next_tide_flag)
+
+    def give_tide_in_epoch(self, current_epoch_time, next_tide_flag):
+        result = self._info.give_tide_in_epoch(current_epoch_time, next_tide_flag)
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_tide_in_epoch(current_epoch_time, next_tide_flag)
+            return previous_result
+
+    def give_next_tide_in_epoch(self, current_epoch_time):
+        next_tide_flag = True
+        return self.give_tide_in_epoch(current_epoch_time, next_tide_flag)
+
+    def give_previous_tide_in_epoch(self, current_epoch_time):
+        next_tide_flag = False
+        return self.give_tide_in_epoch(current_epoch_time, next_tide_flag)
+
+    def give_vertical_ref(self):
+        result = self._info.give_vertical_ref()
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_vertical_ref()
+            return previous_result
+
+    def give_tidal_station_used(self):
+        result = self._info.give_tidal_station_used()
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_tidal_station_used()
+            return previous_result
+
+
+    def give_nearest_station_time_zone(self):
+        result = self._info.give_nearest_station_time_zone()
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_nearest_station_time_zone()
+            return previous_result
+
+    def give_datum(self):
+        result = self._info.give_datum()
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_datum()
+            return previous_result
+
+    def give_plot_picture_without_header(self):
+        result = self._info.give_plot_picture_without_header()
+        if result.get("error") == None:
+            return result
+        else:
+            previous_result = self._previous_info.give_plot_picture_without_header()
+            return previous_result
