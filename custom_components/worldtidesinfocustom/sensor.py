@@ -341,7 +341,7 @@ class WorldTidesInfoCustomSensor(Entity):
         previous_data = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
         )
-        #the decoder
+        # the decoder
         tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
 
         # retrieve init data
@@ -385,12 +385,8 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(
-            current_time
-        )
-        previous_tide_in_epoch = (
-            tide_info.give_previous_tide_in_epoch(current_time)
-        )
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
 
         # initialize data for delta time
         delta_current_time_to_next = 0
@@ -459,9 +455,9 @@ class WorldTidesInfoCustomSensor(Entity):
                 (
                     diff_next_high_tide_low_tide
                     / (
-                       MWS_datum_offset.get("datum_offset_MHWS")
-                       - MWS_datum_offset.get("datum_offset_MLWS")
-                   )
+                        MWS_datum_offset.get("datum_offset_MHWS")
+                        - MWS_datum_offset.get("datum_offset_MLWS")
+                    )
                 )
                 * 100,
                 ROUND_COEFF,
@@ -472,8 +468,8 @@ class WorldTidesInfoCustomSensor(Entity):
         if current_height_value.get("error") == None:
             attr["current_height_utc"] = current_height_value.get("current_height_utc")
             attr["current_height"] = round(
-               current_height_value.get("current_height") * convert_meter_to_feet,
-               ROUND_HEIGTH,
+                current_height_value.get("current_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
             )
 
         # Display the current amplitude
@@ -554,12 +550,11 @@ class WorldTidesInfoCustomSensor(Entity):
             attr["station_around_nb"] = 0
             attr["station_around_name"] = "No Station"
 
-
         time_zone = init_tide_info.give_nearest_station_time_zone()
         if time_zone.get("error") == None:
-           attr["station_around_time_zone"] = time_zone.get("time_zone")
+            attr["station_around_time_zone"] = time_zone.get("time_zone")
         else:
-           attr["station_around_time_zone"] = "No station time zone"
+            attr["station_around_time_zone"] = "No station time zone"
 
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
@@ -580,16 +575,12 @@ class WorldTidesInfoCustomSensor(Entity):
         previous_data = (
             self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
         )
-        #the decoder
+        # the decoder
         tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
 
         # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(
-            current_time
-        )
-        previous_tide_in_epoch = (
-            tide_info.give_previous_tide_in_epoch(current_time)
-        )
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
 
         # delta time to next tide and from previous tide are set to zero
         delta_current_time_to_next = 0
@@ -758,12 +749,14 @@ class WorldTidesInfoCustomSensor(Entity):
             tide_info = give_info_from_raw_data(data)
             datum_content = tide_info.give_datum()
             if datum_content.get("error") == None:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = (
-                    datum_content.get("datums")
+                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = datum_content.get(
+                    "datums"
                 )
             string_picture = tide_info.give_plot_picture_without_header()
             if string_picture.get("error") == None:
-                self._tide_picture_file.store_picture_base64(string_picture.get("image"))
+                self._tide_picture_file.store_picture_base64(
+                    string_picture.get("image")
+                )
             else:
                 self._tide_picture_file.remove_previous_picturefile()
 
