@@ -538,7 +538,7 @@ class WorldTidesInfoCustomSensor(Entity):
 
         # Tide detailed characteristic
         attr["station_distance"] = round(
-            self._worldtidesinfo_server_scheduler._Server_Parameter._tide_station_distance
+            (self._worldtidesinfo_server.give_parameter()).get_tide_station_distance()
             * convert_km_to_miles,
             ROUND_STATION_DISTANCE,
         )
@@ -559,8 +559,8 @@ class WorldTidesInfoCustomSensor(Entity):
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
         if self._show_on_map:
-            attr[ATTR_LATITUDE] = self._worldtidesinfo_server._Server_Parameter._lat
-            attr[ATTR_LONGITUDE] = self._worldtidesinfo_server._Server_Parameter._lon
+            attr[ATTR_LATITUDE] = (self._worldtidesinfo_server.give_parameter()).get_latitude()
+            attr[ATTR_LONGITUDE] = (self._worldtidesinfo_server.give_parameter()).get_longitude()
 
         return attr
 
@@ -644,10 +644,6 @@ class WorldTidesInfoCustomSensor(Entity):
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
-        # try:
-        #    await self.update()
-        # except:
-        #    _LOGGER.error("Sensor data no retrieve %s", self._name)
 
     def update(self):
         """Update of sensors."""
