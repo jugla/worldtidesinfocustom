@@ -559,8 +559,12 @@ class WorldTidesInfoCustomSensor(Entity):
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
         if self._show_on_map:
-            attr[ATTR_LATITUDE] = (self._worldtidesinfo_server.give_parameter()).get_latitude()
-            attr[ATTR_LONGITUDE] = (self._worldtidesinfo_server.give_parameter()).get_longitude()
+            attr[ATTR_LATITUDE] = (
+                self._worldtidesinfo_server.give_parameter()
+            ).get_latitude()
+            attr[ATTR_LONGITUDE] = (
+                self._worldtidesinfo_server.give_parameter()
+            ).get_longitude()
 
         return attr
 

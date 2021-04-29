@@ -58,8 +58,10 @@ class Server_Parameter:
 
     def get_latitude(self):
         return self._lat
+
     def get_longitude(self):
         return self._lon
+
     def get_tide_station_distance(self):
         return self._tide_station_distance
 
