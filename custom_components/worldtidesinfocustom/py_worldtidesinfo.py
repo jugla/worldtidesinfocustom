@@ -56,6 +56,15 @@ class Server_Parameter:
             result = False
         return result
 
+    def get_latitude(self):
+        return self._lat
+
+    def get_longitude(self):
+        return self._lon
+
+    def get_tide_station_distance(self):
+        return self._tide_station_distance
+
 
 class WorldTidesInfo_server:
     """Class to manage the Word Tide Info serer"""

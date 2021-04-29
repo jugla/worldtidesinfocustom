@@ -83,6 +83,9 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Retrieve = Data_Retrieve()
         self._Data_Scheduling = Data_Scheduling()
 
+    def give_parameter(self):
+        return self._Server_Parameter
+
     def no_data(self):
         return self._Data_Retrieve.data == None or self._Data_Retrieve.data == None
 
