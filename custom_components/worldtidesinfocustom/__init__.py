@@ -16,6 +16,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -39,7 +40,7 @@ from .const import (
     DEFAULT_VERTICAL_REF,
     DOMAIN,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
-    WWW_PATH
+    WWW_PATH,
 )
 
 PLATFORMS = ["sensor"]
@@ -173,5 +174,3 @@ async def async_remove_entry(hass, config_entry):
         os.remove(curve_filename)
     if os.path.isfile(persistent_data_filename):
         os.remove(persistent_data_filename)
-
-
