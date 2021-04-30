@@ -34,6 +34,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 _LOGGER = logging.getLogger(__name__)
 
 # Component Library
+from . import give_persistent_filename
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -110,15 +111,15 @@ def setup_sensor(
 ):
     """setup sensor with server, server scheduler in async or sync configuration"""
 
+    # prepare filename
+    filenames = give_persistent_filename(hass, name)
     # prepare the tide picture management
     tide_picture_file = File_Picture(
-        hass.config.path(WWW_PATH), hass.config.path(WWW_PATH, name + ".png")
+        hass.config.path(WWW_PATH), filenames.get("curve_filename")
     )
 
     tide_cache_file = File_Data_Cache(
-        hass.config.path(
-            STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
-        ),
+        filenames.get("persistent_data_filename"),
         key,
     )
 

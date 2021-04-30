@@ -14,7 +14,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 
 # component library
-from . import async_get_config_id
+from . import async_get_config_id, async_get_used_api_key
 from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
@@ -70,42 +70,91 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def config_standard_schema(self):
         """Return the data schema for the cloud API."""
-        return BASIC_DATA_SCHEMA.extend(
-            {
-                vol.Required(
-                    CONF_LATITUDE, default=self.hass.config.latitude
-                ): cv.latitude,
-                vol.Required(
-                    CONF_LONGITUDE, default=self.hass.config.longitude
-                ): cv.longitude,
-            }
-        )
+        if async_get_used_api_key(self.hass) == None:
+            return BASIC_DATA_SCHEMA.extend(
+                {
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                }
+            )
+        else:
+            return vol.Schema(
+                {
+                    vol.Required(CONF_NAME): cv.string,
+                    vol.Required(
+                        CONF_API_KEY, default=async_get_used_api_key(self.hass)
+                    ): cv.string,
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                }
+            )
 
     def config_expert_schema(self):
         """Return the data schema for the cloud API."""
-        return BASIC_DATA_SCHEMA.extend(
-            {
-                vol.Required(
-                    CONF_LATITUDE, default=self.hass.config.latitude
-                ): cv.latitude,
-                vol.Required(
-                    CONF_LONGITUDE, default=self.hass.config.longitude
-                ): cv.longitude,
-                vol.Optional(CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF): vol.In(
-                    CONF_VERTICAL_REF_TYPES
-                ),
-                vol.Optional(
-                    CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
-                ): cv.positive_int,
-                vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
-                vol.Optional(
-                    CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
-                ): cv.string,
-                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
-                    CONF_UNIT_TYPES
-                ),
-            }
-        )
+        if async_get_used_api_key(self.hass) == None:
+            return BASIC_DATA_SCHEMA.extend(
+                {
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                    vol.Optional(
+                        CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
+                    ): vol.In(CONF_VERTICAL_REF_TYPES),
+                    vol.Optional(
+                        CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
+                    ): cv.string,
+                    vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
+                        CONF_UNIT_TYPES
+                    ),
+                }
+            )
+        else:
+            return vol.Schema(
+                {
+                    vol.Required(CONF_NAME): cv.string,
+                    vol.Required(
+                        CONF_API_KEY, default=async_get_used_api_key(self.hass)
+                    ): cv.string,
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                    vol.Optional(
+                        CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
+                    ): vol.In(CONF_VERTICAL_REF_TYPES),
+                    vol.Optional(
+                        CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
+                    ): cv.string,
+                    vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
+                        CONF_UNIT_TYPES
+                    ),
+                }
+            )
 
     async def _async_finish_config_definition(self, user_input, integration_type):
         """Validate a Cloud API key."""

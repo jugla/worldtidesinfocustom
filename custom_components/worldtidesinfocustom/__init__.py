@@ -70,6 +70,16 @@ def async_get_config_id(config_dict):
     )
 
 
+@callback
+def async_get_used_api_key(hass):
+    """Get all DataUpdateCoordinator objects related to a particular API key."""
+    for entry_id, coordinator in hass.data[DOMAIN][DATA_COORDINATOR].items():
+        config_entry = hass.config_entries.async_get_entry(entry_id)
+        if config_entry.data.get(CONF_API_KEY) != None:
+            return config_entry.data.get(CONF_API_KEY)
+    return None
+
+
 async def async_setup(hass, config):
     """Set up the World Tide Custom component."""
     hass.data[DOMAIN] = {DATA_COORDINATOR: {}, DATA_LISTENER: {}}
@@ -156,6 +166,20 @@ async def async_reload_entry(hass, config_entry):
     await hass.config_entries.async_reload(config_entry.entry_id)
 
 
+def give_persistent_filename(hass, name):
+    """give persistent data filename"""
+    curve_filename = hass.config.path(WWW_PATH, name + ".png")
+
+    persistent_data_filename = hass.config.path(
+        STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
+    )
+
+    return {
+        "curve_filename": curve_filename,
+        "persistent_data_filename": persistent_data_filename,
+    }
+
+
 async def async_remove_entry(hass, config_entry):
     """Handle removal of an entry."""
 
@@ -163,13 +187,9 @@ async def async_remove_entry(hass, config_entry):
     config = config_entry.data
     name = config.get(CONF_NAME)
 
-    curve_filename = hass.config.path(WWW_PATH, name + ".png")
+    filenames = give_persistent_filename(hass, name)
 
-    persistent_data_filename = hass.config.path(
-        STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
-    )
-
-    if os.path.isfile(curve_filename):
-        os.remove(curve_filename)
-    if os.path.isfile(persistent_data_filename):
-        os.remove(persistent_data_filename)
+    if os.path.isfile(filenames.get("curve_filename")):
+        os.remove(filenames.get("curve_filename"))
+    if os.path.isfile(filenames.get("persistent_data_filename")):
+        os.remove(filenames.get("persistent_data_filename"))
