@@ -2,6 +2,7 @@
 
 # python library
 import asyncio
+import os
 
 # HA python
 from homeassistant.config_entries import SOURCE_REAUTH
@@ -10,6 +11,7 @@ from homeassistant.const import (
     CONF_API_KEY,
     CONF_LATITUDE,
     CONF_LONGITUDE,
+    CONF_NAME,
     CONF_SHOW_ON_MAP,
 )
 from homeassistant.core import callback
@@ -19,6 +21,7 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed,
 )
+from homeassistant.helpers.storage import STORAGE_DIR
 
 # internal library
 from .const import (
@@ -35,6 +38,8 @@ from .const import (
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DOMAIN,
+    WORLD_TIDES_INFO_CUSTOM_DOMAIN,
+    WWW_PATH
 )
 
 PLATFORMS = ["sensor"]
@@ -149,3 +154,24 @@ async def async_unload_entry(hass, config_entry):
 async def async_reload_entry(hass, config_entry):
     """Handle an options update."""
     await hass.config_entries.async_reload(config_entry.entry_id)
+
+
+async def async_remove_entry(hass, config_entry):
+    """Handle removal of an entry."""
+
+    # remove persistent data
+    config = config_entry.data
+    name = config.get(CONF_NAME)
+
+    curve_filename = hass.config.path(WWW_PATH, name + ".png")
+
+    persistent_data_filename = hass.config.path(
+        STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
+    )
+
+    if os.path.isfile(curve_filename):
+        os.remove(curve_filename)
+    if os.path.isfile(persistent_data_filename):
+        os.remove(persistent_data_filename)
+
+
