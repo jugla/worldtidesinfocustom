@@ -72,7 +72,7 @@ def async_get_config_id(config_dict):
 
 @callback
 def async_get_used_api_key(hass):
-    """Get all DataUpdateCoordinator objects related to a particular API key."""
+    """Go through coordinator to find a used API key."""
     for entry_id, coordinator in hass.data[DOMAIN][DATA_COORDINATOR].items():
         config_entry = hass.config_entries.async_get_entry(entry_id)
         if config_entry.data.get(CONF_API_KEY) != None:
