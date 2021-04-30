@@ -166,7 +166,7 @@ async def async_reload_entry(hass, config_entry):
     await hass.config_entries.async_reload(config_entry.entry_id)
 
 
-def give_persistent_filename (hass, name):
+def give_persistent_filename(hass, name):
     """give persistent data filename"""
     curve_filename = hass.config.path(WWW_PATH, name + ".png")
 
@@ -174,8 +174,9 @@ def give_persistent_filename (hass, name):
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
     )
 
-    return { "curve_filename" : curve_filename,
-             "persistent_data_filename" : persistent_data_filename
+    return {
+        "curve_filename": curve_filename,
+        "persistent_data_filename": persistent_data_filename,
     }
 
 

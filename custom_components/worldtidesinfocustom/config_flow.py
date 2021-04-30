@@ -85,7 +85,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return vol.Schema(
                 {
                     vol.Required(CONF_NAME): cv.string,
-                    vol.Required(CONF_API_KEY, default=async_get_used_api_key(self.hass)): cv.string,
+                    vol.Required(
+                        CONF_API_KEY, default=async_get_used_api_key(self.hass)
+                    ): cv.string,
                     vol.Required(
                         CONF_LATITUDE, default=self.hass.config.latitude
                     ): cv.latitude,
@@ -99,46 +101,52 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Return the data schema for the cloud API."""
         if async_get_used_api_key(self.hass) == None:
             return BASIC_DATA_SCHEMA.extend(
-             {
-                vol.Required(
-                    CONF_LATITUDE, default=self.hass.config.latitude
-                ): cv.latitude,
-                vol.Required(
-                    CONF_LONGITUDE, default=self.hass.config.longitude
-                ): cv.longitude,
-                vol.Optional(CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF): vol.In(
-                    CONF_VERTICAL_REF_TYPES
-                ),
-                vol.Optional(
-                    CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
-                ): cv.positive_int,
-                vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
-                vol.Optional(
-                    CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
-                ): cv.string,
-                vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
-                    CONF_UNIT_TYPES
-                ),
-             }
-            )
-        else:
-            return vol.Schema(
                 {
-                    vol.Required(CONF_NAME): cv.string,
-                    vol.Required(CONF_API_KEY, default=async_get_used_api_key(self.hass)): cv.string,
                     vol.Required(
                         CONF_LATITUDE, default=self.hass.config.latitude
                     ): cv.latitude,
                     vol.Required(
                         CONF_LONGITUDE, default=self.hass.config.longitude
                     ): cv.longitude,
-                    vol.Optional(CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF): vol.In(
-                        CONF_VERTICAL_REF_TYPES
-                    ),
+                    vol.Optional(
+                        CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
+                    ): vol.In(CONF_VERTICAL_REF_TYPES),
                     vol.Optional(
                         CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
                     ): cv.positive_int,
-                    vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
+                    vol.Optional(
+                        CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
+                    ): cv.string,
+                    vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
+                        CONF_UNIT_TYPES
+                    ),
+                }
+            )
+        else:
+            return vol.Schema(
+                {
+                    vol.Required(CONF_NAME): cv.string,
+                    vol.Required(
+                        CONF_API_KEY, default=async_get_used_api_key(self.hass)
+                    ): cv.string,
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                    vol.Optional(
+                        CONF_VERTICAL_REF, default=DEFAULT_VERTICAL_REF
+                    ): vol.In(CONF_VERTICAL_REF_TYPES),
+                    vol.Optional(
+                        CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
+                    ): cv.string,
                     vol.Optional(
                         CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND
                     ): cv.string,

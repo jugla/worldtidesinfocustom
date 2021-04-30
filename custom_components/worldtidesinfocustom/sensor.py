@@ -35,7 +35,6 @@ _LOGGER = logging.getLogger(__name__)
 
 # Component Library
 from . import give_persistent_filename
-
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
