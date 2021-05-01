@@ -1,6 +1,9 @@
 """Sensor worldtides.info."""
 # Python library
 import logging
+
+_LOGGER = logging.getLogger(__name__)
+
 import time
 from datetime import datetime, timedelta
 
@@ -23,7 +26,6 @@ from homeassistant.const import (
     LENGTH_MILES,
 )
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.util.distance import convert as dist_convert
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
@@ -31,7 +33,6 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
-_LOGGER = logging.getLogger(__name__)
 
 # Component Library
 from . import give_persistent_filename
@@ -60,20 +61,19 @@ from .const import (
     ROUND_STATION_DISTANCE,
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
-    WWW_PATH,
 )
 
 # import .storage_mngt
 from .py_worldtidesinfo import (
-    PLOT_CURVE_UNIT_FT,
-    PLOT_CURVE_UNIT_M,
-    WorldTidesInfo_server,
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
+
+# WorlTidesDataCoordinator
+from .worldtides_data_coordinator import WordTide_Data_Coordinator
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -111,43 +111,17 @@ def setup_sensor(
 ):
     """setup sensor with server, server scheduler in async or sync configuration"""
 
-    # prepare filename
-    filenames = give_persistent_filename(hass, name)
-    # prepare the tide picture management
-    tide_picture_file = File_Picture(
-        hass.config.path(WWW_PATH), filenames.get("curve_filename")
-    )
-
-    tide_cache_file = File_Data_Cache(
-        filenames.get("persistent_data_filename"),
-        key,
-    )
-
-    # unit used for display, and convert tide station distance
-    if unit_to_display == IMPERIAL_CONF_UNIT:
-        server_tide_station_distance = tide_station_distance * KM_PER_MI
-        unit_curve_picture = PLOT_CURVE_UNIT_FT
-    else:
-        server_tide_station_distance = tide_station_distance
-        unit_curve_picture = PLOT_CURVE_UNIT_M
-
-    # instanciate server front end
-    worldtidesinfo_server = WorldTidesInfo_server(
-        key,
+    worldtide_data_coordinator = WordTide_Data_Coordinator(
+        hass,
+        name,
         lat,
         lon,
+        key,
         vertical_ref,
-        server_tide_station_distance,
         plot_color,
         plot_background,
-        unit_curve_picture,
-    )
-    worldtidesinfo_server_parameter = worldtidesinfo_server.give_parameter()
-
-    # instantiate scheduler front end
-    worldtidesinfo_server_scheduler = WorldTidesInfo_server_scheduler(
-        key,
-        worldtidesinfo_server_parameter,
+        tide_station_distance,
+        unit_to_display,
     )
 
     # create the sensor
@@ -156,10 +130,7 @@ def setup_sensor(
         name,
         unit_to_display,
         show_on_map,
-        tide_picture_file,
-        tide_cache_file,
-        worldtidesinfo_server,
-        worldtidesinfo_server_scheduler,
+        worldtide_data_coordinator,
     )
 
     return tides
@@ -209,7 +180,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     )
 
     tides.update()
-    if tides._worldtidesinfo_server_scheduler.no_data():
+    if tides._worldtide_data_coordinator.no_data():
         _LOGGER.error(f"No data available for this location: {name}")
         return
 
@@ -268,11 +239,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
     await tides.async_update()
 
-    if tides._worldtidesinfo_server_scheduler.no_data():
+    if tides._worldtide_data_coordinator.no_data():
         _LOGGER.error(f"No data available for this location: {name}")
         return
 
-    async_add_entities([tides], True)
+    async_add_entities([tides])
 
 
 class WorldTidesInfoCustomSensor(Entity):
@@ -284,10 +255,7 @@ class WorldTidesInfoCustomSensor(Entity):
         name,
         unit_to_display,
         show_on_map,
-        tide_picture_file,
-        tide_cache_file,
-        worldtidesinfo_server,
-        worldtidesinfo_server_scheduler,
+        worldtide_data_coordinator,
     ):
         """Initialize the sensor."""
 
@@ -297,19 +265,8 @@ class WorldTidesInfoCustomSensor(Entity):
         self._unit_to_display = unit_to_display
         self._show_on_map = show_on_map
 
-        # Picture data
-        self._tide_picture_file = tide_picture_file
-
-        # World Tide Info Server
-        self._worldtidesinfo_server = worldtidesinfo_server
-        # the scheduler
-        self._worldtidesinfo_server_scheduler = worldtidesinfo_server_scheduler
-        # set first trigger of scheduler
-        self._worldtidesinfo_server_scheduler.setup_next_midnights()
-        # Initialize the data to store
-        self._tide_cache_file = tide_cache_file
-
-        self.credit_used = 0
+        # DATA
+        self._worldtide_data_coordinator = worldtide_data_coordinator
 
     @property
     def name(self):
@@ -333,25 +290,21 @@ class WorldTidesInfoCustomSensor(Entity):
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
 
-        if self._worldtidesinfo_server_scheduler.no_data():
+        if self._worldtide_data_coordinator.no_data():
             return attr
 
-        # retrieve tide data
-        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-        # retrieve previous tide data in case
-        previous_data = (
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
-        )
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+        init_data = data_result.get("init_data")
+        data_datums_offset = data_result.get("data_datums_offset")
+
         # the decoder
         tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
-
         # retrieve init data
-        init_data = self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data
         init_tide_info = give_info_from_raw_data(init_data)
         # retrieve the datum
-        data_datums_offset = (
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
-        )
         datums_info = give_info_from_raw_datums_data(data_datums_offset)
 
         # compute the Mean Water Spring offset
@@ -506,40 +459,35 @@ class WorldTidesInfoCustomSensor(Entity):
             )
 
         # The credit used to display the update
-        attr["CreditCallUsed"] = self.credit_used
+        attr["CreditCallUsed"] = self._worldtide_data_coordinator.get_credit_used()
 
+        schedule_time_result = self._worldtide_data_coordinator.get_schedule_time()
         # Time where are trigerred the request
         attr["Data_request_time"] = time.strftime(
             "%H:%M:%S %d/%m/%y",
-            time.localtime(
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time
-            ),
+            time.localtime(schedule_time_result.get("data_request_time")),
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
             attr["Init_data_request_time"] = time.strftime(
                 "%H:%M:%S %d/%m/%y",
-                time.localtime(
-                    self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time
-                ),
+                time.localtime(schedule_time_result.get("init_data_request_time")),
             )
-            attr[
-                "next day midnight"
-            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight.strftime(
-                "%H:%M:%S %d/%m/%y"
-            )
-            attr[
-                "next month midnight"
-            ] = self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight.strftime(
-                "%H:%M:%S %d/%m/%y"
-            )
+            attr["next day midnight"] = (
+                schedule_time_result.get("next_day_midnight")
+            ).strftime("%H:%M:%S %d/%m/%y")
+            attr["next month midnight"] = (
+                schedule_time_result.get("next_month_midnight")
+            ).strftime("%H:%M:%S %d/%m/%y")
 
         # Filename of tide picture
-        attr["plot"] = self._tide_picture_file.full_filename()
+        attr["plot"] = self._worldtide_data_coordinator.get_curve_filename()
 
         # Tide detailed characteristic
         attr["station_distance"] = round(
-            (self._worldtidesinfo_server.give_parameter()).get_tide_station_distance()
+            (
+                self._worldtide_data_coordinator.get_server_parameter()
+            ).get_tide_station_distance()
             * convert_km_to_miles,
             ROUND_STATION_DISTANCE,
         )
@@ -561,10 +509,10 @@ class WorldTidesInfoCustomSensor(Entity):
         # in the entity attributes with "latitude" and "longitude" as the keys.
         if self._show_on_map:
             attr[ATTR_LATITUDE] = (
-                self._worldtidesinfo_server.give_parameter()
+                self._worldtide_data_coordinator.get_server_parameter()
             ).get_latitude()
             attr[ATTR_LONGITUDE] = (
-                self._worldtidesinfo_server.give_parameter()
+                self._worldtide_data_coordinator.get_server_parameter()
             ).get_longitude()
 
         return attr
@@ -575,11 +523,9 @@ class WorldTidesInfoCustomSensor(Entity):
         current_time = time.time()
 
         # retrieve tide data
-        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-        # retrieve previous tide data in case of error
-        previous_data = (
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data
-        )
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
         # the decoder
         tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
 
@@ -630,7 +576,9 @@ class WorldTidesInfoCustomSensor(Entity):
     @property
     def state(self):
         """Return the state of the device."""
-        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+        # retrieve tide data
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
         if data:
             tide_info = give_info_from_raw_data(data)
             # Get next tide time
@@ -653,116 +601,4 @@ class WorldTidesInfoCustomSensor(Entity):
     def update(self):
         """Update of sensors."""
         _LOGGER.debug("Sync Update Tides sensor %s", self._name)
-        init_data_fetched = False
-
-        self.credit_used = 0
-        current_time = time.time()
-
-        # Init data (initialisation or refresh or retrieve from a file)
-        if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
-            if self._tide_cache_file.Fetch_Stored_Data():
-                SchedulerSnapshot = self._tide_cache_file.Data_Read()
-                _LOGGER.debug("Snpashot retrieved data file at: %s ", int(current_time))
-                if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(
-                    SchedulerSnapshot
-                ):
-                    _LOGGER.debug(
-                        "Snpashot decoding data file at: %s ", int(current_time)
-                    )
-                    self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(
-                        SchedulerSnapshot
-                    )
-                else:
-                    _LOGGER.debug(
-                        "Error in decoding data file at: %s", int(current_time)
-                    )
-
-        # the data read is empty (the snapshot retrieve is not useable) or too old
-        if (
-            self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
-            == True
-        ):
-            # Retrieve station from server
-            self.retrieve_tide_station()
-            self._worldtidesinfo_server_scheduler.setup_next_init_data_midnight()
-            init_data_fetched = True
-
-        # Update: normal process
-        if self._worldtidesinfo_server_scheduler.data_to_be_fetched(
-            init_data_fetched, current_time
-        ):
-            self.retrieve_height_station(init_data_fetched)
-            self._worldtidesinfo_server_scheduler.setup_next_data_midnight()
-            self._tide_cache_file.store_data(
-                self._worldtidesinfo_server_scheduler.give_scheduler_image()
-            )
-        else:
-            _LOGGER.debug(
-                "Tide data not need to be requeried at: %s", int(current_time)
-            )
-
-    def retrieve_tide_station(self):
-        """TIDE STATION : Get the latest data from WorldTidesInfo."""
-        if self._worldtidesinfo_server.retrieve_tide_station():
-            _LOGGER.debug(
-                "Init data queried at: %s",
-                self._worldtidesinfo_server.retrieve_tide_station_request_time,
-            )
-            self.credit_used = (
-                self.credit_used
-                + self._worldtidesinfo_server.retrieve_tide_station_credit()
-            )
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data = (
-                self._worldtidesinfo_server.retrieve_tide_station_raw_data()
-            )
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time = (
-                self._worldtidesinfo_server.retrieve_tide_station_request_time()
-            )
-        else:
-            _LOGGER.error(
-                "Error retrieving data from WorldTidesInfo: %s",
-                self._worldtidesinfo_server.retrieve_tide_station_err_value,
-            )
-
-    def retrieve_height_station(self, init_data_fetched):
-        """HEIGTH : Get the latest data from WorldTidesInfo."""
-        data = None
-        datum_flag = (
-            self._worldtidesinfo_server_scheduler.no_datum()
-            or init_data_fetched == True
-        )
-        if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
-            _LOGGER.debug(
-                "Data queried at: %s",
-                self._worldtidesinfo_server.retrieve_tide_request_time,
-            )
-            # update store data
-            data = self._worldtidesinfo_server.retrieve_tide_raw_data()
-            self._worldtidesinfo_server_scheduler.store_new_data(
-                data, self._worldtidesinfo_server.retrieve_tide_request_time()
-            )
-
-            self.credit_used = (
-                self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
-            )
-
-            # process information
-            tide_info = give_info_from_raw_data(data)
-            datum_content = tide_info.give_datum()
-            if datum_content.get("error") == None:
-                self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = datum_content.get(
-                    "datums"
-                )
-            string_picture = tide_info.give_plot_picture_without_header()
-            if string_picture.get("error") == None:
-                self._tide_picture_file.store_picture_base64(
-                    string_picture.get("image")
-                )
-            else:
-                self._tide_picture_file.remove_previous_picturefile()
-
-        else:
-            _LOGGER.error(
-                "Error retrieving data from WorldTidesInfo: %s",
-                self._worldtidesinfo_server.retrieve_tide_err_value,
-            )
+        self._worldtide_data_coordinator.update_server_data()
