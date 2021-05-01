@@ -1,6 +1,7 @@
 """Sensor worldtides.info."""
 # Python library
 import logging
+
 _LOGGER = logging.getLogger(__name__)
 
 import time
@@ -71,7 +72,7 @@ from .py_worldtidesinfo import (
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
-#WorlTidesDataCoordinator
+# WorlTidesDataCoordinator
 from .worldtides_data_coordinator import WordTide_Data_Coordinator
 
 # Sensor HA parameter
@@ -464,33 +465,29 @@ class WorldTidesInfoCustomSensor(Entity):
         # Time where are trigerred the request
         attr["Data_request_time"] = time.strftime(
             "%H:%M:%S %d/%m/%y",
-            time.localtime(schedule_time_result.get("data_request_time")
-            ),
+            time.localtime(schedule_time_result.get("data_request_time")),
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
             attr["Init_data_request_time"] = time.strftime(
                 "%H:%M:%S %d/%m/%y",
-                time.localtime(schedule_time_result.get("init_data_request_time")
-                ),
+                time.localtime(schedule_time_result.get("init_data_request_time")),
             )
-            attr[
-                "next day midnight"
-            ] = (schedule_time_result.get("next_day_midnight")).strftime(
-                "%H:%M:%S %d/%m/%y"
-            )
-            attr[
-                "next month midnight"
-            ] = (schedule_time_result.get("next_month_midnight")).strftime(
-                "%H:%M:%S %d/%m/%y"
-            )
+            attr["next day midnight"] = (
+                schedule_time_result.get("next_day_midnight")
+            ).strftime("%H:%M:%S %d/%m/%y")
+            attr["next month midnight"] = (
+                schedule_time_result.get("next_month_midnight")
+            ).strftime("%H:%M:%S %d/%m/%y")
 
         # Filename of tide picture
         attr["plot"] = self._worldtide_data_coordinator.get_curve_filename()
 
         # Tide detailed characteristic
         attr["station_distance"] = round(
-            (self._worldtide_data_coordinator.get_server_parameter()).get_tide_station_distance()
+            (
+                self._worldtide_data_coordinator.get_server_parameter()
+            ).get_tide_station_distance()
             * convert_km_to_miles,
             ROUND_STATION_DISTANCE,
         )
@@ -605,4 +602,3 @@ class WorldTidesInfoCustomSensor(Entity):
         """Update of sensors."""
         _LOGGER.debug("Sync Update Tides sensor %s", self._name)
         self._worldtide_data_coordinator.update_server_data()
-

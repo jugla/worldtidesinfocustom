@@ -1,36 +1,30 @@
 """Data Coordinator."""
 # Python library
 import logging
+
 _LOGGER = logging.getLogger(__name__)
 
 import time
 from datetime import datetime, timedelta
 
-
 # HA library
-from homeassistant.util.distance import convert as dist_convert
-from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 from homeassistant.const import (
     LENGTH_FEET,
     LENGTH_KILOMETERS,
     LENGTH_METERS,
     LENGTH_MILES,
 )
+from homeassistant.util.distance import convert as dist_convert
+from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 
-
 # Component library
 from . import give_persistent_filename
-
-from .const import (
-    IMPERIAL_CONF_UNIT,
-    WWW_PATH,
-)
-
+from .const import IMPERIAL_CONF_UNIT, WWW_PATH
 from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
@@ -41,6 +35,7 @@ from .py_worldtidesinfo import (
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
+
 
 class WordTide_Data_Coordinator:
     """End Point to Fetch Data and to maintain cache"""
@@ -57,7 +52,7 @@ class WordTide_Data_Coordinator:
         plot_background,
         tide_station_distance,
         unit_to_display,
-        ):
+    ):
 
         ### Self
         self._tide_picture_file = None
@@ -65,7 +60,6 @@ class WordTide_Data_Coordinator:
         self._worldtidesinfo_server = None
         self._worldtidesinfo_server_scheduler = None
         self._credit_used = 0
-
 
         # prepare filename
         filenames = give_persistent_filename(hass, name)
@@ -76,7 +70,6 @@ class WordTide_Data_Coordinator:
             hass.config.path(WWW_PATH), filenames.get("curve_filename")
         )
         self._tide_picture_file = tide_picture_file
-
 
         ### Self
         # prepare persistent file management
@@ -112,8 +105,8 @@ class WordTide_Data_Coordinator:
 
         # instantiate scheduler front end
         worldtidesinfo_server_scheduler = WorldTidesInfo_server_scheduler(
-           key,
-           worldtidesinfo_server_parameter,
+            key,
+            worldtidesinfo_server_parameter,
         )
 
         ### Self
@@ -128,22 +121,21 @@ class WordTide_Data_Coordinator:
 
     def get_data(self):
         return {
-           "current_data" : self._worldtidesinfo_server_scheduler._Data_Retrieve.data,
-           "previous_data" : self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data,
-           "init_data" : self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data,
-           "data_datums_offset" : self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset
+            "current_data": self._worldtidesinfo_server_scheduler._Data_Retrieve.data,
+            "previous_data": self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data,
+            "init_data": self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data,
+            "data_datums_offset": self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset,
         }
 
     def get_credit_used(self):
         return self._credit_used
 
-
     def get_schedule_time(self):
         return {
-           "data_request_time" : self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
-           "init_data_request_time" : self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time,
-           "next_day_midnight" : self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight,
-           "next_month_midnight" : self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight
+            "data_request_time": self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
+            "init_data_request_time": self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time,
+            "next_day_midnight": self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight,
+            "next_month_midnight": self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight,
         }
 
     def get_curve_filename(self):
@@ -151,8 +143,6 @@ class WordTide_Data_Coordinator:
 
     def get_server_parameter(self):
         return self._worldtidesinfo_server.give_parameter()
-
-
 
     def _retrieve_tide_station(self):
         """TIDE STATION : Get the latest data from WorldTidesInfo."""
@@ -176,7 +166,6 @@ class WordTide_Data_Coordinator:
                 "Error retrieving data from WorldTidesInfo: %s",
                 self._worldtidesinfo_server.retrieve_tide_station_err_value,
             )
-
 
     def _retrieve_height_station(self, init_data_fetched):
         """HEIGTH : Get the latest data from WorldTidesInfo."""
@@ -220,9 +209,6 @@ class WordTide_Data_Coordinator:
                 "Error retrieving data from WorldTidesInfo: %s",
                 self._worldtidesinfo_server.retrieve_tide_err_value,
             )
-
-
-
 
     def update_server_data(self):
         init_data_fetched = False
@@ -272,4 +258,3 @@ class WordTide_Data_Coordinator:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
             )
-
