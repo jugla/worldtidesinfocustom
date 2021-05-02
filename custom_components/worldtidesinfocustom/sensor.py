@@ -134,7 +134,14 @@ def setup_sensor(
     )
 
     # create height
-    tides_height = WorldTidesInfoCustomSensorHeight(
+    tides_current_height = WorldTidesInfoCustomSensorCurrentHeight(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+    tides_next_low_tide_height = WorldTidesInfoCustomSensorNextLowTideHeight(
         hass,
         name,
         unit_to_display,
@@ -142,8 +149,20 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
+    tides_next_high_tide_height = WorldTidesInfoCustomSensorNextHighTideHeight(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
 
-    return [tides, tides_height]
+    return [
+        tides,
+        tides_current_height,
+        tides_next_low_tide_height,
+        tides_next_high_tide_height,
+    ]
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -259,7 +278,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(tides_sensors)
 
 
-class WorldTidesInfoCustomSensorHeight(Entity):
+class WorldTidesInfoCustomSensorGeneric(Entity):
     """Representation of a WorldTidesInfo sensor."""
 
     def __init__(
@@ -281,57 +300,9 @@ class WorldTidesInfoCustomSensorHeight(Entity):
         # DATA
         self._worldtide_data_coordinator = worldtide_data_coordinator
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name + "height"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit the value is expressed in."""
-        if self._unit_to_display == IMPERIAL_CONF_UNIT:
-            return "ft"
-        else:
-            return "m"
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes of this device."""
-        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
-
-        current_time = time.time()
-
-        if self._unit_to_display == IMPERIAL_CONF_UNIT:
-            convert_meter_to_feet = FT_PER_M
-            convert_km_to_miles = MI_PER_KM
-        else:
-            convert_meter_to_feet = 1
-            convert_km_to_miles = 1
-
-        # Unit system
-        attr["Unit displayed"] = self._unit_to_display
-
-        if self._worldtide_data_coordinator.no_data():
-            return attr
-
-        # retrieve tide data (current & previous)
-        data_result = self._worldtide_data_coordinator.get_data()
-        data = data_result.get("current_data")
-        previous_data = data_result.get("previous_data")
-
-        # the decoder
-        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
-
-        # The height
-        current_height_value = tide_info.give_current_height_in_UTC(current_time)
-        if current_height_value.get("error") == None:
-            attr["current_height_utc"] = current_height_value.get("current_height_utc")
-            attr["current_height"] = round(
-                current_height_value.get("current_height") * convert_meter_to_feet,
-                ROUND_HEIGTH,
-            )
-
-        return attr
+    # Name : to be defined by class
+    # unit_of_measurement : to be defined by class
+    # device_state_attributes : to be defined by class
 
     @property
     def icon(self):
@@ -389,6 +360,75 @@ class WorldTidesInfoCustomSensorHeight(Entity):
                 tide_tendancy = "mdi:chevron-triple-down"
         return tide_tendancy
 
+    # state : to be defined by class
+
+    async def async_update(self):
+        """Fetch new state data for this sensor."""
+        _LOGGER.debug("Async Update Tides sensor %s", self._name)
+        ##Watch Out : only method name is given to function i.e. without ()
+        await self._hass.async_add_executor_job(self.update)
+
+    def update(self):
+        """Update of sensors."""
+        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
+        self._worldtide_data_coordinator.update_server_data()
+
+
+class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_current_tide_height"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            return "ft"
+        else:
+            return "m"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # The height
+        current_height_value = tide_info.give_current_height_in_UTC(current_time)
+        if current_height_value.get("error") == None:
+            attr["current_height_utc"] = current_height_value.get("current_height_utc")
+            attr["current_height"] = round(
+                current_height_value.get("current_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return attr
+
     @property
     def state(self):
         """Return the state of the device."""
@@ -426,39 +466,199 @@ class WorldTidesInfoCustomSensorHeight(Entity):
 
         return state_value
 
-    async def async_update(self):
-        """Fetch new state data for this sensor."""
-        _LOGGER.debug("Async Update Tides sensor %s", self._name)
-        ##Watch Out : only method name is given to function i.e. without ()
-        await self._hass.async_add_executor_job(self.update)
 
-    def update(self):
-        """Update of sensors."""
-        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
-        self._worldtide_data_coordinator.update_server_data()
-
-
-class WorldTidesInfoCustomSensor(Entity):
+class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
-    def __init__(
-        self,
-        hass,
-        name,
-        unit_to_display,
-        show_on_map,
-        worldtide_data_coordinator,
-    ):
-        """Initialize the sensor."""
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_next_low_tide_height"
 
-        self._hass = hass
-        # Parameters from configuration.yaml
-        self._name = name
-        self._unit_to_display = unit_to_display
-        self._show_on_map = show_on_map
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            return "ft"
+        else:
+            return "m"
 
-        # DATA
-        self._worldtide_data_coordinator = worldtide_data_coordinator
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next tide
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
+            attr["high_tide_height"] = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
+            attr["low_tide_height"] = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        state_value = 0
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        if self._worldtide_data_coordinator.no_data():
+            return state_value
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next low tide Height
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            state_value = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return state_value
+
+
+class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_next_high_tide_height"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            return "ft"
+        else:
+            return "m"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next tide
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
+            attr["high_tide_height"] = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
+            attr["low_tide_height"] = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        state_value = 0
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        if self._worldtide_data_coordinator.no_data():
+            return state_value
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next low tide Height
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            state_value = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return state_value
+
+
+class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
 
     @property
     def name(self):
@@ -710,62 +910,6 @@ class WorldTidesInfoCustomSensor(Entity):
         return attr
 
     @property
-    def icon(self):
-        """return icon tendancy"""
-        current_time = time.time()
-
-        # retrieve tide data
-        data_result = self._worldtide_data_coordinator.get_data()
-        data = data_result.get("current_data")
-        previous_data = data_result.get("previous_data")
-        # the decoder
-        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
-
-        # Tide Tendancy and time_to_next_tide
-        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
-        previous_tide_in_epoch = tide_info.give_previous_tide_in_epoch(current_time)
-
-        # delta time to next tide and from previous tide are set to zero
-        delta_current_time_to_next = 0
-        delta_current_time_from_previous = 0
-
-        # delta time to next tide
-        if next_tide_in_epoch.get("error") == None:
-            delta_current_time_to_next = (
-                next_tide_in_epoch.get("tide_time") - current_time
-            )
-
-        # delta time from previous tide
-        if previous_tide_in_epoch.get("error") == None:
-            delta_current_time_from_previous = (
-                current_time - previous_tide_in_epoch.get("tide_time")
-            )
-
-        # compute tide tendancy
-        tide_tendancy = "mdi:shore"
-        if next_tide_in_epoch.get("tide_type") == "High":
-            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
-                tide_tendancy = "mdi:chevron-up"
-            elif previous_tide_in_epoch.get("error") != None:
-                # if delta time from previous tide cannot be computed, assume that
-                # we are not in slack
-                tide_tendancy = "mdi:chevron-triple-up"
-            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
-                tide_tendancy = "mdi:chevron-up"
-            else:
-                tide_tendancy = "mdi:chevron-triple-up"
-        else:
-            if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
-                tide_tendancy = "mdi:chevron-down"
-            elif previous_tide_in_epoch.get("error") != None:
-                tide_tendancy = "mdi:chevron-triple-down"
-            elif delta_current_time_from_previous < HALF_TIDE_SLACK_DURATION:
-                tide_tendancy = "mdi:chevron-down"
-            else:
-                tide_tendancy = "mdi:chevron-triple-down"
-        return tide_tendancy
-
-    @property
     def state(self):
         """Return the state of the device."""
         # retrieve tide data
@@ -783,14 +927,3 @@ class WorldTidesInfoCustomSensor(Entity):
                 tide_string = f"{tidetype} tide at {tidetime}"
                 return tide_string
         return None
-
-    async def async_update(self):
-        """Fetch new state data for this sensor."""
-        _LOGGER.debug("Async Update Tides sensor %s", self._name)
-        ##Watch Out : only method name is given to function i.e. without ()
-        await self._hass.async_add_executor_job(self.update)
-
-    def update(self):
-        """Update of sensors."""
-        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
-        self._worldtide_data_coordinator.update_server_data()
