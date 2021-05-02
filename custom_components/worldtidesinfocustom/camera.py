@@ -5,6 +5,7 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 import time
+import os
 from datetime import datetime, timedelta
 
 # PyPy Library
@@ -135,6 +136,7 @@ class TidesCurvePicture(Camera):
 
         # DATA
         self._generated_at = None
+        self._last_requested_date = None
         self._image = None
 
         self._image_filename = (give_persistent_filename(hass, name)).get(
@@ -168,7 +170,8 @@ class TidesCurvePicture(Camera):
             )
         if read_ok:
             self._image = read_image
-            self._generated_at = current_time
+            self._last_requested_date = current_time
+            self._generated_at = time.ctime(os.path.getctime(self._image_filename))
 
     async def async_update(self):
         """Fetch new state data for the camera."""
@@ -193,5 +196,8 @@ class TidesCurvePicture(Camera):
 
         if self._generated_at is not None:
             attr[ATTR_GENERATED_AT] = self._generated_at
-
+        if self._last_requested_date is not None:
+            attr["last_requested_date"] = time.strftime(
+            "%H:%M:%S %d/%m/%y",
+            time.localtime(self._last_requested_date))
         return attr
