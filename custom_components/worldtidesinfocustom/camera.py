@@ -7,14 +7,14 @@ _LOGGER = logging.getLogger(__name__)
 import time
 from datetime import datetime, timedelta
 
+import homeassistant.helpers.config_validation as cv
+
 # PyPy Library
 import requests
+import voluptuous as vol
 
 # HA library
-from homeassistant.helpers.httpx_client import get_async_client
-
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
+from homeassistant.components.camera import PLATFORM_SCHEMA, Camera
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
     CONF_API_KEY,
@@ -23,12 +23,8 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
 )
+from homeassistant.helpers.httpx_client import get_async_client
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
-
-from homeassistant.components.camera import (
-    PLATFORM_SCHEMA,
-    Camera,
-)
 
 # Component Library
 from . import give_persistent_filename
@@ -56,7 +52,6 @@ from .const import (
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
-
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 ATTR_GENERATED_AT = "generated_at"
@@ -82,6 +77,7 @@ def setup_camera(
     )
 
     return [curve_picture]
+
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the WorldTidesInfo Custom sensor."""
@@ -124,6 +120,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     async_add_entities(tides_cameras)
 
+
 class TidesCurvePicture(Camera):
     """Curve Picture."""
 
@@ -143,11 +140,15 @@ class TidesCurvePicture(Camera):
         self._image_url = None
         self._image = None
 
-        self._image_url = "https://127.0.0.1:8123/local/"+(give_persistent_filename(hass, name)).get("curve_basefilename")
-        self._image_filename = (give_persistent_filename(hass, name)).get("curve_filename")
+        self._image_url = "https://127.0.0.1:8123/local/" + (
+            give_persistent_filename(hass, name)
+        ).get("curve_basefilename")
+        self._image_filename = (give_persistent_filename(hass, name)).get(
+            "curve_filename"
+        )
 
     def no_data(self):
-        return (self._image == None)
+        return self._image == None
 
     def camera_image(self):
         """Return image response."""
@@ -163,7 +164,7 @@ class TidesCurvePicture(Camera):
         """Return image response."""
         try:
             with open(self._image_filename, "rb") as file:
-                read_image= file.read()
+                read_image = file.read()
             read_ok = True
         except FileNotFoundError:
             _LOGGER.warning(
@@ -181,38 +182,36 @@ class TidesCurvePicture(Camera):
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 
-
-#    async def async_update(self):
-#        """Check the contents of the file."""
-#        _LOGGER.error("Async Fetch new picture image from %s", self._name)
-#
-#        response = None
-#        current_time = time.time()
-#        try:
-#            async_client = get_async_client(self._hass, verify_ssl=False)
-#            response = await async_client.get(
-#                self._image_url, auth=None, timeout=GET_IMAGE_TIMEOUT
-#            )
-#            response.raise_for_status()
-#            image = response.content
-#        except httpx.TimeoutException:
-#            _LOGGER.error("Timeout getting picture image from %s", self._name)
-#            return
-#        except (httpx.RequestError, httpx.HTTPStatusError) as err:
-#            _LOGGER.error("Error getting new picture image from %s: %s", self._name, err)
-#            return
-#        finally:
-#            if response:
-#                await response.aclose()
-#        self._image = image
-#        self._generated_at = current_time
-#        return
-
+    #    async def async_update(self):
+    #        """Check the contents of the file."""
+    #        _LOGGER.error("Async Fetch new picture image from %s", self._name)
+    #
+    #        response = None
+    #        current_time = time.time()
+    #        try:
+    #            async_client = get_async_client(self._hass, verify_ssl=False)
+    #            response = await async_client.get(
+    #                self._image_url, auth=None, timeout=GET_IMAGE_TIMEOUT
+    #            )
+    #            response.raise_for_status()
+    #            image = response.content
+    #        except httpx.TimeoutException:
+    #            _LOGGER.error("Timeout getting picture image from %s", self._name)
+    #            return
+    #        except (httpx.RequestError, httpx.HTTPStatusError) as err:
+    #            _LOGGER.error("Error getting new picture image from %s: %s", self._name, err)
+    #            return
+    #        finally:
+    #            if response:
+    #                await response.aclose()
+    #        self._image = image
+    #        self._generated_at = current_time
+    #        return
 
     @property
     def name(self):
         """Return the name."""
-        return self._name +  "_curve_picture"
+        return self._name + "_curve_picture"
 
     @property
     def extra_state_attributes(self):
@@ -228,5 +227,3 @@ class TidesCurvePicture(Camera):
             attr[ATTR_GENERATED_AT] = self._generated_at
 
         return attr
-
-

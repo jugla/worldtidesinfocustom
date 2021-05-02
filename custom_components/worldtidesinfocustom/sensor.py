@@ -157,12 +157,11 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
-
     return [
-       tides,
-       tides_current_height,
-       tides_next_low_tide_height,
-       tides_next_high_tide_height
+        tides,
+        tides_current_height,
+        tides_next_low_tide_height,
+        tides_next_high_tide_height,
     ]
 
 
@@ -277,6 +276,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
             return
 
     async_add_entities(tides_sensors)
+
 
 class WorldTidesInfoCustomSensorGeneric(Entity):
     """Representation of a WorldTidesInfo sensor."""
@@ -466,6 +466,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
 
         return state_value
 
+
 class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -560,6 +561,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
 
         return state_value
 
+
 class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -653,6 +655,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
             )
 
         return state_value
+
 
 class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
@@ -924,5 +927,3 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 tide_string = f"{tidetype} tide at {tidetime}"
                 return tide_string
         return None
-
-

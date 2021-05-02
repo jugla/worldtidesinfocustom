@@ -42,7 +42,7 @@ from .const import (
     WWW_PATH,
 )
 
-PLATFORMS = ["sensor","camera"]
+PLATFORMS = ["sensor", "camera"]
 
 DATA_LISTENER = "listener"
 
@@ -176,7 +176,7 @@ def give_persistent_filename(hass, name):
 
     return {
         "curve_filename": curve_filename,
-        "curve_basefilename" : name + ".png",
+        "curve_basefilename": name + ".png",
         "persistent_data_filename": persistent_data_filename,
     }
 
