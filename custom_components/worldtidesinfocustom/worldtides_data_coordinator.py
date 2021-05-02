@@ -210,7 +210,7 @@ class WordTide_Data_Coordinator:
                 self._worldtidesinfo_server.retrieve_tide_err_value,
             )
 
-    def update_server_data(self):
+    def _update_and_fetch_server_data(self):
         init_data_fetched = False
 
         self.credit_used = 0
@@ -258,3 +258,11 @@ class WordTide_Data_Coordinator:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
             )
+        return True
+
+    def update_server_data(self):
+        ### The class is intended to be used by several sensor
+        ### but only one is forecast to update at a time
+        ### (write of new data during update)
+        ### The function is sync (i.e. or used with async and a LOCK)
+        result = self._update_and_fetch_server_data()
