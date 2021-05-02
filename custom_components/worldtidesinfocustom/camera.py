@@ -4,9 +4,12 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+import os
 import time
 import os
 from datetime import datetime, timedelta
+
+import homeassistant.helpers.config_validation as cv
 
 # PyPy Library
 import requests
@@ -22,7 +25,6 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
 )
-import homeassistant.helpers.config_validation as cv
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
@@ -198,6 +200,6 @@ class TidesCurvePicture(Camera):
             attr[ATTR_GENERATED_AT] = self._generated_at
         if self._last_requested_date is not None:
             attr["last_requested_date"] = time.strftime(
-            "%H:%M:%S %d/%m/%y",
-            time.localtime(self._last_requested_date))
+                "%H:%M:%S %d/%m/%y", time.localtime(self._last_requested_date)
+            )
         return attr
