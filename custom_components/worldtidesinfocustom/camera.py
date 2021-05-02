@@ -173,7 +173,7 @@ class TidesCurvePicture(Camera):
         if read_ok:
             self._image = read_image
             self._last_requested_date = current_time
-            self._generated_at = time.ctime(os.path.getctime(self._image_filename))
+            self._generated_at = time.ctime(os.path.getmtime(self._image_filename))
 
     async def async_update(self):
         """Fetch new state data for the camera."""
