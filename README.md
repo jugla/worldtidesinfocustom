@@ -56,6 +56,8 @@ Get API key from https://www.worldtides.info/developer (buy prepaid)
 Then either 
 - use UI 
 - or in configuration.yaml, declare :
+<details><summary>Example of YAML</summary>
+  
 ```yaml
 ##configuration.yaml example
 sensor:
@@ -71,7 +73,11 @@ sensor:
 #    plot_background: 255,255,255
 #    scan_interval: 900
 
+camera:
+  - platform: worldtidesinfocustom
+    name: royan_tides
 ``` 
+
 where :
 - name is name of your sensor
 - api_key is the key you get from [world tides info](https://www.worldtides.info/developer) 
@@ -85,9 +91,11 @@ and  optional parameter
 - plot_background : the comma-separated RGB values for the tide graph background color
 - scan_interval : the scan rate to refresh entity (should not be used)
 
-One entity is declared with attibutes. 
-To see them as sensor, you have to declare them inside `configuration.yaml`. 
-Please follow the hereafter example
+</details>
+
+Several snesors and one camera are provided with attibutes. 
+To see these attributes as sensor, you have to declare them inside `configuration.yaml`. 
+<details><summary>Please follow the hereafter example</summary>
 
 ```yaml
 ##configuration.yaml example
@@ -141,6 +149,7 @@ camera:
     verify_ssl: false
 
 ```
+</details>
 
 Hereafter the display of attributes within lovelace UI
 
@@ -155,7 +164,7 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
-<details><summary>with source code</summary>
+<details><summary>with source code (please **ADAPT** the name of sensors respect to your case)</summary>
 
 ```yaml
 ##UI interface example (can be entered via manual card)
@@ -210,7 +219,7 @@ and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on sever
   <img src="./doc/picture/RoyanTideAmplitude.jpg" alt="Size Limit CLI" width="300">
 </p>
 
-<details><summary>with source code</summary>
+<details><summary>with source code (please **ADAPT** the name of sensors respect to your case)</summary>
 
 ```yaml
 ##UI interface example (can be entered via manual card)
@@ -232,7 +241,7 @@ Hereafter an example of picture element card under lovelace UI
   <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="400">
 </p>
 
-<details><summary>with the source code of the card</summary>
+<details><summary>with the source code of the card (please **ADAPT** the name of sensors respect to your case)</summary>
 
 ```yaml
 ##UI interface example (can be entered via manual card)
@@ -351,7 +360,7 @@ Hereafter an example of the default map under lovelace UI
 </p>
 
 
-## Detail Configuration parameter
+## Detail Configuration parameter for UI, and sensor for YAML
 
 | Name              | Type                                                           | Requirement  | Supported | Default value        | Config                             | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|--------------|-----------|----------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
@@ -366,16 +375,32 @@ Hereafter an example of the default map under lovelace UI
 | plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI                                                                                                                                                                   | string that represents the comma-separated RGB values for the tide graph background color |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 
+## Detail Configuration parameter for camera for YAML
+
+| Name              | Type                                                           | Requirement  | Supported | Default value        | Config                             | Description                                                                                                   |
+|-------------------|----------------------------------------------------------------|--------------|-----------|----------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| name              | string                                                         | **Required** | v4.0.0    | worldtidesinfocustom | YAML                                                                                                                                                                | name for sensor entity  (the **name of SENSOR of YAML**)                                             |
+
+
 ## about vertical reference
 Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
 
 ## Detail Sensor attribute description
-The platform create 1 sensor (name given in configuration.yaml). 
+The platform create several sensors (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
-| name given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | **HA local time**  | gives the next tide low or high with HA local time     |
+| NAME given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | **HA local time**  | gives the next tide low or high with HA local time     |
+| NAME_current_tide_height      |  v4.0.0 |  float | m/ft  | gives the current height      |
+| NAME_next_high_tide_height    |  v4.0.0 |  float | m/ft  | gives the next high tide height      |
+| NAME_next_low_tide_height     |  v4.0.0 |  float | m/ft  | gives the next low tide height      |
 
-This sensor has a set of attributes describes hereafter
+The platform create one camera (name given in UI/configuration.yaml). 
+| Name              | Supported | format | unit | Description                                                                                                   |
+|-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
+| NAME_curve_picture    |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image*      |
+
+
+The sensor "NAME" has a set of attributes describes hereafter
 
 | Name                 | Supported | format     | unit | Description                                                                                                   |
 |----------------------|-----------|------------|------|---------------------------------------------------------------------------------------------------------------|
@@ -404,7 +429,7 @@ This sensor has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- split in several sensors
+- split in several sensors (V4.0.0)
 - make this integration as default in home assistant
 
 ## Contact
