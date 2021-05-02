@@ -176,7 +176,6 @@ def give_persistent_filename(hass, name):
 
     return {
         "curve_filename": curve_filename,
-        "curve_basefilename": name + ".png",
         "persistent_data_filename": persistent_data_filename,
     }
 

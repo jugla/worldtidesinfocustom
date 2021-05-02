@@ -7,8 +7,6 @@ _LOGGER = logging.getLogger(__name__)
 import time
 from datetime import datetime, timedelta
 
-import homeassistant.helpers.config_validation as cv
-
 # PyPy Library
 import requests
 import voluptuous as vol
@@ -23,7 +21,7 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
 )
-from homeassistant.helpers.httpx_client import get_async_client
+import homeassistant.helpers.config_validation as cv
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
@@ -137,12 +135,8 @@ class TidesCurvePicture(Camera):
 
         # DATA
         self._generated_at = None
-        self._image_url = None
         self._image = None
 
-        self._image_url = "https://127.0.0.1:8123/local/" + (
-            give_persistent_filename(hass, name)
-        ).get("curve_basefilename")
         self._image_filename = (give_persistent_filename(hass, name)).get(
             "curve_filename"
         )
@@ -181,32 +175,6 @@ class TidesCurvePicture(Camera):
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
-
-    #    async def async_update(self):
-    #        """Check the contents of the file."""
-    #        _LOGGER.error("Async Fetch new picture image from %s", self._name)
-    #
-    #        response = None
-    #        current_time = time.time()
-    #        try:
-    #            async_client = get_async_client(self._hass, verify_ssl=False)
-    #            response = await async_client.get(
-    #                self._image_url, auth=None, timeout=GET_IMAGE_TIMEOUT
-    #            )
-    #            response.raise_for_status()
-    #            image = response.content
-    #        except httpx.TimeoutException:
-    #            _LOGGER.error("Timeout getting picture image from %s", self._name)
-    #            return
-    #        except (httpx.RequestError, httpx.HTTPStatusError) as err:
-    #            _LOGGER.error("Error getting new picture image from %s: %s", self._name, err)
-    #            return
-    #        finally:
-    #            if response:
-    #                await response.aclose()
-    #        self._image = image
-    #        self._generated_at = current_time
-    #        return
 
     @property
     def name(self):
