@@ -130,7 +130,7 @@ class TidesCurvePicture(Camera):
         hass,
         name,
     ):
-        """Initialize Neato cleaning map."""
+        """Initialize Curve Picture."""
         super().__init__()
         self._hass = hass
         # Parameters from configuration.yaml
