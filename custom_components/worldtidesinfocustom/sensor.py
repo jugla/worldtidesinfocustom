@@ -78,6 +78,9 @@ from .worldtides_data_coordinator import WordTide_Data_Coordinator
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
+#override HA behaviour no parallelism during update
+PARALLEL_UPDATES = 1
+
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_API_KEY): cv.string,
@@ -365,14 +368,13 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
     async def async_update(self):
         """Fetch new state data for this sensor."""
         _LOGGER.debug("Async Update Tides sensor %s", self._name)
-        ##Watch Out : only method name is given to function i.e. without ()
+        # Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 
     def update(self):
         """Update of sensors."""
-        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
-        self._worldtide_data_coordinator.update_server_data()
-
+        # Only one sensor has the liability to update
+        return
 
 class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
@@ -692,6 +694,13 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         init_data = data_result.get("init_data")
         data_datums_offset = data_result.get("data_datums_offset")
 
+        if previous_data == None:
+            _LOGGER.debug(
+                "No previous data for {}: empty".format(
+                    self._name,
+                )
+            )
+
         # the decoder
         tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
         # retrieve init data
@@ -861,6 +870,13 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         )
         # KEEP FOR DEBUG:
         if DEBUG_FLAG:
+            if schedule_time_result.get("previous_data_request_time") != None:
+                attr["Previous_Data_request_time"] = time.strftime(
+                   "%H:%M:%S %d/%m/%y",
+                   time.localtime(schedule_time_result.get("previous_data_request_time")),
+                )
+            else:
+                attr["Previous_Data_request_time"] = 0
             attr["Init_data_request_time"] = time.strftime(
                 "%H:%M:%S %d/%m/%y",
                 time.localtime(schedule_time_result.get("init_data_request_time")),
@@ -927,3 +943,8 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 tide_string = f"{tidetype} tide at {tidetime}"
                 return tide_string
         return None
+
+    def update(self):
+        """Update of sensors."""
+        _LOGGER.debug("Sync Update Tides sensor %s", self._name)
+        self._worldtide_data_coordinator.update_server_data()

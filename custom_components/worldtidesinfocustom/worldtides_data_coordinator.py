@@ -133,6 +133,7 @@ class WordTide_Data_Coordinator:
     def get_schedule_time(self):
         return {
             "data_request_time": self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
+            "previous_data_request_time": self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
             "init_data_request_time": self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time,
             "next_day_midnight": self._worldtidesinfo_server_scheduler._Data_Scheduling.next_day_midnight,
             "next_month_midnight": self._worldtidesinfo_server_scheduler._Data_Scheduling.next_month_midnight,
@@ -151,8 +152,8 @@ class WordTide_Data_Coordinator:
                 "Init data queried at: %s",
                 self._worldtidesinfo_server.retrieve_tide_station_request_time,
             )
-            self.credit_used = (
-                self.credit_used
+            self._credit_used = (
+                self._credit_used
                 + self._worldtidesinfo_server.retrieve_tide_station_credit()
             )
             self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data = (
@@ -177,16 +178,30 @@ class WordTide_Data_Coordinator:
         if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
             _LOGGER.debug(
                 "Data queried at: %s",
-                self._worldtidesinfo_server.retrieve_tide_request_time,
+                self._worldtidesinfo_server.retrieve_tide_request_time(),
             )
             # update store data
+            # _LOGGER.debug(
+            #    "Store currnt data time at: curr %s prev %s",
+            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
+            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
+            # )
+
             data = self._worldtidesinfo_server.retrieve_tide_raw_data()
             self._worldtidesinfo_server_scheduler.store_new_data(
                 data, self._worldtidesinfo_server.retrieve_tide_request_time()
             )
-
-            self.credit_used = (
-                self.credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
+            # _LOGGER.debug(
+            #    "Store New data queried at: %s",
+            #    self._worldtidesinfo_server.retrieve_tide_request_time(),
+            # )
+            # _LOGGER.debug(
+            #    "Store currnt data time at: curr %s prev %s",
+            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
+            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
+            # )
+            self._credit_used = (
+                self._credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )
 
             # process information
