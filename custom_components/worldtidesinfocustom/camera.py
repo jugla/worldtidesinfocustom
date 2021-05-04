@@ -158,7 +158,7 @@ class TidesCurvePicture(Camera):
         current_time = time.time()
         read_ok = False
         read_image = None
-        _LOGGER.error("Sync Fetch new picture image from %s", self._name)
+        _LOGGER.debug("Sync Fetch new picture image from %s", self._name)
         """Return image response."""
         try:
             with open(self._image_filename, "rb") as file:
