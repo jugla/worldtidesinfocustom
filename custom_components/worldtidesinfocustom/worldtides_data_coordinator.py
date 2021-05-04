@@ -199,7 +199,7 @@ class WordTide_Data_Coordinator:
             #    "Store currnt data time at: curr %s prev %s",
             #    self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
             #    self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
-            # )
+            # )
             self._credit_used = (
                 self._credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )

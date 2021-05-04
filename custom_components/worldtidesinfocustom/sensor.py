@@ -78,7 +78,7 @@ from .worldtides_data_coordinator import WordTide_Data_Coordinator
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
-#override HA behaviour no parallelism during update
+# override HA behaviour no parallelism during update
 PARALLEL_UPDATES = 1
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
@@ -375,6 +375,7 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
         """Update of sensors."""
         # Only one sensor has the liability to update
         return
+
 
 class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
@@ -872,8 +873,10 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         if DEBUG_FLAG:
             if schedule_time_result.get("previous_data_request_time") != None:
                 attr["Previous_Data_request_time"] = time.strftime(
-                   "%H:%M:%S %d/%m/%y",
-                   time.localtime(schedule_time_result.get("previous_data_request_time")),
+                    "%H:%M:%S %d/%m/%y",
+                    time.localtime(
+                        schedule_time_result.get("previous_data_request_time")
+                    ),
                 )
             else:
                 attr["Previous_Data_request_time"] = 0

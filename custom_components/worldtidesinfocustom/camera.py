@@ -6,7 +6,6 @@ _LOGGER = logging.getLogger(__name__)
 
 import os
 import time
-import os
 from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
