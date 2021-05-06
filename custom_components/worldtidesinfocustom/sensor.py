@@ -35,7 +35,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 
 # Component Library
-from . import give_persistent_filename
+from . import give_persistent_filename, worldtidesinfo_data_coordinator
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -126,6 +126,7 @@ def setup_sensor(
         tide_station_distance,
         unit_to_display,
     )
+    worldtidesinfo_data_coordinator[name] = worldtide_data_coordinator
 
     # create the sensor
     tides = WorldTidesInfoCustomSensor(
@@ -160,11 +161,29 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
+    tides_credit_used = WorldTidesInfoCustomSensorCreditUsed(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+
+    tides_global_credit_used = WorldTidesInfoCustomSensorGlobalCreditUsed(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+
     return [
         tides,
         tides_current_height,
         tides_next_low_tide_height,
         tides_next_high_tide_height,
+        tides_credit_used,
+        tides_global_credit_used,
     ]
 
 
@@ -660,6 +679,69 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         return state_value
 
 
+class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_credit_used"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        return "credit"
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        # The credit used to display the update
+        return self._worldtide_data_coordinator.get_credit_used()
+
+    @property
+    def icon(self):
+        """return icon tendancy"""
+        return "mdi:credit-card-check-outline"
+
+
+class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_global_credit_used"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        return "credit"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {}
+
+        # managment of global count :  give all locations
+        monitored_location = ""
+        for name, coordinator in worldtidesinfo_data_coordinator.items():
+            monitored_location = monitored_location + "," + name
+        attr["monitored_location"] = monitored_location
+
+        return attr
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        # The credit used to display the update
+        return self._worldtide_data_coordinator.overall_count
+
+    @property
+    def icon(self):
+        """return icon tendancy"""
+        return "mdi:credit-card-multiple-outline"
+
+
 class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -951,3 +1033,15 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         """Update of sensors."""
         _LOGGER.debug("Sync Update Tides sensor %s", self._name)
         self._worldtide_data_coordinator.update_server_data()
+
+        # managment of global count
+        for name, coordinator in worldtidesinfo_data_coordinator.items():
+            coordinator.overall_count_tmp = (
+                coordinator.overall_count_tmp
+                + self._worldtide_data_coordinator.get_credit_used()
+            )
+
+        self._worldtide_data_coordinator.overall_count = (
+            self._worldtide_data_coordinator.overall_count_tmp
+        )
+        self._worldtide_data_coordinator.overall_count_tmp = 0
