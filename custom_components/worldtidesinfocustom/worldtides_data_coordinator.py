@@ -61,6 +61,10 @@ class WordTide_Data_Coordinator:
         self._worldtidesinfo_server_scheduler = None
         self._credit_used = 0
 
+        # managment og global count
+        self.overall_count = 0
+        self.overall_count_tmp = 0
+
         # prepare filename
         filenames = give_persistent_filename(hass, name)
 
@@ -180,26 +184,12 @@ class WordTide_Data_Coordinator:
                 "Data queried at: %s",
                 self._worldtidesinfo_server.retrieve_tide_request_time(),
             )
-            # update store data
-            # _LOGGER.debug(
-            #    "Store currnt data time at: curr %s prev %s",
-            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
-            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
-            # )
 
+            # update store data
             data = self._worldtidesinfo_server.retrieve_tide_raw_data()
             self._worldtidesinfo_server_scheduler.store_new_data(
                 data, self._worldtidesinfo_server.retrieve_tide_request_time()
             )
-            # _LOGGER.debug(
-            #    "Store New data queried at: %s",
-            #    self._worldtidesinfo_server.retrieve_tide_request_time(),
-            # )
-            # _LOGGER.debug(
-            #    "Store currnt data time at: curr %s prev %s",
-            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.data_request_time,
-            #    self._worldtidesinfo_server_scheduler._Data_Retrieve.previous_data_request_time,
-            # )
             self._credit_used = (
                 self._credit_used + self._worldtidesinfo_server.retrieve_tide_credit()
             )
@@ -228,7 +218,7 @@ class WordTide_Data_Coordinator:
     def _update_and_fetch_server_data(self):
         init_data_fetched = False
 
-        self.credit_used = 0
+        self._credit_used = 0
         current_time = time.time()
 
         # Init data (initialisation or refresh or retrieve from a file)

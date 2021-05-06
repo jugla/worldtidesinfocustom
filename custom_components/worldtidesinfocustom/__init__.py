@@ -46,6 +46,7 @@ PLATFORMS = ["sensor", "camera"]
 
 DATA_LISTENER = "listener"
 
+worldtidesinfo_data_coordinator = {}
 
 class WorldTidesInfoCoordinator:
     """Define the coordinator."""
@@ -154,6 +155,10 @@ async def async_unload_entry(hass, config_entry):
         )
     )
     if unload_ok:
+        #remove global cooordinator
+        worldtidesinfo_data_coordinator.pop(config_entry.data[CONF_NAME])
+
+        #remove config flow coordinator
         hass.data[DOMAIN][DATA_COORDINATOR].pop(config_entry.entry_id)
         remove_listener = hass.data[DOMAIN][DATA_LISTENER].pop(config_entry.entry_id)
         remove_listener()
