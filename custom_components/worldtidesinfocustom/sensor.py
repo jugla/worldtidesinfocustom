@@ -35,7 +35,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 
 # Component Library
-from . import give_persistent_filename
+from . import give_persistent_filename, worldtidesinfo_data_coordinator
 from .const import (
     ATTRIBUTION,
     CONF_PLOT_BACKGROUND,
@@ -185,7 +185,7 @@ def setup_sensor(
         tides_next_low_tide_height,
         tides_next_high_tide_height,
         tides_credit_used,
-        tides_global_credit_used
+        tides_global_credit_used,
     ]
 
 
@@ -727,7 +727,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGener
         # managment of global count :  give all locations
         monitored_location = ""
         for name, coordinator in worldtidesinfo_data_coordinator.items():
-           monitored_location = monitored_location + "," + name
+            monitored_location = monitored_location + "," + name
         attr["monitored_location"] = monitored_location
 
         return attr
@@ -742,6 +742,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGener
     def icon(self):
         """return icon tendancy"""
         return "mdi:credit-card-multiple-outline"
+
 
 class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
@@ -1037,7 +1038,12 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
 
         # managment of global count
         for name, coordinator in worldtidesinfo_data_coordinator.items():
-           coordinator.overall_count_tmp = coordinator.overall_count_tmp + self._worldtide_data_coordinator.get_credit_used()
+            coordinator.overall_count_tmp = (
+                coordinator.overall_count_tmp
+                + self._worldtide_data_coordinator.get_credit_used()
+            )
 
-        self._worldtide_data_coordinator.overall_count = self._worldtide_data_coordinator.overall_count_tmp
+        self._worldtide_data_coordinator.overall_count = (
+            self._worldtide_data_coordinator.overall_count_tmp
+        )
         self._worldtide_data_coordinator.overall_count_tmp = 0
