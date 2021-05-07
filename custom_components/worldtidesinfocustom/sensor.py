@@ -62,8 +62,6 @@ from .const import (
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
-from . import worldtidesinfo_data_coordinator
-
 
 # import .storage_mngt
 from .py_worldtidesinfo import (
@@ -163,7 +161,7 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
-    #amplitude
+    # amplitude
 
     tides_current_amplitude = WorldTidesInfoCustomSensorCurrentAmplitude(
         hass,
@@ -181,8 +179,7 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
-
-    #create credit used
+    # create credit used
     tides_credit_used = WorldTidesInfoCustomSensorCreditUsed(
         hass,
         name,
@@ -350,7 +347,6 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
     # Name : to be defined by class
     # unit_of_measurement : to be defined by class
     # device_state_attributes : to be defined by class
-
 
     @property
     def icon(self):
@@ -704,6 +700,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
 
         return state_value
 
+
 class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -770,7 +767,9 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
                 )
             )
 
-        attr["tide_amplitude"] = round(diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH)
+        attr["tide_amplitude"] = round(
+            diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
+        )
 
         # The coeff tide_highlow_over the Mean Water Spring
         if MWS_datum_offset.get("error") == None:
@@ -785,7 +784,6 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
                 * 100,
                 ROUND_COEFF,
             )
-
 
     @property
     def state(self):
@@ -829,10 +827,12 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
                 )
             )
 
-        state_value = round(diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH)
-
+        state_value = round(
+            diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
+        )
 
         return state_value
+
 
 class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
@@ -897,7 +897,9 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
                 )
             )
 
-        attr["tide_amplitude"] = round(diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH)
+        attr["tide_amplitude"] = round(
+            diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
+        )
 
         # The coeff tide_highlow_over the Mean Water Spring
         if MWS_datum_offset.get("error") == None:
@@ -912,7 +914,6 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
                 * 100,
                 ROUND_COEFF,
             )
-
 
     @property
     def state(self):
@@ -977,12 +978,9 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
                 ROUND_COEFF,
             )
 
-
         state_value = Coeff_resp_MWS
 
-
         return state_value
-
 
 
 class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
@@ -1191,7 +1189,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 next_tide_UTC.get("high_tide_height")
                 - next_tide_UTC.get("low_tide_height")
             )
-        attr["next_tide_amplitude"] = round(diff_next_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH)
+        attr["next_tide_amplitude"] = round(
+            diff_next_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
+        )
 
         # The next coeff tide_highlow_over the Mean Water Spring
         if MWS_datum_offset.get("error") == None:
@@ -1232,7 +1232,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 )
             )
 
-        attr["tide_amplitude"] = round(diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH)
+        attr["tide_amplitude"] = round(
+            diff_current_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
+        )
 
         # The coeff tide_highlow_over the Mean Water Spring
         if MWS_datum_offset.get("error") == None:
