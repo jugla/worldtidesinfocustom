@@ -51,6 +51,7 @@ from .const import (
     SCAN_INTERVAL_SECONDS,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
+from .py_worldtidesinfo import SERVER_API_VERSION
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -65,15 +66,24 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
+def worldtidesinfo_unique_id (lat,long):
+    return ("lat:{}_long:{}".format(lat,long))
+
+
 def setup_camera(
     hass,
     name,
+    lat,
+    lon,
 ):
     """setup camera"""
+    unique_id = worldtidesinfo_unique_id(lat,lon)
+
 
     curve_picture = TidesCurvePicture(
         hass,
         name,
+        unique_id,
     )
 
     return [curve_picture]
@@ -84,11 +94,15 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     # Get data from configuration.yaml
     name = config.get(CONF_NAME)
+    lat = config.get(CONF_LATITUDE, hass.config.latitude)
+    lon = config.get(CONF_LONGITUDE, hass.config.longitude)
 
     # what is the unit used
     tides_cameras = setup_camera(
         hass,
         name,
+        lat,
+        lon,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
@@ -107,10 +121,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     # Get data from config flow
     name = config.get(CONF_NAME)
+    lat = config.get(CONF_LATITUDE)
+    lon = config.get(CONF_LONGITUDE)
 
     tides_cameras = setup_camera(
         hass,
         name,
+        lat,
+        lon,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
@@ -128,12 +146,15 @@ class TidesCurvePicture(Camera):
         self,
         hass,
         name,
-    ):
+        unique_id,
+     ):
         """Initialize Curve Picture."""
         super().__init__()
         self._hass = hass
         # Parameters from configuration.yaml
         self._name = name
+
+        self._unique_id = unique_id
 
         # DATA
         self._generated_at = None
@@ -143,6 +164,18 @@ class TidesCurvePicture(Camera):
         self._image_filename = (give_persistent_filename(hass, name)).get(
             "curve_filename"
         )
+
+    @property
+    def device_info(self):
+        """Device info for neato robot."""
+        return {"identifiers": {(DOMAIN, self._unique_id)},
+            "manufacturer": "WorldTidesInfo",
+            "sw_version" : SERVER_API_VERSION,
+            "name" : self._name+"_server",
+            "model" : "WorldTidesInfoAPI"
+        }
+
+
 
     def no_data(self):
         return self._image == None
@@ -184,6 +217,10 @@ class TidesCurvePicture(Camera):
     def name(self):
         """Return the name."""
         return self._name + "_curve_picture"
+
+    @property
+    def unique_id(self):
+        return self._unique_id + "_curve_picture"
 
     @property
     def extra_state_attributes(self):
