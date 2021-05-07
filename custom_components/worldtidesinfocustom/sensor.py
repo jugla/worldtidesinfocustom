@@ -1184,7 +1184,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_remaining_for_next_tide"
+        return self._name + "_remaining_time_for_next_tide"
 
     @property
     def unit_of_measurement(self):
