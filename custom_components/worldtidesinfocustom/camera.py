@@ -66,8 +66,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def worldtidesinfo_unique_id (lat,long):
-    return ("lat:{}_long:{}".format(lat,long))
+def worldtidesinfo_unique_id(lat, long):
+    return "lat:{}_long:{}".format(lat, long)
 
 
 def setup_camera(
@@ -77,8 +77,7 @@ def setup_camera(
     lon,
 ):
     """setup camera"""
-    unique_id = worldtidesinfo_unique_id(lat,lon)
-
+    unique_id = worldtidesinfo_unique_id(lat, lon)
 
     curve_picture = TidesCurvePicture(
         hass,
@@ -147,7 +146,7 @@ class TidesCurvePicture(Camera):
         hass,
         name,
         unique_id,
-     ):
+    ):
         """Initialize Curve Picture."""
         super().__init__()
         self._hass = hass
@@ -168,14 +167,13 @@ class TidesCurvePicture(Camera):
     @property
     def device_info(self):
         """Device info for neato robot."""
-        return {"identifiers": {(DOMAIN, self._unique_id)},
+        return {
+            "identifiers": {(DOMAIN, self._unique_id)},
             "manufacturer": "WorldTidesInfo",
-            "sw_version" : SERVER_API_VERSION,
-            "name" : self._name+"_server",
-            "model" : "WorldTidesInfoAPI"
+            "sw_version": SERVER_API_VERSION,
+            "name": self._name + "_server",
+            "model": "WorldTidesInfoAPI",
         }
-
-
 
     def no_data(self):
         return self._image == None

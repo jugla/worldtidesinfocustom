@@ -65,6 +65,7 @@ from .const import (
 
 # import .storage_mngt
 from .py_worldtidesinfo import (
+    SERVER_API_VERSION,
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
@@ -100,8 +101,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def worldtidesinfo_unique_id (lat,long):
-    return ("lat:{}_long:{}".format(lat,long))
+def worldtidesinfo_unique_id(lat, long):
+    return "lat:{}_long:{}".format(lat, long)
+
 
 def setup_sensor(
     hass,
@@ -117,7 +119,7 @@ def setup_sensor(
     show_on_map,
 ):
     """setup sensor with server, server scheduler in async or sync configuration"""
-    unique_id = worldtidesinfo_unique_id(lat,lon)
+    unique_id = worldtidesinfo_unique_id(lat, lon)
 
     worldtide_data_coordinator = WordTide_Data_Coordinator(
         hass,
@@ -392,7 +394,6 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
 
         self._unique_id = unique_id
 
-
     # Name : to be defined by class
     # unit_of_measurement : to be defined by class
     # device_state_attributes : to be defined by class
@@ -400,11 +401,12 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
     @property
     def device_info(self):
         """Device info for neato robot."""
-        return {"identifiers": {(DOMAIN, self._unique_id)},
+        return {
+            "identifiers": {(DOMAIN, self._unique_id)},
             "manufacturer": "WorldTidesInfo",
-            "sw_version" : SERVER_API_VERSION,
-            "name" : self._name+"_server",
-            "model" : "WorldTidesInfoAPI"
+            "sw_version": SERVER_API_VERSION,
+            "name": self._name + "_server",
+            "model": "WorldTidesInfoAPI",
         }
 
     @property
@@ -586,7 +588,6 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
     def unique_id(self):
         return self._unique_id + "_next_low_tide_height"
 
-
     @property
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
@@ -686,7 +687,6 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
     def unique_id(self):
         return self._unique_id + "_next_low_tide_time"
 
-
     @property
     def device_state_attributes(self):
         """Return the state attributes of this device."""
@@ -775,7 +775,6 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
     @property
     def unique_id(self):
         return self._unique_id + "_next_high_tide_height"
-
 
     @property
     def unit_of_measurement(self):
@@ -876,7 +875,6 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
     def unique_id(self):
         return self._unique_id + "_next_high_tide_time"
 
-
     @property
     def device_state_attributes(self):
         """Return the state attributes of this device."""
@@ -967,7 +965,6 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
     @property
     def unique_id(self):
         return self._unique_id + "_remaining_time_for_next_tide"
-
 
     @property
     def unit_of_measurement(self):
@@ -1069,7 +1066,6 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
     @property
     def unique_id(self):
         return self._unique_id + "_current_tide_amplitude"
-
 
     @property
     def unit_of_measurement(self):
@@ -1207,7 +1203,6 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
     @property
     def unique_id(self):
         return self._unique_id + "_current_tide_coeff_resp_MWS"
-
 
     @property
     def unit_of_measurement(self):
@@ -1362,7 +1357,6 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
     def unique_id(self):
         return self._unique_id + "_credit_used"
 
-
     @property
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
@@ -1391,7 +1385,6 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGener
     @property
     def unique_id(self):
         return self._unique_id + "_global_credit_used"
-
 
     @property
     def unit_of_measurement(self):
@@ -1434,7 +1427,6 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     @property
     def unique_id(self):
         return self._unique_id + ""
-
 
     @property
     def device_state_attributes(self):
