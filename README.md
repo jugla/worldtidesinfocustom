@@ -392,7 +392,9 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | **HA local time**  | gives the next tide low or high with HA local time     |
 | NAME_current_tide_height      |  v4.0.0 |  float | m/ft  | gives the current height      |
 | NAME_next_high_tide_height    |  v4.0.0 |  float | m/ft  | gives the next high tide height      |
-| NAME_next_low_tide_height     |  v4.0.0 |  float | m/ft  | gives the next low tide height      |
+| NAME_next_low_tide_height     |  v4.0.0 |  float | m/ft  | gives the next low tide height       |
+| NAME_credit_used              |  v4.1.0 |  int   | N/A   | gives instantaneous credit used (due to worldtides info request)     |
+| NAME_global_credit_used       |  v4.1.0 |  int   | N/A   | gives instantaneous credit used for all monitored location.      |
 
 The platform create one camera (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
