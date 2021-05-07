@@ -31,11 +31,13 @@ Please refer to [https://www.worldtides.info/developer](https://www.worldtides.i
 1. Select worldtidesinfocustom and install 
 
 ### Manual
+<details><summary>Manual Procedure</summary>
 1. Download the folder worldtidesinfocustom from the latest [release](https://github.com/jugla/worldtidesinfocustom/releases) (with right click, save 
 link as) 
 1. Place the downloaded directory on your Home Assistant machine in the `config/custom_components` folder (when there is no `custom_components` folder in the 
 folder where your `configuration.yaml` file is, create it and place the directory there) 
 1. restart HomeAssistant
+</details>
 
 ## Breaking change
 <details><summary>detail description</summary>
@@ -51,11 +53,14 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 </details>
 
 ## Using the component
-Get API key from https://www.worldtides.info/developer (buy prepaid)
+- Get API key from https://www.worldtides.info/developer (buy prepaid)
 
-Then either 
-- use UI 
-- or in configuration.yaml, declare :
+Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
+
+
+- **Use UI (Integration)** 
+
+*Deprecated* in configuration.yaml, declare :
 <details><summary>Example of YAML</summary>
   
 ```yaml
@@ -93,8 +98,8 @@ and  optional parameter
 
 </details>
 
-Several snesors and one camera are provided with attibutes. 
-To see these attributes as sensor, you have to declare them inside `configuration.yaml`. 
+Several sensors and one camera are provided with attibutes. 
+To see some attributes as sensor, you have to use template inside `configuration.yaml`. 
 <details><summary>Please follow the hereafter example</summary>
 
 ```yaml
@@ -150,6 +155,9 @@ camera:
 
 ```
 </details>
+
+## Lovelace example
+
 
 Hereafter the display of attributes within lovelace UI
 
@@ -360,7 +368,7 @@ Hereafter an example of the default map under lovelace UI
 </p>
 
 
-## Detail Configuration parameter for UI, and sensor for YAML
+## Detail Configuration parameter for UI, (*Deprecated* for YAML for sensor)
 
 | Name              | Type                                                           | Requirement  | Supported | Default value        | Config                             | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|--------------|-----------|----------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
@@ -375,15 +383,13 @@ Hereafter an example of the default map under lovelace UI
 | plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI                                                                                                                                                                   | string that represents the comma-separated RGB values for the tide graph background color |  
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 
-## Detail Configuration parameter for camera for YAML
+## Camera are automatically created by UI , Hereafter *deprecated method* for camera for YAML
 
 | Name              | Type                                                           | Requirement  | Supported | Default value        | Config                             | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|--------------|-----------|----------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | name              | string                                                         | **Required** | v4.0.0    | worldtidesinfocustom | YAML                                                                                                                                                                | name for sensor entity  (the **name of SENSOR of YAML**)                                             |
 
 
-## about vertical reference
-Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
 
 ## Detail Sensor attribute description
 The platform create several sensors (name given in UI/configuration.yaml). 
@@ -395,6 +401,11 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME_next_low_tide_height     |  v4.0.0 |  float | m/ft  | gives the next low tide height       |
 | NAME_credit_used              |  v4.1.0 |  int   | N/A   | gives instantaneous credit used (due to worldtides info request)     |
 | NAME_global_credit_used       |  v4.1.0 |  int   | N/A   | gives instantaneous credit used for all monitored location.      |
+| NAME_remaining_time_for_next_tide | v4.2.0 |  float   | h   | gives remaining time to next tide.      |
+| NAME_next_low_tide_time | v4.2.0 |  H:M   | local   | gives local time of next low tide.      |
+| NAME_next_high_tide_time | v4.2.0 |  H:M   | local  | gives local time of next high tide      |
+| NAME_current_tide_coeff_resp_MWS | v4.2.0 |  float   | %   | gives coeff sensors.      |
+| NAME_current_tide_amplitude | v4.2.0 |  float   | m/ft   | gives current amplitude.      |
 
 The platform create one camera (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
@@ -431,7 +442,6 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- split in several sensors (V4.0.0)
 - make this integration as default in home assistant
 
 ## Contact
