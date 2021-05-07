@@ -301,22 +301,28 @@ class give_info_from_raw_data:
 
         if "High" in str(self._data["extremes"][next_tide]["type"]):
             high_tide_time_utc = self._data["extremes"][next_tide]["date"]
+            high_tide_time_epoch = self._data["extremes"][next_tide]["dt"]
             high_tide_height = self._data["extremes"][next_tide]["height"]
 
             low_tide_time_utc = self._data["extremes"][next_tide + 1]["date"]
+            low_tide_time_epoch = self._data["extremes"][next_tide + 1]["dt"]
             low_tide_height = self._data["extremes"][next_tide + 1]["height"]
 
         elif "Low" in str(self._data["extremes"][next_tide]["type"]):
             high_tide_time_utc = self._data["extremes"][next_tide + 1]["date"]
+            high_tide_time_epoch = self._data["extremes"][next_tide + 1]["dt"]
             high_tide_height = self._data["extremes"][next_tide + 1]["height"]
 
             low_tide_time_utc = self._data["extremes"][next_tide]["date"]
+            low_tide_time_epoch = self._data["extremes"][next_tide]["dt"]
             low_tide_height = self._data["extremes"][next_tide]["height"]
 
         return {
             "high_tide_time_utc": high_tide_time_utc,
+            "high_tide_time_epoch": high_tide_time_epoch,
             "high_tide_height": high_tide_height,
             "low_tide_time_utc": low_tide_time_utc,
+            "low_tide_time_epoch": low_tide_time_epoch,
             "low_tide_height": low_tide_height,
         }
 
