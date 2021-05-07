@@ -145,6 +145,8 @@ def setup_sensor(
         show_on_map,
         worldtide_data_coordinator,
     )
+
+    # next tide
     tides_next_low_tide_height = WorldTidesInfoCustomSensorNextLowTideHeight(
         hass,
         name,
@@ -153,7 +155,31 @@ def setup_sensor(
         worldtide_data_coordinator,
     )
 
+    tides_next_low_tide_time = WorldTidesInfoCustomSensorNextLowTideTime(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+
     tides_next_high_tide_height = WorldTidesInfoCustomSensorNextHighTideHeight(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+
+    tides_next_high_tide_time = WorldTidesInfoCustomSensorNextHighTideTime(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+    )
+
+    tides_next_remaining_time = WorldTidesInfoCustomSensorNextRemainingTideTime(
         hass,
         name,
         unit_to_display,
@@ -200,7 +226,10 @@ def setup_sensor(
         tides,
         tides_current_height,
         tides_next_low_tide_height,
+        tides_next_low_tide_time,
         tides_next_high_tide_height,
+        tides_next_high_tide_time,
+        tides_next_remaining_time,
         tides_current_amplitude,
         tides_current_coeff_resp_MWS,
         tides_credit_used,
@@ -606,6 +635,91 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         return state_value
 
 
+class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_next_low_tide_time"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next tide
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
+            attr["high_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("high_tide_time_epoch"))
+            )
+            attr["high_tide_height"] = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
+            attr["low_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("low_tide_time_epoch"))
+            )
+            attr["low_tide_height"] = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return attr
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        state_value = ""
+
+        current_time = time.time()
+
+        if self._worldtide_data_coordinator.no_data():
+            return state_value
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next low tide Height
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            state_value = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("low_tide_time_epoch"))
+            )
+        return state_value
+
+
 class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -697,6 +811,190 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
                 next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
                 ROUND_HEIGTH,
             )
+
+        return state_value
+
+
+class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGeneric):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_next_high_tide_time"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next tide
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
+            attr["high_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("high_tide_time_epoch"))
+            )
+            attr["high_tide_height"] = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
+            attr["low_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("low_tide_time_epoch"))
+            )
+            attr["low_tide_height"] = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return attr
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        state_value = ""
+
+        current_time = time.time()
+
+        if self._worldtide_data_coordinator.no_data():
+            return state_value
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next low tide Height
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            state_value = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("high_tide_time_epoch"))
+            )
+        return state_value
+
+
+class WorldTidesInfoCustomSensorNextRemainingTideTime(
+    WorldTidesInfoCustomSensorGeneric
+):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + "_remaining_for_next_tide"
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        return "h"
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+
+        current_time = time.time()
+
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            convert_meter_to_feet = FT_PER_M
+            convert_km_to_miles = MI_PER_KM
+        else:
+            convert_meter_to_feet = 1
+            convert_km_to_miles = 1
+
+        # Unit system
+        attr["Unit displayed"] = self._unit_to_display
+
+        if self._worldtide_data_coordinator.no_data():
+            return attr
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Next tide
+        next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        if next_tide_UTC.get("error") == None:
+            attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
+            attr["high_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("high_tide_time_epoch"))
+            )
+            attr["high_tide_height"] = round(
+                next_tide_UTC.get("high_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+            attr["low_tide_time_utc"] = next_tide_UTC.get("low_tide_time_utc")
+            attr["low_tide_time_local"] = time.strftime(
+                "%H:%M", time.localtime(next_tide_UTC.get("low_tide_time_epoch"))
+            )
+            attr["low_tide_height"] = round(
+                next_tide_UTC.get("low_tide_height") * convert_meter_to_feet,
+                ROUND_HEIGTH,
+            )
+
+        return attr
+
+    @property
+    def state(self):
+        """Return the state of the device."""
+        current_time = time.time()
+        state_value = 0
+
+        if self._worldtide_data_coordinator.no_data():
+            return state_value
+
+        # retrieve tide data (current & previous)
+        data_result = self._worldtide_data_coordinator.get_data()
+        data = data_result.get("current_data")
+        previous_data = data_result.get("previous_data")
+
+        # the decoder
+        tide_info = give_info_from_raw_data_N_and_N_1(data, previous_data)
+
+        # Compute remainig time
+        # time_to_next_tide
+        next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
+
+        # initialize data for delta time
+        delta_current_time_to_next = 0
+
+        # compute delta tide to next tide
+        if next_tide_in_epoch.get("error") == None:
+            delta_current_time_to_next = (
+                next_tide_in_epoch.get("tide_time") - current_time
+            )
+        state_value = round(delta_current_time_to_next / 60 / 60, 2)
 
         return state_value
 
