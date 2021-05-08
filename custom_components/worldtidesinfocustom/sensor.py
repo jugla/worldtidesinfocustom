@@ -24,7 +24,6 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
-
 # Component Library
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
 from .const import (
@@ -55,7 +54,32 @@ from .py_worldtidesinfo import (
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
-    SERVER_API_VERSION,
+)
+
+# sensor_service
+from .sensor_service import (
+    convert_to_peform,
+    current_amplitude_attribute,
+    current_amplitude_state,
+    current_coeff_state,
+    current_height_attribute,
+    current_height_state,
+    get_all_tide_info,
+    get_tide_info,
+    get_tide_info_and_offset,
+    icon_tendancy,
+    next_amplitude_attribute,
+    next_high_tide_height_state,
+    next_high_tide_time_state,
+    next_low_tide_height_state,
+    next_low_tide_time_state,
+    next_tide_attribute,
+    next_tide_state,
+    remaining_time_to_next_tide,
+    schedule_time_attribute,
+    tide_station_attribute,
+    tide_tendancy_attribute,
+    worldtidesinfo_unique_id,
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
@@ -427,7 +451,7 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
         current_time = time.time()
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
-        return icon_tendancy(tide_info,current_time)
+        return icon_tendancy(tide_info, current_time)
 
     # state : to be defined by class
 
@@ -468,7 +492,9 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -476,7 +502,9 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # The height
-        attr.update(current_height_attribute(tide_info, current_time, convert_meter_to_feet))
+        attr.update(
+            current_height_attribute(tide_info, current_time, convert_meter_to_feet)
+        )
 
         return attr
 
@@ -485,12 +513,14 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         """Return the state of the device."""
 
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # The height
-        return current_height_state(tide_info,current_time, convert_meter_to_feet)
+        return current_height_state(tide_info, current_time, convert_meter_to_feet)
 
 
 class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGeneric):
@@ -518,7 +548,9 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -533,14 +565,14 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
 
         return attr
 
-
-
     @property
     def state(self):
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         if self._worldtide_data_coordinator.no_data():
@@ -549,7 +581,9 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # Next low tide Height
-        state_value = next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet)
+        state_value = next_low_tide_height_state(
+            tide_info, current_time, convert_meter_to_feet
+        )
         return state_value
 
 
@@ -570,7 +604,9 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -626,7 +662,9 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -646,7 +684,9 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         if self._worldtide_data_coordinator.no_data():
@@ -655,7 +695,9 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # Next low tide Height
-        state_value = next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet)
+        state_value = next_high_tide_height_state(
+            tide_info, current_time, convert_meter_to_feet
+        )
 
         return state_value
 
@@ -677,7 +719,9 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -732,7 +776,9 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -759,7 +805,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # Compute remainig time
-        state_value = remaining_time_to_next_tide(tide_info,current_time)
+        state_value = remaining_time_to_next_tide(tide_info, current_time)
         return state_value
 
 
@@ -788,7 +834,9 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -797,8 +845,14 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
             return attr
 
         # the tide info : coeff and amplitude
-        tide_info, datums_info = get_tide_info_and_offset(self._worldtide_data_coordinator)
-        attr.update(current_amplitude_attribute(tide_info,datums_info ,current_time, convert_meter_to_feet))
+        tide_info, datums_info = get_tide_info_and_offset(
+            self._worldtide_data_coordinator
+        )
+        attr.update(
+            current_amplitude_attribute(
+                tide_info, datums_info, current_time, convert_meter_to_feet
+            )
+        )
 
         return attr
 
@@ -807,15 +861,21 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         if self._worldtide_data_coordinator.no_data():
             return state_value
 
         # the tide info : amplitude
-        tide_info, datums_info = get_tide_info_and_offset(self._worldtide_data_coordinator)
-        state_value = current_amplitude_state(tide_info,datums_info,current_time, convert_meter_to_feet)
+        tide_info, datums_info = get_tide_info_and_offset(
+            self._worldtide_data_coordinator
+        )
+        state_value = current_amplitude_state(
+            tide_info, datums_info, current_time, convert_meter_to_feet
+        )
 
         return state_value
 
@@ -842,7 +902,9 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -851,8 +913,14 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
             return attr
 
         # the tide info: compute amplitude and coeff
-        tide_info, datums_info = get_tide_info_and_offset(self._worldtide_data_coordinator)
-        attr.update(current_amplitude_attribute(tide_info,datums_info ,current_time, convert_meter_to_feet))
+        tide_info, datums_info = get_tide_info_and_offset(
+            self._worldtide_data_coordinator
+        )
+        attr.update(
+            current_amplitude_attribute(
+                tide_info, datums_info, current_time, convert_meter_to_feet
+            )
+        )
 
         return attr
 
@@ -861,15 +929,21 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         if self._worldtide_data_coordinator.no_data():
             return state_value
 
         # the tide info : coeff
-        tide_info, datums_info = get_tide_info_and_offset(self._worldtide_data_coordinator)
-        state_value = current_coeff_state(tide_info,datums_info,current_time, convert_meter_to_feet)
+        tide_info, datums_info = get_tide_info_and_offset(
+            self._worldtide_data_coordinator
+        )
+        state_value = current_coeff_state(
+            tide_info, datums_info, current_time, convert_meter_to_feet
+        )
 
         return state_value
 
@@ -962,7 +1036,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet , convert_km_to_miles = convert_to_peform(self._unit_to_display)
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
 
         # Unit system
         attr["Unit displayed"] = self._unit_to_display
@@ -971,7 +1047,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
             return attr
 
         # the tide info
-        tide_info, datums_info, init_tide_info = get_all_tide_info(self._worldtide_data_coordinator)
+        tide_info, datums_info, init_tide_info = get_all_tide_info(
+            self._worldtide_data_coordinator
+        )
 
         # The vertical reference used : LAT, ...
         vertical_ref = tide_info.give_vertical_ref()
@@ -988,19 +1066,29 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
             attr["tidal_station_used"] = "No Tide station used"
 
         # Next tide : height and time
-        attr.update(next_tide_attribute(tide_info,current_time, convert_meter_to_feet))
+        attr.update(next_tide_attribute(tide_info, current_time, convert_meter_to_feet))
 
         # Tide Tendancy and time_to_next_tide
-        attr.update(tide_tendancy_attribute(tide_info,current_time))
+        attr.update(tide_tendancy_attribute(tide_info, current_time))
 
         # Next Amplitude , Coeff
-        attr.update(next_amplitude_attribute(tide_info,datums_info ,current_time, convert_meter_to_feet))
+        attr.update(
+            next_amplitude_attribute(
+                tide_info, datums_info, current_time, convert_meter_to_feet
+            )
+        )
 
         # The height
-        attr.update(current_height_attribute(tide_info, current_time, convert_meter_to_feet))
+        attr.update(
+            current_height_attribute(tide_info, current_time, convert_meter_to_feet)
+        )
 
         # Current Amplitude , Coeff
-        attr.update(current_amplitude_attribute(tide_info,datums_info ,current_time, convert_meter_to_feet))
+        attr.update(
+            current_amplitude_attribute(
+                tide_info, datums_info, current_time, convert_meter_to_feet
+            )
+        )
 
         # The credit used to display the update
         attr["CreditCallUsed"] = self._worldtide_data_coordinator.get_credit_used()
@@ -1012,7 +1100,11 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         attr["plot"] = self._worldtide_data_coordinator.get_curve_filename()
 
         # Tide detailed characteristic
-        attr.update(tide_station_attribute(self._worldtide_data_coordinator,init_tide_info,convert_km_to_miles))
+        attr.update(
+            tide_station_attribute(
+                self._worldtide_data_coordinator, init_tide_info, convert_km_to_miles
+            )
+        )
 
         # Displaying the geography on the map relies upon putting the latitude/longitude
         # in the entity attributes with "latitude" and "longitude" as the keys.
@@ -1033,7 +1125,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # give next tide
-        return next_tide_state(tide_info,current_time)
+        return next_tide_state(tide_info, current_time)
 
     def update(self):
         """Update of sensors."""
