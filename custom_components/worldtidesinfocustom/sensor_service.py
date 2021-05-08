@@ -3,7 +3,6 @@ import time
 from datetime import datetime, timedelta
 
 # import HA
-
 from homeassistant.const import (
     LENGTH_FEET,
     LENGTH_KILOMETERS,
@@ -45,6 +44,7 @@ def worldtidesinfo_unique_id(lat, long):
 
 
 def convert_to_peform(unit_to_display):
+    """compute the conversion value Metric/Imperial"""
     if unit_to_display == IMPERIAL_CONF_UNIT:
         convert_meter_to_feet = FT_PER_M
         convert_km_to_miles = MI_PER_KM
@@ -55,6 +55,7 @@ def convert_to_peform(unit_to_display):
 
 
 def get_all_tide_info(worldtide_data_coordinator):
+    """Retrieve the tide data within its decoder"""
     # retrieve tide data (current & previous)
     data_result = worldtide_data_coordinator.get_data()
     data = data_result.get("current_data")
@@ -73,6 +74,7 @@ def get_all_tide_info(worldtide_data_coordinator):
 
 
 def get_tide_info_and_offset(worldtide_data_coordinator):
+    """Retrieve the tide data within its decoder"""
     tide_info, datums_info, init_tide_info = get_all_tide_info(
         worldtide_data_coordinator
     )
@@ -81,6 +83,7 @@ def get_tide_info_and_offset(worldtide_data_coordinator):
 
 
 def get_tide_info(worldtide_data_coordinator):
+    """Retrieve the tide data within its decoder"""
     tide_info, datums_info, init_tide_info = get_all_tide_info(
         worldtide_data_coordinator
     )
@@ -88,6 +91,7 @@ def get_tide_info(worldtide_data_coordinator):
 
 
 def current_height_attribute(tide_info, current_time, convert_meter_to_feet):
+    """Compute attributes linked to current height"""
     attr = {}
 
     current_height_value = tide_info.give_current_height_in_UTC(current_time)
@@ -102,6 +106,7 @@ def current_height_attribute(tide_info, current_time, convert_meter_to_feet):
 
 
 def current_height_state(tide_info, current_time, convert_meter_to_feet):
+    """Compute state linked to current height"""
     state_value = 0
     attr = current_height_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("current_height") != None:
@@ -110,6 +115,7 @@ def current_height_state(tide_info, current_time, convert_meter_to_feet):
 
 
 def next_tide_attribute(tide_info, current_time, convert_meter_to_feet):
+    """Compute attributes linked to next tide"""
     attr = {}
 
     next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
@@ -135,6 +141,7 @@ def next_tide_attribute(tide_info, current_time, convert_meter_to_feet):
 
 
 def next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet):
+    """Compute low tide state linked to next tide"""
     state_value = 0
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("low_tide_height") != None:
@@ -143,6 +150,7 @@ def next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet):
 
 
 def next_low_tide_time_state(tide_info, current_time):
+    """Compute low tide state linked to next tide"""
     state_value = ""
     # do as if no conversion in meter
     convert_meter_to_feet = 1
@@ -153,6 +161,7 @@ def next_low_tide_time_state(tide_info, current_time):
 
 
 def next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet):
+    """Compute hight tide state linked to next tide"""
     state_value = 0
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("high_tide_height") != None:
@@ -161,6 +170,7 @@ def next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet):
 
 
 def next_high_tide_time_state(tide_info, current_time):
+    """Compute hight tide state linked to next tide"""
     state_value = ""
     # do as if no conversion in meter
     convert_meter_to_feet = 1
@@ -171,6 +181,7 @@ def next_high_tide_time_state(tide_info, current_time):
 
 
 def remaining_time_to_next_tide(tide_info, current_time):
+    """Compute the time needed to reach next tide"""
     # time_to_next_tide
     next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
 
@@ -187,6 +198,7 @@ def remaining_time_to_next_tide(tide_info, current_time):
 def amplitude_attribute(
     next_flag, tide_info, datums_info, current_time, convert_meter_to_feet
 ):
+    """Compute amplitude tide attribute linked to current/next tide"""
     attr = {}
     if next_flag:
         next_string = "next_"
@@ -226,6 +238,7 @@ def amplitude_attribute(
 def current_amplitude_attribute(
     tide_info, datums_info, current_time, convert_meter_to_feet
 ):
+    """Compute amplitude tide attribute linked to current tide"""
     next_flag = False
     return amplitude_attribute(
         next_flag, tide_info, datums_info, current_time, convert_meter_to_feet
@@ -235,6 +248,7 @@ def current_amplitude_attribute(
 def next_amplitude_attribute(
     tide_info, datums_info, current_time, convert_meter_to_feet
 ):
+    """Compute amplitude tide attribute linked to next tide"""
     next_flag = True
     return amplitude_attribute(
         next_flag, tide_info, datums_info, current_time, convert_meter_to_feet
@@ -244,6 +258,7 @@ def next_amplitude_attribute(
 def current_amplitude_state(
     tide_info, datums_info, current_time, convert_meter_to_feet
 ):
+    """Compute amplitude tide state linked to current tide"""
     state_value = 0
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
@@ -254,6 +269,7 @@ def current_amplitude_state(
 
 
 def current_coeff_state(tide_info, datums_info, current_time, convert_meter_to_feet):
+    """Compute coeff MWS tide state linked to current tide"""
     state_value = 0
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
@@ -264,6 +280,7 @@ def current_coeff_state(tide_info, datums_info, current_time, convert_meter_to_f
 
 
 def tide_tendancy_attribute(tide_info, current_time):
+    """Compute current tide tendancy attribute"""
     attr = {}
     # Tide Tendancy and time_to_next_tide
     next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
@@ -323,6 +340,7 @@ def tide_tendancy_attribute(tide_info, current_time):
 
 
 def icon_tendancy(tide_info, current_time):
+    """Compute icon based on tendancy"""
     attr = tide_tendancy_attribute(tide_info, current_time)
     icon = "mdi:shore"
 
@@ -341,6 +359,7 @@ def icon_tendancy(tide_info, current_time):
 
 
 def schedule_time_attribute(worldtide_data_coordinator):
+    """Compute attribute for time scheduler"""
     attr = {}
 
     schedule_time_result = worldtide_data_coordinator.get_schedule_time()
@@ -375,6 +394,7 @@ def schedule_time_attribute(worldtide_data_coordinator):
 def tide_station_attribute(
     worldtide_data_coordinator, init_tide_info, convert_km_to_miles
 ):
+    """Compute tide station attribute"""
     attr = {}
 
     # Tide detailed characteristic
@@ -401,6 +421,7 @@ def tide_station_attribute(
 
 
 def next_tide_state(tide_info, current_time):
+    """Compute next tide state"""
     # Get next tide time
     next_tide = tide_info.give_next_tide_in_epoch(current_time)
     if next_tide.get("error") == None:
