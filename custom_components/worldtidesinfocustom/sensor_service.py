@@ -2,8 +2,6 @@
 import time
 from datetime import datetime, timedelta
 
-# import HA
-
 from homeassistant.const import (
     LENGTH_FEET,
     LENGTH_KILOMETERS,
@@ -11,6 +9,9 @@ from homeassistant.const import (
     LENGTH_MILES,
 )
 from homeassistant.util.distance import convert as dist_convert
+
+# import HA
+
 
 KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
