@@ -34,7 +34,6 @@ from .const import (
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
-    DEBUG_FLAG,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
@@ -55,10 +54,8 @@ from .py_worldtidesinfo import (
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
-    SERVER_API_VERSION,
 )
 
-# sensor_service
 # sensor_service
 from .sensor_service import (
     convert_to_peform,
@@ -70,6 +67,7 @@ from .sensor_service import (
     get_all_tide_info,
     get_tide_info,
     get_tide_info_and_offset,
+    give_unit_attribute,
     icon_tendancy,
     next_amplitude_attribute,
     next_high_tide_height_state,
@@ -215,7 +213,6 @@ def setup_sensor(
     )
 
     # amplitude
-
     tides_current_amplitude = WorldTidesInfoCustomSensorCurrentAmplitude(
         hass,
         name,
@@ -475,7 +472,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         # the tide info
         tide_info = get_tide_info(self._worldtide_data_coordinator)
@@ -531,7 +528,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -587,7 +584,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -645,7 +642,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -702,7 +699,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -759,7 +756,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -817,7 +814,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -885,7 +882,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
@@ -1019,7 +1016,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         )
 
         # Unit system
-        attr["Unit displayed"] = self._unit_to_display
+        attr.update(give_unit_attribute(self._unit_to_display))
 
         if self._worldtide_data_coordinator.no_data():
             return attr
