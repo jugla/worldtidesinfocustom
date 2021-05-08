@@ -173,6 +173,7 @@ class TidesCurvePicture(Camera):
             "sw_version": SERVER_API_VERSION,
             "name": self._name + "_server",
             "model": "WorldTidesInfoAPI",
+            "entry_type": "service",
         }
 
     def no_data(self):
