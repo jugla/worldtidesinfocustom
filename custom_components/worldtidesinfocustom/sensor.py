@@ -54,6 +54,7 @@ from .py_worldtidesinfo import (
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
+    SERVER_API_VERSION,
 )
 
 # sensor_service
