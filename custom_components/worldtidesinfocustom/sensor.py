@@ -407,6 +407,7 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
             "sw_version": SERVER_API_VERSION,
             "name": self._name + "_server",
             "model": "WorldTidesInfoAPI",
+            "entry_type": "service",
         }
 
     @property
