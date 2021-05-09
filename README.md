@@ -32,6 +32,7 @@ Please refer to [https://www.worldtides.info/developer](https://www.worldtides.i
 
 ### Manual
 <details><summary>Manual Procedure</summary>
+  
 1. Download the folder worldtidesinfocustom from the latest [release](https://github.com/jugla/worldtidesinfocustom/releases) (with right click, save 
 link as) 
 1. Place the downloaded directory on your Home Assistant machine in the `config/custom_components` folder (when there is no `custom_components` folder in the 
