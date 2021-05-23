@@ -443,6 +443,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
+- see how to make a marker on tide picture (camera) on current time
 - make this integration as default in home assistant
 
 ## Contact
