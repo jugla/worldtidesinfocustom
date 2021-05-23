@@ -24,6 +24,7 @@ Please refer to [https://www.worldtides.info/developer](https://www.worldtides.i
 
 
 ## Installation
+Either use HACS (default), either manual
 ### [HACS](https://hacs.xyz/) (Home Assistant Community Store) 
 1. Go to HACS page on your Home Assistant instance 
 1. Select `integration` 
@@ -56,12 +57,15 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 ## Using the component
 - Get API key from https://www.worldtides.info/developer (buy prepaid)
 
-Different Vertical reference can be used for tide. Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
+- During configuration, you can define a Vertical Reference (default is LAT).
+Please go to this page that explain [https://www.sailingissues.com/navcourse7.html](https://www.sailingissues.com/navcourse7.html)
 
+- Either UI (prefered), either YAML (deprecated) :
 
-- **Use UI (Integration)** 
+   - **Use UI (Integration)** 
 
-*Deprecated* in configuration.yaml, declare :
+   - *Deprecated* in configuration.yaml, declare :
+
 <details><summary>Example of YAML</summary>
   
 ```yaml
@@ -99,7 +103,7 @@ and  optional parameter
 
 </details>
 
-Several sensors and one camera are provided with attibutes. 
+- Several sensors and one camera are provided with attibutes. 
 To see some attributes as sensor, you have to use template inside `configuration.yaml`. 
 <details><summary>Please follow the hereafter example</summary>
 
