@@ -36,6 +36,10 @@ from .py_worldtidesinfo import (
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
+# matplot lib
+from matplotlib import pyplot as plt
+from .sensor_service import convert_to_peform
+
 
 class WordTide_Data_Coordinator:
     """End Point to Fetch Data and to maintain cache"""
@@ -53,6 +57,8 @@ class WordTide_Data_Coordinator:
         tide_station_distance,
         unit_to_display,
     ):
+        ### for trace
+        self._name = name
 
         ### Self
         self._tide_picture_file = None
@@ -83,6 +89,10 @@ class WordTide_Data_Coordinator:
         )
         self._tide_cache_file = tide_cache_file
 
+        ### Self
+        self._tide_plot_filename = filenames.get("plot_filename")
+
+
         # unit used for display, and convert tide station distance
         if unit_to_display == IMPERIAL_CONF_UNIT:
             server_tide_station_distance = tide_station_distance * KM_PER_MI
@@ -90,6 +100,9 @@ class WordTide_Data_Coordinator:
         else:
             server_tide_station_distance = tide_station_distance
             unit_curve_picture = PLOT_CURVE_UNIT_M
+
+        #### Self
+        self._unit_to_display = unit_to_display
 
         # instanciate server front end
         worldtidesinfo_server = WorldTidesInfo_server(
@@ -263,6 +276,50 @@ class WordTide_Data_Coordinator:
             _LOGGER.debug(
                 "Tide data not need to be requeried at: %s", int(current_time)
             )
+
+        # generate a plot curve at each update
+        # create a plot
+        data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
+
+        current_time = time.time()
+        current_time_string = time.strftime(
+                   "%H:%M", time.localtime(current_time)
+        )
+
+        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+            self._unit_to_display
+        )
+
+        current_height_index = 0
+        height_value = []
+        height_time = []
+        for height_index in range(len(data["heights"])):
+            if current_time > data["heights"][height_index]["dt"]:
+                current_height_index = height_index
+            height_current_value = data["heights"][height_index]["height"]*convert_meter_to_feet
+            height_current_time = data["heights"][height_index]["dt"]
+            # draw below 24h : from -6h to 18h
+            if (((height_current_time - current_time)/60/60) > -6 ) and (((height_current_time - current_time)/60/60) < (3*6) ):
+                height_value.append(height_current_value)
+                height_time.append((height_current_time - current_time)/60/60)
+        # current time and height
+        current_height_value = []
+        current_height_time = []
+        current_height_value_sample = data["heights"][current_height_index]["height"]*convert_meter_to_feet
+        current_height_value.append(current_height_value_sample)
+        current_height_time_sample = data["heights"][current_height_index]["dt"]
+        current_height_time.append((current_height_time_sample - current_time)/60/60)
+
+        # name is used as an id --> all coordinators works in //
+        fig = plt.figure(self._name)
+        fig.clf()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(height_time,height_value)
+        ax.plot(current_height_time,current_height_value,color='red',marker = 'o')
+        ax.set_ylabel('height '+self._unit_to_display)
+        ax.set_xlabel('time in hour respect to '+current_time_string)
+        fig.savefig(self._tide_plot_filename)
+
         return True
 
     def update_server_data(self):

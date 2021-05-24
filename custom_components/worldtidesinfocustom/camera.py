@@ -78,14 +78,23 @@ def setup_camera(
 ):
     """setup camera"""
     unique_id = worldtidesinfo_unique_id(lat, lon)
+    filename = give_persistent_filename(hass, name)
 
     curve_picture = TidesCurvePicture(
         hass,
         name,
         unique_id,
+        filename.get("curve_filename")
     )
 
-    return [curve_picture]
+    plot_picture = TidesPlotPicture(
+        hass,
+        name,
+        unique_id,
+        filename.get("plot_filename")
+    )
+
+    return [curve_picture, plot_picture]
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -138,7 +147,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(tides_cameras)
 
 
-class TidesCurvePicture(Camera):
+class TidesPicture_FromFile(Camera):
     """Curve Picture."""
 
     def __init__(
@@ -146,13 +155,15 @@ class TidesCurvePicture(Camera):
         hass,
         name,
         unique_id,
+        image_filename,
     ):
         """Initialize Curve Picture."""
         super().__init__()
         self._hass = hass
+
         # Parameters from configuration.yaml
         self._name = name
-
+        self._image_filename = image_filename
         self._unique_id = unique_id
 
         # DATA
@@ -160,9 +171,6 @@ class TidesCurvePicture(Camera):
         self._last_requested_date = None
         self._image = None
 
-        self._image_filename = (give_persistent_filename(hass, name)).get(
-            "curve_filename"
-        )
 
     @property
     def device_info(self):
@@ -189,7 +197,7 @@ class TidesCurvePicture(Camera):
         current_time = time.time()
         read_ok = False
         read_image = None
-        _LOGGER.debug("Sync Fetch new picture image from %s", self._name)
+        _LOGGER.debug("Sync Fetch new picture image from %s", self._image_filename)
         """Return image response."""
         try:
             with open(self._image_filename, "rb") as file:
@@ -212,14 +220,8 @@ class TidesCurvePicture(Camera):
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 
-    @property
-    def name(self):
-        """Return the name."""
-        return self._name + "_curve_picture"
 
-    @property
-    def unique_id(self):
-        return self._unique_id + "_curve_picture"
+    # name and unique_id function shall be implemented
 
     @property
     def extra_state_attributes(self):
@@ -238,3 +240,32 @@ class TidesCurvePicture(Camera):
                 "%H:%M:%S %d/%m/%y", time.localtime(self._last_requested_date)
             )
         return attr
+
+
+
+class TidesCurvePicture(TidesPicture_FromFile):
+    """Curve Picture."""
+
+    @property
+    def name(self):
+        """Return the name."""
+        return self._name + "_curve_picture"
+
+    @property
+    def unique_id(self):
+        return self._unique_id + "_curve_picture"
+
+
+class TidesPlotPicture(TidesPicture_FromFile):
+    """Plot Picture."""
+
+    @property
+    def name(self):
+        """Return the name."""
+        return self._name + "_plot_picture"
+
+    @property
+    def unique_id(self):
+        return self._unique_id + "_plot_picture"
+
+

@@ -175,6 +175,7 @@ async def async_reload_entry(hass, config_entry):
 def give_persistent_filename(hass, name):
     """give persistent data filename"""
     curve_filename = hass.config.path(WWW_PATH, name + ".png")
+    plot_filename = hass.config.path(WWW_PATH, name + "_plot.png")
 
     persistent_data_filename = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
@@ -182,6 +183,7 @@ def give_persistent_filename(hass, name):
 
     return {
         "curve_filename": curve_filename,
+        "plot_filename": plot_filename,
         "persistent_data_filename": persistent_data_filename,
     }
 
@@ -195,7 +197,12 @@ async def async_remove_entry(hass, config_entry):
 
     filenames = give_persistent_filename(hass, name)
 
+    ## picture from server
     if os.path.isfile(filenames.get("curve_filename")):
         os.remove(filenames.get("curve_filename"))
+    ## picture compute with matplotlib
+    if os.path.isfile(filenames.get("plot_filename")):
+        os.remove(filenames.get("plot_filename"))
+    ## persistent data
     if os.path.isfile(filenames.get("persistent_data_filename")):
         os.remove(filenames.get("persistent_data_filename"))
