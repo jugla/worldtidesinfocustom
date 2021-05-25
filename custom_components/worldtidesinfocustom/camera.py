@@ -83,17 +83,11 @@ def setup_camera(
     filename = give_persistent_filename(hass, name)
 
     curve_picture = TidesCurvePicture(
-        hass,
-        name,
-        unique_id,
-        filename.get("curve_filename")
+        hass, name, unique_id, filename.get("curve_filename")
     )
 
     plot_picture = TidesPlotPicture(
-        hass,
-        name,
-        unique_id,
-        filename.get("plot_filename")
+        hass, name, unique_id, filename.get("plot_filename")
     )
 
     return [curve_picture, plot_picture]
@@ -173,7 +167,6 @@ class TidesPicture_FromFile(Camera):
         self._last_requested_date = None
         self._image = None
 
-
     @property
     def device_info(self):
         """Device info for neato robot."""
@@ -222,7 +215,6 @@ class TidesPicture_FromFile(Camera):
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 
-
     # name and unique_id function shall be implemented
 
     @property
@@ -242,7 +234,6 @@ class TidesPicture_FromFile(Camera):
                 "%H:%M:%S %d/%m/%y", time.localtime(self._last_requested_date)
             )
         return attr
-
 
 
 class TidesCurvePicture(TidesPicture_FromFile):
@@ -269,5 +260,3 @@ class TidesPlotPicture(TidesPicture_FromFile):
     @property
     def unique_id(self):
         return self._unique_id + CAMERA_PLOT_PICTURE_SUFFIX
-
-

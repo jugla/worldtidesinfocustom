@@ -91,12 +91,12 @@ def get_tide_info(worldtide_data_coordinator):
     )
     return tide_info
 
+
 def give_unit_attribute(unit_to_display):
     """give the unit attributes"""
     attr = {}
     attr["Unit displayed"] = unit_to_display
     return attr
-
 
 
 def current_height_attribute(tide_info, current_time, convert_meter_to_feet):
