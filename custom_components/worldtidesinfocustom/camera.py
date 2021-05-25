@@ -30,6 +30,8 @@ from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 from . import give_persistent_filename
 from .const import (
     ATTRIBUTION,
+    CAMERA_CURVE_PICTURE_SUFFIX,
+    CAMERA_PLOT_PICTURE_SUFFIX,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
@@ -81,17 +83,11 @@ def setup_camera(
     filename = give_persistent_filename(hass, name)
 
     curve_picture = TidesCurvePicture(
-        hass,
-        name,
-        unique_id,
-        filename.get("curve_filename")
+        hass, name, unique_id, filename.get("curve_filename")
     )
 
     plot_picture = TidesPlotPicture(
-        hass,
-        name,
-        unique_id,
-        filename.get("plot_filename")
+        hass, name, unique_id, filename.get("plot_filename")
     )
 
     return [curve_picture, plot_picture]
@@ -171,7 +167,6 @@ class TidesPicture_FromFile(Camera):
         self._last_requested_date = None
         self._image = None
 
-
     @property
     def device_info(self):
         """Device info for neato robot."""
@@ -220,7 +215,6 @@ class TidesPicture_FromFile(Camera):
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 
-
     # name and unique_id function shall be implemented
 
     @property
@@ -242,18 +236,17 @@ class TidesPicture_FromFile(Camera):
         return attr
 
 
-
 class TidesCurvePicture(TidesPicture_FromFile):
     """Curve Picture."""
 
     @property
     def name(self):
         """Return the name."""
-        return self._name + "_curve_picture"
+        return self._name + CAMERA_CURVE_PICTURE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_curve_picture"
+        return self._unique_id + CAMERA_CURVE_PICTURE_SUFFIX
 
 
 class TidesPlotPicture(TidesPicture_FromFile):
@@ -262,10 +255,8 @@ class TidesPlotPicture(TidesPicture_FromFile):
     @property
     def name(self):
         """Return the name."""
-        return self._name + "_plot_picture"
+        return self._name + CAMERA_PLOT_PICTURE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_plot_picture"
-
-
+        return self._unique_id + CAMERA_PLOT_PICTURE_SUFFIX

@@ -82,3 +82,7 @@ ROUND_HOUR = 2
 
 # Half Tide Slack Duration in seconds
 HALF_TIDE_SLACK_DURATION = 3600
+
+# set constant to give suffix to camera and sensor name
+CAMERA_PLOT_PICTURE_SUFFIX = "_plot_picture"
+CAMERA_CURVE_PICTURE_SUFFIX = "_curve_picture"
