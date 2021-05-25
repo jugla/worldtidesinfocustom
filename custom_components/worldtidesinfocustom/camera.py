@@ -30,6 +30,8 @@ from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 from . import give_persistent_filename
 from .const import (
     ATTRIBUTION,
+    CAMERA_CURVE_PICTURE_SUFFIX,
+    CAMERA_PLOT_PICTURE_SUFFIX,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
@@ -249,11 +251,11 @@ class TidesCurvePicture(TidesPicture_FromFile):
     @property
     def name(self):
         """Return the name."""
-        return self._name + "_curve_picture"
+        return self._name + CAMERA_CURVE_PICTURE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_curve_picture"
+        return self._unique_id + CAMERA_CURVE_PICTURE_SUFFIX
 
 
 class TidesPlotPicture(TidesPicture_FromFile):
@@ -262,10 +264,10 @@ class TidesPlotPicture(TidesPicture_FromFile):
     @property
     def name(self):
         """Return the name."""
-        return self._name + "_plot_picture"
+        return self._name + CAMERA_PLOT_PICTURE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_plot_picture"
+        return self._unique_id + CAMERA_PLOT_PICTURE_SUFFIX
 
 
