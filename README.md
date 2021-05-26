@@ -447,7 +447,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- see how to make a marker on tide picture (camera) on current time
+- create a new camera to see current tide height (plot) on the current tide prediction (curve) --> available in V5.0.0
 - make this integration as default in home assistant
 
 ## Contact
