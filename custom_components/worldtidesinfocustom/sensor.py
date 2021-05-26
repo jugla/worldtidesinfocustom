@@ -69,7 +69,7 @@ from .py_worldtidesinfo import (
 
 # sensor_service
 from .sensor_service import (
-    convert_to_peform,
+    convert_to_perform,
     current_amplitude_attribute,
     current_amplitude_state,
     current_coeff_state,
@@ -478,7 +478,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -499,7 +499,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         """Return the state of the device."""
 
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -534,7 +534,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -556,7 +556,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -590,7 +590,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -648,7 +648,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -670,7 +670,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -705,7 +705,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -762,7 +762,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -820,7 +820,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -847,7 +847,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -888,7 +888,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -915,7 +915,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         """Return the state of the device."""
         state_value = 0
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 
@@ -1022,7 +1022,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 

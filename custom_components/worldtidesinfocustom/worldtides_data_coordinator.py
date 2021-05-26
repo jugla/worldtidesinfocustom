@@ -36,7 +36,7 @@ from .py_worldtidesinfo import (
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
 )
-from .sensor_service import convert_to_peform
+from .sensor_service import convert_to_perform
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
@@ -283,7 +283,7 @@ class WordTide_Data_Coordinator:
         current_time = time.time()
         current_time_string = time.strftime("%H:%M", time.localtime(current_time))
 
-        convert_meter_to_feet, convert_km_to_miles = convert_to_peform(
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
         )
 

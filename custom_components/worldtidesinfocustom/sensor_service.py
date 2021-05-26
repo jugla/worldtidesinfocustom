@@ -45,7 +45,7 @@ def worldtidesinfo_unique_id(lat, long):
     return "lat:{}_long:{}".format(lat, long)
 
 
-def convert_to_peform(unit_to_display):
+def convert_to_perform(unit_to_display):
     """compute the conversion value Metric/Imperial"""
     if unit_to_display == IMPERIAL_CONF_UNIT:
         convert_meter_to_feet = FT_PER_M
