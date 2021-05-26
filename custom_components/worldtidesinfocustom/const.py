@@ -86,3 +86,16 @@ HALF_TIDE_SLACK_DURATION = 3600
 # set constant to give suffix to camera and sensor name
 CAMERA_PLOT_PICTURE_SUFFIX = "_plot_picture"
 CAMERA_CURVE_PICTURE_SUFFIX = "_curve_picture"
+SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX = "_current_tide_height"
+SENSOR_NEXT_LOW_TIDE_HEIGHT_SUFFIX = "_next_low_tide_height"
+SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX = "_next_low_tide_time"
+SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX = "_next_high_tide_height"
+SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX = "_next_high_tide_time"
+SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX = "_remaining_time_for_next_tide"
+SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX = "_current_tide_amplitude"
+SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX = "_current_tide_coeff_resp_MWS"
+SENSOR_CREDIT_USED_SUFFIX = "_credit_used"
+SENSOR_GLOBAL_CREDIT_USED_SUFFIX = "_global_credit_used"
+SENSOR_NEXT_TIDE_SUFFIX = ""
+
+

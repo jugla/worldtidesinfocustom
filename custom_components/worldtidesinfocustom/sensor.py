@@ -45,6 +45,17 @@ from .const import (
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
     SCAN_INTERVAL_SECONDS,
+    SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX,
+    SENSOR_NEXT_LOW_TIDE_HEIGHT_SUFFIX,
+    SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX,
+    SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX,
+    SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX,
+    SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX,
+    SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX,
+    SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX,
+    SENSOR_CREDIT_USED_SUFFIX,
+    SENSOR_GLOBAL_CREDIT_USED_SUFFIX,
+    SENSOR_NEXT_TIDE_SUFFIX,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
@@ -448,11 +459,11 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_current_tide_height"
+        return self._name + SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_current_tide_height"
+        return self._unique_id + SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -504,11 +515,11 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_next_low_tide_height"
+        return self._name + SENSOR_NEXT_LOW_TIDE_HEIGHT_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_next_low_tide_height"
+        return self._unique_id + SENSOR_NEXT_LOW_TIDE_HEIGHT_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -568,11 +579,11 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_next_low_tide_time"
+        return self._name + SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_next_low_tide_time"
+        return self._unique_id + SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX
 
     @property
     def device_state_attributes(self):
@@ -618,11 +629,11 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_next_high_tide_height"
+        return self._name + SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_next_high_tide_height"
+        return self._unique_id + SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -683,11 +694,11 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_next_high_tide_time"
+        return self._name + SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_next_high_tide_time"
+        return self._unique_id + SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX
 
     @property
     def device_state_attributes(self):
@@ -735,11 +746,11 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_remaining_time_for_next_tide"
+        return self._name + SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_remaining_time_for_next_tide"
+        return self._unique_id + SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -790,11 +801,11 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_current_tide_amplitude"
+        return self._name + SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_current_tide_amplitude"
+        return self._unique_id + SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -861,11 +872,11 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_current_tide_coeff_resp_MWS"
+        return self._name + SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_current_tide_coeff_resp_MWS"
+        return self._unique_id + SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -929,11 +940,11 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_credit_used"
+        return self._name + SENSOR_CREDIT_USED_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_credit_used"
+        return self._unique_id + SENSOR_CREDIT_USED_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -958,11 +969,11 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGener
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name + "_global_credit_used"
+        return self._name + SENSOR_GLOBAL_CREDIT_USED_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + "_global_credit_used"
+        return self._unique_id + SENSOR_GLOBAL_CREDIT_USED_SUFFIX
 
     @property
     def unit_of_measurement(self):
@@ -1000,11 +1011,11 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name
+        return self._name + SENSOR_NEXT_TIDE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + ""
+        return self._unique_id + SENSOR_NEXT_TIDE_SUFFIX
 
     @property
     def device_state_attributes(self):
