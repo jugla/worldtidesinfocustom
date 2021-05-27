@@ -359,7 +359,7 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME_current_tide_coeff_resp_MWS | v4.2.0 |  float   | %   | gives coeff sensors.      |
 | NAME_current_tide_amplitude | v4.2.0 |  float   | m/ft   | gives current amplitude.      |
 
-The platform create one camera (name given in UI/configuration.yaml). 
+The platform create cameras (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
 | NAME_curve_picture   |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to local time (0h-24h)     |
