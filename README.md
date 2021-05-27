@@ -415,7 +415,8 @@ The platform create several sensors (name given in UI/configuration.yaml).
 The platform create one camera (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
-| NAME_curve_picture    |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image*      |
+| NAME_curve_picture   |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to local time (0h-24h)     |
+| NAME_plot_picture    |  v5.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to current time with current position (time frame from -6h to +18h)    |
 
 
 The sensor "NAME" has a set of attributes describes hereafter
