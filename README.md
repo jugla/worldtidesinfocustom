@@ -177,75 +177,22 @@ Hereafter an example under lovelace UI
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
 
-<details><summary>with source code (please **ADAPT** the name of sensors respect to your case)</summary>
-
-```yaml
-##UI interface example (can be entered via manual card)
-type: entities
-entities:
-  - entity: sensor.royan_tides
-  - entity: sensor.tide_royan_next_low
-  - entity: sensor.tide_royan_next_high
-  - entity: sensor.tide_royan_next_low_height
-  - entity: sensor.tide_royan_next_high_height
-title: Royan Tides (worldtidesinfo)
-```
-
-```yaml
-##UI interface example (can be entered via manual card)
-type: history-graph
-entities:
-  - entity: sensor.tide_royan_current_height
-  - entity: sensor.royan_tides
-hours_to_show: 24
-refresh_interval: 0
-title: Royan Next Tide/Current Height
-```
-
-```yaml
-##UI interface example (can be entered via manual card)
-type: vertical-stack
-cards:
-  - type: entity
-    entity: sensor.royan_tides
-    attribute: station_around_time_zone
-    name: royan time zone station
-  - type: picture-entity
-    entity: sensor.royan_tides
-    camera_image: camera.royan_tides_curve
-```
-
-```yaml
-##UI interface example (can be entered via manual card)
-type: history-graph
-entities:
-  - entity: sensor.tide_royan_credit
-hours_to_show: 24
-refresh_interval: 0
-title: royan credit used worldtide
-```
-</details>
-
 and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on several days
 
 <p align="center">
   <img src="./doc/picture/RoyanTideAmplitude.jpg" alt="Size Limit CLI" width="300">
 </p>
 
-<details><summary>with source code (please **ADAPT** the name of sensors respect to your case)</summary>
+and a dedicated view credit (the station monitored and all other declared)
 
-```yaml
-##UI interface example (can be entered via manual card)
-type: history-graph
-entities:
-  - entity: sensor.tide_royan_coeff_mws
-  - entity: sensor.tide_royan_amplitude
-refresh_interval: 0
-title: Royan Tide Coeff Week
-hours_to_show: 168
-```
-NB: in recorder, the number of days shall be set accordingly
-</details>
+<p align="center">
+  <img src="./doc/picture/RoyanTideCredit.jpg" alt="Size Limit CLI" width="300">
+</p>
+
+An example of the camera that plot the current tide height respect to current prediction
+<p align="center">
+  <img src="./doc/picture/RoyanTidePlot.jpg" alt="Size Limit CLI" width="400">
+</p>
 
 
 Hereafter an example of picture element card under lovelace UI
@@ -412,7 +359,7 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME_current_tide_coeff_resp_MWS | v4.2.0 |  float   | %   | gives coeff sensors.      |
 | NAME_current_tide_amplitude | v4.2.0 |  float   | m/ft   | gives current amplitude.      |
 
-The platform create one camera (name given in UI/configuration.yaml). 
+The platform create cameras (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
 | NAME_curve_picture   |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to local time (0h-24h)     |
@@ -448,10 +395,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 
 ## Wish/Todo list
-- create a new camera to see current tide height (plot) on the current tide prediction (curve) --> available in V5.0.0
 - make this integration as default in home assistant
-
-## Contact
 
 ## Thanks to
 Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
@@ -462,4 +406,11 @@ Thanks home-assitant community !
 
 Thanks Home-assistant project !
 
-## Support
+## Credit / Use Of / Purpose
+Since V1.0.0 :
+- use of [WorldTidesInfo](https://www.worldtides.info) results 
+- to be used within [Home Assistant](https://home-assistant.io/).
+
+Since V5.0.0 : 
+- [matplotlib](https://matplotlib.org/) is used
+
