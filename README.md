@@ -397,8 +397,6 @@ The sensor "NAME" has a set of attributes describes hereafter
 ## Wish/Todo list
 - make this integration as default in home assistant
 
-## Contact
-
 ## Thanks to
 Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
 
@@ -408,4 +406,11 @@ Thanks home-assitant community !
 
 Thanks Home-assistant project !
 
-## Support
+## Credit / Use Of / Purpose
+Since V1.0.0 :
+- use of [WorldTidesInfo](https://www.worldtides.info) results 
+- to be used within [Home Assistant](https://home-assistant.io/).
+
+Since V5.0.0 : 
+- [matplotlib](https://matplotlib.org/) is used
+
