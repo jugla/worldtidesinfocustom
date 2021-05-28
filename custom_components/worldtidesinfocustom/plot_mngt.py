@@ -10,7 +10,7 @@ from .sensor_service import convert_to_perform
 
 
 class Plot_Manager:
-    """End Point to Fetch Data and to maintain cache"""
+    """Class to manage MatPlotLib"""
 
     def __init__(self, name, unit_to_display, filename):
         ### for trace
