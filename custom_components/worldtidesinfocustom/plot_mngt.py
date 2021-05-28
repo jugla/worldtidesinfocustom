@@ -11,7 +11,7 @@ from .sensor_service import convert_to_perform
 from matplotlib import pyplot as plt
 
 class Plot_Manager:
-    """End Point to Fetch Data and to maintain cache"""
+    """Class used to encapsulate MatPlotLib Management"""
 
     def __init__(
         self,
@@ -69,6 +69,7 @@ class Plot_Manager:
         ax.set_ylabel("height " + self._unit_to_display)
         current_time_string = time.strftime("%H:%M", time.localtime(current_time))
         ax.set_xlabel("time in hour respect to " + current_time_string)
+        ax.grid()
         fig.savefig(self._filename)
 
 
