@@ -21,13 +21,10 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
-
-# matplot lib
-from matplotlib import pyplot as plt
-
 # Component library
 from . import give_persistent_filename
 from .const import IMPERIAL_CONF_UNIT, WWW_PATH
+from .plot_mngt import Plot_Manager
 from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
@@ -36,7 +33,6 @@ from .py_worldtidesinfo import (
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
 )
-from .sensor_service import convert_to_perform
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
@@ -90,7 +86,9 @@ class WordTide_Data_Coordinator:
         self._tide_cache_file = tide_cache_file
 
         ### Self
-        self._tide_plot_filename = filenames.get("plot_filename")
+        self._plot_manager = Plot_Manager(
+            name, unit_to_display, filenames.get("plot_filename")
+        )
 
         # unit used for display, and convert tide station distance
         if unit_to_display == IMPERIAL_CONF_UNIT:
@@ -279,51 +277,7 @@ class WordTide_Data_Coordinator:
         # generate a plot curve at each update
         # create a plot
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-
-        current_time = time.time()
-        current_time_string = time.strftime("%H:%M", time.localtime(current_time))
-
-        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
-            self._unit_to_display
-        )
-
-        current_height_index = 0
-        height_value = []
-        height_time = []
-        for height_index in range(len(data["heights"])):
-            if current_time > data["heights"][height_index]["dt"]:
-                current_height_index = height_index
-            height_current_value = (
-                data["heights"][height_index]["height"] * convert_meter_to_feet
-            )
-            height_current_time = data["heights"][height_index]["dt"]
-            # draw below 24h : from -6h to 18h
-            if (((height_current_time - current_time) / 60 / 60) > -6) and (
-                ((height_current_time - current_time) / 60 / 60) < (3 * 6)
-            ):
-                height_value.append(height_current_value)
-                height_time.append((height_current_time - current_time) / 60 / 60)
-        # current time and height
-        current_height_value = []
-        current_height_time = []
-        current_height_value_sample = (
-            data["heights"][current_height_index]["height"] * convert_meter_to_feet
-        )
-        current_height_value.append(current_height_value_sample)
-        current_height_time_sample = data["heights"][current_height_index]["dt"]
-        current_height_time.append(
-            (current_height_time_sample - current_time) / 60 / 60
-        )
-
-        # name is used as an id --> all coordinators works in //
-        fig = plt.figure(self._name)
-        fig.clf()
-        ax = fig.add_subplot(1, 1, 1)
-        ax.plot(height_time, height_value)
-        ax.plot(current_height_time, current_height_value, color="red", marker="o")
-        ax.set_ylabel("height " + self._unit_to_display)
-        ax.set_xlabel("time in hour respect to " + current_time_string)
-        fig.savefig(self._tide_plot_filename)
+        self._plot_manager.compute_new_plot(data, current_time)
 
         return True
 
