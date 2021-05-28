@@ -353,10 +353,10 @@ class give_info_from_raw_data:
         return {
             "current_height": current_height,
             "current_height_utc": current_height_utc,
-            "current_height_epoch" : current_height_epoch,
+            "current_height_epoch": current_height_epoch,
         }
 
-    def give_tide_prediction_within_time_frame(self,epoch_frame_min,epoch_frame_max):
+    def give_tide_prediction_within_time_frame(self, epoch_frame_min, epoch_frame_max):
         """retrieve data from frame_min to frame_max"""
         if self._data == None:
             return {"error": "no data"}
@@ -368,14 +368,14 @@ class give_info_from_raw_data:
             height_current_value = self._data["heights"][height_index]["height"]
             height_current_time = self._data["heights"][height_index]["dt"]
             # retrive height and time
-            if ((height_current_time > epoch_frame_min) and
-                (height_current_time < epoch_frame_max)
+            if (height_current_time > epoch_frame_min) and (
+                height_current_time < epoch_frame_max
             ):
                 height_value.append(height_current_value)
                 height_time.append(height_current_time)
         return {
-            "height_value" : height_value,
-            "height_epoch" : height_time,
+            "height_value": height_value,
+            "height_epoch": height_time,
         }
 
     def give_station_around_info(self):

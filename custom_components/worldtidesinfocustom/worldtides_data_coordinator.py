@@ -24,6 +24,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 # Component library
 from . import give_persistent_filename
 from .const import IMPERIAL_CONF_UNIT, WWW_PATH
+from .plot_mngt import Plot_Manager
 from .py_worldtidesinfo import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
@@ -86,9 +87,7 @@ class WordTide_Data_Coordinator:
 
         ### Self
         self._plot_manager = Plot_Manager(
-            name,
-            unit_to_display,
-            filenames.get("plot_filename")
+            name, unit_to_display, filenames.get("plot_filename")
         )
 
         # unit used for display, and convert tide station distance
@@ -278,7 +277,7 @@ class WordTide_Data_Coordinator:
         # generate a plot curve at each update
         # create a plot
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
-        self._plot_manager.compute_new_plot(data,current_time)
+        self._plot_manager.compute_new_plot(data, current_time)
 
         return True
 
