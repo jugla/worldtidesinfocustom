@@ -67,7 +67,7 @@ class Plot_Manager:
         fig.clf()
         ax = fig.add_subplot(1, 1, 1)
         # trace the predict tides
-        ax.plot(height_time, height_value,color="darkblue")
+        ax.plot(height_time, height_value, color="darkblue")
         # plot th current position
         ax.plot(current_height_time, current_height_value, color="red", marker="o")
         # label on axis
@@ -76,14 +76,19 @@ class Plot_Manager:
         ax.set_xlabel("time in hour respect to " + current_time_string)
         # grid + filling
         ax.grid()
-        ax.fill_between(height_time,0, height_value, color="lightblue")
+        ax.fill_between(height_time, 0, height_value, color="lightblue")
         # annotate the current position
         label = "{:.1f} @ {}".format(current_height_value[0], current_time_string)
-        ax.annotate(label, # this is the text
-                 (current_height_time[0],current_height_value[0]), # this is the point to label
-                 textcoords="offset points", # how to position the text
-                 xytext=(0,10), # distance from text to points (x,y)
-                 ha='center', # horizontal alignment can be left, right or center
-                 color="red") # color
+        ax.annotate(
+            label,  # this is the text
+            (
+                current_height_time[0],
+                current_height_value[0],
+            ),  # this is the point to label
+            textcoords="offset points",  # how to position the text
+            xytext=(0, 10),  # distance from text to points (x,y)
+            ha="center",  # horizontal alignment can be left, right or center
+            color="red",
+        )  # color
         # save the figure
         fig.savefig(self._filename)

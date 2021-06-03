@@ -35,7 +35,7 @@ from .py_worldtidesinfo import (
 )
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
-from .plot_mngt import Plot_Manager
+
 
 class WordTide_Data_Coordinator:
     """End Point to Fetch Data and to maintain cache"""
