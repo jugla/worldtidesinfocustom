@@ -396,6 +396,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 ## Wish/Todo list
 - make this integration as default in home assistant
+- add online parameter changes (e.g. color, ...) i.e. without re-install the integration through UI
 
 ## Thanks to
 Idea of picture element card given within [community.home-assistant.io/t/world-tide-info-v2-api-graph](https://community.home-assistant.io/t/world-tide-info-v2-api-graph/260063)
