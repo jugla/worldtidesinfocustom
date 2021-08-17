@@ -10,7 +10,11 @@ from datetime import datetime, timedelta
 # HA library
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import (
+    PLATFORM_SCHEMA,
+    STATE_CLASS_MEASUREMENT,
+    SensorEntity,
+)
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
     ATTR_LATITUDE,
@@ -390,7 +394,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(tides_sensors)
 
 
-class WorldTidesInfoCustomSensorGeneric(Entity):
+class WorldTidesInfoCustomSensorGeneric(SensorEntity):
     """Representation of a WorldTidesInfo sensor."""
 
     def __init__(
@@ -421,7 +425,7 @@ class WorldTidesInfoCustomSensorGeneric(Entity):
 
     @property
     def device_info(self):
-        """Device info for neato robot."""
+        """Device info for WorldTideInfo Server."""
         return {
             "identifiers": {(DOMAIN, self._unique_id)},
             "manufacturer": "WorldTidesInfo",
@@ -472,6 +476,13 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
             return "ft"
         else:
             return "m"
+
+    @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug("StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT)
+        return STATE_CLASS_MEASUREMENT
+
 
     @property
     def device_state_attributes(self):
@@ -882,6 +893,13 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "%"
+
+    @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug("StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT) 
+        return STATE_CLASS_MEASUREMENT
+
 
     @property
     def device_state_attributes(self):

@@ -169,7 +169,7 @@ class TidesPicture_FromFile(Camera):
 
     @property
     def device_info(self):
-        """Device info for neato robot."""
+        """Device info for WorldTideInfo Server."""
         return {
             "identifiers": {(DOMAIN, self._unique_id)},
             "manufacturer": "WorldTidesInfo",
