@@ -480,9 +480,10 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
     @property
     def state_class(self):
         """Return the state class for long term statistics."""
-        _LOGGER.debug("StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT)
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
         return STATE_CLASS_MEASUREMENT
-
 
     @property
     def device_state_attributes(self):
@@ -897,9 +898,10 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
     @property
     def state_class(self):
         """Return the state class for long term statistics."""
-        _LOGGER.debug("StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT) 
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
         return STATE_CLASS_MEASUREMENT
-
 
     @property
     def device_state_attributes(self):
