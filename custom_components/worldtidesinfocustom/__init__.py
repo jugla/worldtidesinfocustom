@@ -84,7 +84,7 @@ def async_get_used_api_key(hass):
 
 async def async_setup(hass, config):
     """Set up the World Tide Custom component."""
-    hass.data[DOMAIN] = {DATA_COORDINATOR: {}, DATA_LISTENER: {}}
+    # hass.data[DOMAIN] = {DATA_COORDINATOR: {}, DATA_LISTENER: {}}
     return True
 
 
@@ -125,6 +125,8 @@ def _standardize_config_entry(hass, config_entry):
 
 async def async_setup_entry(hass, config_entry):
     """Set up WorldTidesInfo as config entry."""
+    hass.data.setdefault(DOMAIN, {DATA_COORDINATOR: {}, DATA_LISTENER: {}})
+
     _standardize_config_entry(hass, config_entry)
 
     # just to initialize (this code will be replace by evolution to have global count)
