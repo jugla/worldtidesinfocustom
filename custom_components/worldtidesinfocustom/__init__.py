@@ -13,6 +13,7 @@ from homeassistant.const import (
     CONF_LONGITUDE,
     CONF_NAME,
     CONF_SHOW_ON_MAP,
+    CONF_SOURCE,
 )
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
@@ -25,12 +26,14 @@ from homeassistant.helpers.update_coordinator import (
 
 # internal library
 from .const import (
+    CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
+    DEFAULT_CONF_LIVE_LOCATION,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
@@ -38,6 +41,8 @@ from .const import (
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DOMAIN,
+    FROM_SENSOR_CONF,
+    STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
     WWW_PATH,
 )
@@ -67,9 +72,22 @@ def async_get_config_id(config_dict):
     if not config_dict:
         return
 
-    return ", ".join(
-        (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
-    )
+    if not config_dict.get(CONF_LIVE_LOCATION):
+        return ", ".join(
+            (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
+        )
+
+    if config_dict[CONF_LIVE_LOCATION] == STATIC_CONF:
+        return ", ".join(
+            (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
+        )
+
+    if config_dict[CONF_LIVE_LOCATION] == FROM_SENSOR_CONF:
+        return ", ".join(
+            (str(config_dict[CONF_LIVE_LOCATION]), str(config_dict[CONF_SOURCE]))
+        )
+
+    return
 
 
 @callback
@@ -77,7 +95,7 @@ def async_get_used_api_key(hass):
     """Go through coordinator to find a used API key."""
     # first time the entry does not exist and so nothing is created
     if hass.data.get(DOMAIN) == None:
-       return None
+        return None
 
     # look for existing key
     for entry_id, coordinator in hass.data[DOMAIN][DATA_COORDINATOR].items():
@@ -122,6 +140,8 @@ def _standardize_config_entry(hass, config_entry):
         entry_updates["data"][CONF_PLOT_BACKGROUND] = DEFAULT_PLOT_BACKGROUND
     if not config_entry.data.get(CONF_UNIT):
         entry_updates["data"][CONF_UNIT] = DEFAULT_CONF_UNIT
+    if not config_entry.data.get(CONF_LIVE_LOCATION):
+        entry_updates["data"][CONF_LIVE_LOCATION] = DEFAULT_CONF_LIVE_LOCATION
 
     if not entry_updates:
         # Do no thing !

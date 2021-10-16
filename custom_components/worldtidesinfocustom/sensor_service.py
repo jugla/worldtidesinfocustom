@@ -27,6 +27,7 @@ from .const import (
     ROUND_HOUR,
     ROUND_SEC,
     ROUND_STATION_DISTANCE,
+    STATIC_CONF,
 )
 
 # import .storage_mngt
@@ -40,9 +41,14 @@ from .py_worldtidesinfo import (
 # primary function for sensor (attributes and state)
 
 
-def worldtidesinfo_unique_id(lat, long):
+def worldtidesinfo_unique_id(lat, long, live_position_management, source):
     """give a unique id for sensor"""
-    return "lat:{}_long:{}".format(lat, long)
+    if live_position_management == None:
+        return "lat:{}_long:{}".format(lat, long)
+    elif live_position_management == STATIC_CONF:
+        return "lat:{}_long:{}".format(lat, long)
+    else:
+        return "motion:{}_sensor{}".format(live_position_management, source)
 
 
 def convert_to_perform(unit_to_display):

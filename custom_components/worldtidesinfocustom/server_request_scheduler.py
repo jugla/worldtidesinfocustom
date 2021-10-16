@@ -79,9 +79,14 @@ class WorldTidesInfo_server_scheduler:
     ):
 
         self._Server_Parameter = worldtidesinfo_server_parameter
+        self._parameter_updated = False
 
         self._Data_Retrieve = Data_Retrieve()
         self._Data_Scheduling = Data_Scheduling()
+
+    def update_parameter(self, worldtidesinfo_server_parameter):
+        self._Server_Parameter = worldtidesinfo_server_parameter
+        self._parameter_updated = True
 
     def give_parameter(self):
         return self._Server_Parameter
@@ -104,6 +109,8 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Retrieve.data = data
         self._Data_Retrieve.data_request_time = data_request_time
 
+        self._parameter_updated = False
+
     def setup_next_midnights(self):
         """update all midnights"""
         self._Data_Scheduling.setup_next_midnights()
@@ -123,6 +130,8 @@ class WorldTidesInfo_server_scheduler:
             datetime.fromtimestamp(current_time)
             >= self._Data_Scheduling.next_month_midnight
         ):
+            init_data_to_require = True
+        elif self._parameter_updated:
             init_data_to_require = True
         else:
             init_data_to_require = False
