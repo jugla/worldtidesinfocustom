@@ -8,7 +8,6 @@ import time
 from datetime import datetime, timedelta
 
 # HA library
-from homeassistant.helpers.event import async_track_state_change_event
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import (
@@ -24,10 +23,13 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
-    CONF_SOURCE,
     CONF_SHOW_ON_MAP,
+    CONF_SOURCE,
 )
 from homeassistant.helpers.entity import Entity
+
+# HA library
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
@@ -36,9 +38,9 @@ from .const import (
     ATTRIBUTION,
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
+    CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
-    CONF_LIVE_LOCATION,
     CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
@@ -69,6 +71,10 @@ from .const import (
     STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
+
+# Live Position Management
+# Live Position Management
+from .live_position_management import Live_Position_Management
 
 # import .storage_mngt
 from .py_worldtidesinfo import (
@@ -110,9 +116,6 @@ from .storage_mngt import File_Data_Cache, File_Picture
 # WorlTidesDataCoordinator
 from .worldtides_data_coordinator import WordTide_Data_Coordinator
 
-# Live Position Management
-from .live_position_management import Live_Position_Management
-
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
@@ -137,7 +140,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-
 def setup_sensor(
     hass,
     name,
@@ -158,7 +160,9 @@ def setup_sensor(
     """setup sensor with server, server scheduler in async or sync configuration"""
     unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
 
-    live_position_management = Live_Position_Management(lat, lon, live_position_management, source, source_attr_lat, source_attr_long)
+    live_position_management = Live_Position_Management(
+        lat, lon, live_position_management, source, source_attr_lat, source_attr_long
+    )
 
     worldtide_data_coordinator = WordTide_Data_Coordinator(
         hass,
@@ -338,8 +342,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     source_attr_lat = None
     source_attr_long = None
 
-
-
     tides_sensors = setup_sensor(
         hass,
         name,
@@ -403,13 +405,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     else:
         show_on_map = False
 
-
     live_position_management = config.get(CONF_LIVE_LOCATION)
     source = config.get(CONF_SOURCE)
     source_attr_lat = config.get(CONF_ATTRIBUTE_NAME_LAT)
     source_attr_long = config.get(CONF_ATTRIBUTE_NAME_LONG)
-
-
 
     tides_sensors = setup_sensor(
         hass,
@@ -1172,7 +1171,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
             ).get_longitude()
 
         ## Moving sensor or not
-        attr["live_location"] = self._live_position_management.get_live_position_management()
+        attr[
+            "live_location"
+        ] = self._live_position_management.get_live_position_management()
         attr["source_id"] = self._live_position_management.get_source_id()
         attr["ref_lat"] = self._live_position_management.get_ref_lat()
         attr["ref_long"] = self._live_position_management.get_ref_long()
@@ -1190,7 +1191,6 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         # give next tide
         return next_tide_state(tide_info, current_time)
 
-
     def _async_worldtidesinfo_sensor_state_listener(self, event):
         """Handle sensor state changes."""
         new_state_valid = False
@@ -1202,32 +1202,42 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
             return
 
         try:
-            lat = float(new_state.attributes.get(self._live_position_management.get_lat_attribute()))
-            long =  float(new_state.attributes.get(self._live_position_management.get_long_attribute()))
+            lat = float(
+                new_state.attributes.get(
+                    self._live_position_management.get_lat_attribute()
+                )
+            )
+            long = float(
+                new_state.attributes.get(
+                    self._live_position_management.get_long_attribute()
+                )
+            )
             new_state_valid = True
 
         except (ValueError, TypeError):
             _LOGGER.warning(
-                    "%s : lat %s, long %s is not numerical",
-                    self._live_position_management.get_source_id(),
-                    self._live_position_management.get_lat_attribute(),
-                    self._live_position_management.get_long_attribute()
+                "%s : lat %s, long %s is not numerical",
+                self._live_position_management.get_source_id(),
+                self._live_position_management.get_lat_attribute(),
+                self._live_position_management.get_long_attribute(),
             )
 
         if new_state_valid == True:
-            self._live_position_management.update(lat,long)
-            if self._live_position_management.need_to_change_ref(lat,long):
-                self._worldtide_data_coordinator.change_reference_point(lat,long)
-                self._live_position_management.change_ref(lat,long)
+            self._live_position_management.update(lat, long)
+            if self._live_position_management.need_to_change_ref(lat, long):
+                self._worldtide_data_coordinator.change_reference_point(lat, long)
+                self._live_position_management.change_ref(lat, long)
             self.async_write_ha_state()
-
 
     async def async_added_to_hass(self):
         """Handle added to Hass."""
         await super().async_added_to_hass()
 
         # listen to source ID
-        if self._live_position_management.get_live_position_management() == FROM_SENSOR_CONF:
+        if (
+            self._live_position_management.get_live_position_management()
+            == FROM_SENSOR_CONF
+        ):
             self.async_on_remove(
                 async_track_state_change_event(
                     self.hass,
@@ -1235,8 +1245,6 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                     self._async_worldtidesinfo_sensor_state_listener,
                 )
             )
-
-
 
     def update(self):
         """Update of sensors."""

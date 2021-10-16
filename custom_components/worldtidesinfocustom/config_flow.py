@@ -8,12 +8,11 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
-    CONF_SOURCE,
     CONF_SHOW_ON_MAP,
+    CONF_SOURCE,
 )
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
-
 
 # component library
 from . import async_get_config_id, async_get_used_api_key
@@ -31,8 +30,8 @@ from .const import (
     CONF_VERTICAL_REF_TYPES,
     DEFAULT_CONF_ATTRIBUTE_NAME_LAT,
     DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
-    DEFAULT_CONF_UNIT,
     DEFAULT_CONF_LIVE_LOCATION,
+    DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -132,12 +131,17 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
                         CONF_UNIT_TYPES
                     ),
-                    vol.Optional(CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION): vol.In(
-                        CONF_LIVE_LOCATION_TYPES
-                    ),
-                    vol.Optional(CONF_SOURCE):  cv.string,
-                    vol.Optional(CONF_ATTRIBUTE_NAME_LAT, default= DEFAULT_CONF_ATTRIBUTE_NAME_LAT):  cv.string,
-                    vol.Optional(CONF_ATTRIBUTE_NAME_LONG, default= DEFAULT_CONF_ATTRIBUTE_NAME_LONG):  cv.string,
+                    vol.Optional(
+                        CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
+                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_SOURCE): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LONG,
+                        default=DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
+                    ): cv.string,
                 }
             )
         else:
@@ -168,13 +172,17 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
                         CONF_UNIT_TYPES
                     ),
-                    vol.Optional(CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION): vol.In(
-                        CONF_LIVE_LOCATION_TYPES
-                    ),
-#                    vol.Optional(CONF_SOURCE):  cv.entity_id,
+                    vol.Optional(
+                        CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
+                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
                     vol.Optional(CONF_SOURCE): cv.string,
-                    vol.Optional(CONF_ATTRIBUTE_NAME_LAT,default = DEFAULT_CONF_ATTRIBUTE_NAME_LAT):  cv.string,
-                    vol.Optional(CONF_ATTRIBUTE_NAME_LONG, default = DEFAULT_CONF_ATTRIBUTE_NAME_LONG):  cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LONG,
+                        default=DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
+                    ): cv.string,
                 }
             )
 

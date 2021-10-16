@@ -84,7 +84,7 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Retrieve = Data_Retrieve()
         self._Data_Scheduling = Data_Scheduling()
 
-    def update_parameter(self,worldtidesinfo_server_parameter):
+    def update_parameter(self, worldtidesinfo_server_parameter):
         self._Server_Parameter = worldtidesinfo_server_parameter
         self._parameter_updated = True
 

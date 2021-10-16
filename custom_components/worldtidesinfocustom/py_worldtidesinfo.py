@@ -65,9 +65,10 @@ class Server_Parameter:
     def get_tide_station_distance(self):
         return self._tide_station_distance
 
-    def change_ref_point(self,lat,lon):
+    def change_ref_point(self, lat, lon):
         self._lat = lat
         self._lon = lon
+
 
 class WorldTidesInfo_server:
     """Class to manage the Word Tide Info server"""
@@ -107,8 +108,8 @@ class WorldTidesInfo_server:
         self.last_tide_request_credit = 0
         self.last_tide_request_error_value = None
 
-    def change_ref_point(self,lat,lon):
-        self._Server_Parameter.change_ref_point(lat,lon)
+    def change_ref_point(self, lat, lon):
+        self._Server_Parameter.change_ref_point(lat, lon)
 
     def give_parameter(self):
         return self._Server_Parameter
@@ -141,7 +142,6 @@ class WorldTidesInfo_server:
             self._Server_Parameter._tide_station_distance,
         )
         try:
-#            data = requests.get(resource, timeout=10).json()
             data_get = requests.get(resource, timeout=10)
             if data_get.status_code == 200:
                 data = data_get.json()
