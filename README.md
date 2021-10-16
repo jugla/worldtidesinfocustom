@@ -15,13 +15,16 @@ This component allows to :
 - give tide tendancy, amplitude
 - display location on default map
 
-Refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
+==> the monitored location is either static, either given by GPS data (tracker)
+
+In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 
 The request per day per location uses 3 credits.
 So for one location: 20000 credits will last ~18 years
 
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
+In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved from 10km
 
 ## Installation
 Either use HACS (default), either manual
@@ -328,11 +331,15 @@ Hereafter an example of the default map under lovelace UI
 | api_key           | string                                                         | **Required** | v1.0.0    | n.a | YAML  / UI                                                       | API Key given by [world tide info](https://www.worldtides.info/).                                          | 
 | latitude          | float                                                          | **Optional** | v1.0.0    | latitude in your Home Assistant configuration | YAML  / UI                                                                                                                                                                   | Latitude (in decimal degrees) of the location for which to return the tidal data . |
 | longitude         | float                                                          | **Optional** | v1.0.0    | longitude in your Home Assistant configuration | YAML  / UI                                                                                                                                                                  | Longitude (in decimal degrees) of the location for which to return the tidal data .    |
-| unit              | string                                                         | **Optional** | V2.6.0    | home_assistant | YAML / UI  | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
+| unit              |  enumerated                                                        | **Optional** | V2.6.0    | home_assistant | YAML / UI  | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
 | station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km/miles | YAML / UI                                                                                                                                                                  | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML  / UI                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
 | plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML  / UI                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
 | plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI                                                                                                                                                                   | string that represents the comma-separated RGB values for the tide graph background color |  
+| live_location      | enumerated                                                         | **Optional** | v6.0.0    | Static |  UI                                                                                                                                                                   | **static** or **from_sensor**, static means that the monitored location is static, from_sensor the position is given by source |  
+| source      | string                                                         | **Optional** | v6.0.0    | None |  UI                                                                                                                                                                   | the entity that contains GPS position |
+| latitude_attr_name      | string                                                         | **Optional** | v6.0.0    | latitude |  UI                                                                                                                                                                   | the attribute of entity that contains latitude position |
+| longitude_attr_name      | string                                                         | **Optional** | v6.0.0    | longitude |  UI                                                                                                                                                                   | the attribute of entity that contains longitude position |
 | scan_interval     | positive int                                                   | **Optional** | v1.0.0    | 900s | YAML                                                                                                                                                                  | It's the time (in seconds) between 2 refresh of sensor with its attributes         |
 
 ## Camera are automatically created by UI , Hereafter *deprecated method* for camera for YAML
@@ -358,6 +365,7 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME_next_high_tide_time | v4.2.0 |  H:M   | local  | gives local time of next high tide      |
 | NAME_current_tide_coeff_resp_MWS | v4.2.0 |  float   | %   | gives coeff sensors.      |
 | NAME_current_tide_amplitude | v4.2.0 |  float   | m/ft   | gives current amplitude.      |
+
 
 The platform create cameras (name given in UI/configuration.yaml). 
 | Name              | Supported | format | unit | Description                                                                                                   |
@@ -392,7 +400,12 @@ The sensor "NAME" has a set of attributes describes hereafter
 | Station distance     | v2.0.0    | float        | km/miles   | the radius used to retrieve tide station around location |
 | Station around name  | v2.0.0    | string     | location name | tide station list separate by ";" |
 | Station around time zone | v2.0.0 | string    | time zone | Full timezone name (ex. America/Los_Angeles) |
-
+| live_location | v6.0.0 |  enum   | NA   | monitored location : static or from_sensor      |
+| source_id | v6.0.0 |  string   | NA   | the sensor that gives position      |
+| ref lat | v6.0.0 |  float   | deg   | the latitude of monitored location      |
+| ref long | v6.0.0 |  float   | deg   | the longitude of monitored location      |
+| current lat | v6.0.0 |  float   | deg   | the current latitude of source id      |
+| current long | v6.0.0 |  float   | deg   | the current longitude of source id      |
 
 ## Wish/Todo list
 - make this integration as default in home assistant

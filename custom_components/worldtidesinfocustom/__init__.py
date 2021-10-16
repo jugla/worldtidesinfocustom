@@ -33,8 +33,8 @@ from .const import (
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
-    DEFAULT_CONF_UNIT,
     DEFAULT_CONF_LIVE_LOCATION,
+    DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -73,19 +73,19 @@ def async_get_config_id(config_dict):
         return
 
     if not config_dict.get(CONF_LIVE_LOCATION):
-       return ", ".join(
-           (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
-       )
+        return ", ".join(
+            (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
+        )
 
     if config_dict[CONF_LIVE_LOCATION] == STATIC_CONF:
-       return ", ".join(
-           (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
-       )
+        return ", ".join(
+            (str(config_dict[CONF_LATITUDE]), str(config_dict[CONF_LONGITUDE]))
+        )
 
     if config_dict[CONF_LIVE_LOCATION] == FROM_SENSOR_CONF:
-       return ", ".join(
-           (str(config_dict[CONF_LIVE_LOCATION]), str(config_dict[CONF_SOURCE]))
-       )
+        return ", ".join(
+            (str(config_dict[CONF_LIVE_LOCATION]), str(config_dict[CONF_SOURCE]))
+        )
 
     return
 
@@ -94,7 +94,7 @@ def async_get_used_api_key(hass):
     """Go through coordinator to find a used API key."""
     # first time the entry does not exist and so nothing is created
     if hass.data.get(DOMAIN) == None:
-       return None
+        return None
 
     # look for existing key
     for entry_id, coordinator in hass.data[DOMAIN][DATA_COORDINATOR].items():

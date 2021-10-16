@@ -48,7 +48,7 @@ def worldtidesinfo_unique_id(lat, long, live_position_management, source):
     elif live_position_management == STATIC_CONF:
         return "lat:{}_long:{}".format(lat, long)
     else:
-        return "motion:{}_sensor{}".format(live_position_management,source)
+        return "motion:{}_sensor{}".format(live_position_management, source)
 
 
 def convert_to_perform(unit_to_display):

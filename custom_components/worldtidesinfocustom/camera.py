@@ -22,8 +22,8 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
-    CONF_SOURCE,
     CONF_SHOW_ON_MAP,
+    CONF_SOURCE,
 )
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
@@ -57,7 +57,6 @@ from .const import (
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 from .py_worldtidesinfo import SERVER_API_VERSION
-
 from .sensor_service import worldtidesinfo_unique_id
 
 # Sensor HA parameter
@@ -71,7 +70,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Required(CONF_NAME, default=DEFAULT_NAME): cv.string,
     }
 )
-
 
 
 def setup_camera(
@@ -107,7 +105,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     live_position_management = STATIC_CONF
     source = None
-
 
     # what is the unit used
     tides_cameras = setup_camera(

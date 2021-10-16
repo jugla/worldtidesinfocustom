@@ -288,8 +288,9 @@ class WordTide_Data_Coordinator:
         ### The function is sync (i.e. or used with async and a LOCK)
         result = self._update_and_fetch_server_data()
 
-
-    def change_reference_point(self,lat,long):
-       self._worldtidesinfo_server.change_ref_point(lat,long)
-       worldtidesinfo_server_parameter = self._worldtidesinfo_server.give_parameter()
-       self._worldtidesinfo_server_scheduler.update_parameter(worldtidesinfo_server_parameter)
+    def change_reference_point(self, lat, long):
+        self._worldtidesinfo_server.change_ref_point(lat, long)
+        worldtidesinfo_server_parameter = self._worldtidesinfo_server.give_parameter()
+        self._worldtidesinfo_server_scheduler.update_parameter(
+            worldtidesinfo_server_parameter
+        )
