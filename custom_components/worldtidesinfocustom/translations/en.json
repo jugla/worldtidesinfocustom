@@ -21,7 +21,7 @@
       },
       "config_def_expert": {
         "title": "Configure expert",
-        "description": "Use the WorldTidesInfo cloud API to monitor a latitude/longitude with additional parameters.",
+        "description": "Use the WorldTidesInfo cloud API to monitor a static/live latitude/longitude with additional parameters.",
         "data": {
           "name": "name",
           "api_key": "api key of world tides info",
@@ -31,7 +31,11 @@
           "station_distance" : "tidal station distance",
           "plot_color": "plot curve color in comma-separated RGB values",
           "plot_background": "plot curve background color in comma-separated RGB values",
-          "unit" : "metric HA imperial"
+          "unit" : "metric HA imperial",
+          "live_location" : "location is static or dynamic from_sensor",
+          "source" : "source id that contains lat/long",
+          "latitude_attr_name" : "latitude attribute name of sensor id",
+          "longitude_attr_name" : "longitude attribute name of sensor id"
         }
       }
     },

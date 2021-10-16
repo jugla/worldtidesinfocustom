@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timedelta
 
 # HA library
+from homeassistant.helpers.event import async_track_state_change_event
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import (
@@ -23,6 +24,7 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
+    CONF_SOURCE,
     CONF_SHOW_ON_MAP,
 )
 from homeassistant.helpers.entity import Entity
@@ -32,8 +34,11 @@ from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
 from .const import (
     ATTRIBUTION,
+    CONF_ATTRIBUTE_NAME_LAT,
+    CONF_ATTRIBUTE_NAME_LONG,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
+    CONF_LIVE_LOCATION,
     CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
@@ -45,6 +50,7 @@ from .const import (
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DOMAIN,
+    FROM_SENSOR_CONF,
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
@@ -60,6 +66,7 @@ from .const import (
     SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX,
     SENSOR_NEXT_TIDE_SUFFIX,
     SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX,
+    STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
@@ -103,6 +110,9 @@ from .storage_mngt import File_Data_Cache, File_Picture
 # WorlTidesDataCoordinator
 from .worldtides_data_coordinator import WordTide_Data_Coordinator
 
+# Live Position Management
+from .live_position_management import Live_Position_Management
+
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 
@@ -127,9 +137,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def worldtidesinfo_unique_id(lat, long):
-    return "lat:{}_long:{}".format(lat, long)
-
 
 def setup_sensor(
     hass,
@@ -143,9 +150,15 @@ def setup_sensor(
     tide_station_distance,
     unit_to_display,
     show_on_map,
+    live_position_management,
+    source,
+    source_attr_lat,
+    source_attr_long,
 ):
     """setup sensor with server, server scheduler in async or sync configuration"""
-    unique_id = worldtidesinfo_unique_id(lat, lon)
+    unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
+
+    live_position_management = Live_Position_Management(lat, lon, live_position_management, source, source_attr_lat, source_attr_long)
 
     worldtide_data_coordinator = WordTide_Data_Coordinator(
         hass,
@@ -168,6 +181,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -178,6 +192,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -188,6 +203,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -197,6 +213,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -206,6 +223,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -215,6 +233,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -224,6 +243,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -234,6 +254,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -243,6 +264,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -253,6 +275,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -262,6 +285,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     )
 
@@ -309,6 +333,13 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     show_on_map = True
 
+    live_position_management = STATIC_CONF
+    source = None
+    source_attr_lat = None
+    source_attr_long = None
+
+
+
     tides_sensors = setup_sensor(
         hass,
         name,
@@ -321,6 +352,10 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         tide_station_distance,
         unit_to_display,
         show_on_map,
+        live_position_management,
+        source,
+        source_attr_lat,
+        source_attr_long,
     )
 
     for tides in tides_sensors:
@@ -368,6 +403,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     else:
         show_on_map = False
 
+
+    live_position_management = config.get(CONF_LIVE_LOCATION)
+    source = config.get(CONF_SOURCE)
+    source_attr_lat = config.get(CONF_ATTRIBUTE_NAME_LAT)
+    source_attr_long = config.get(CONF_ATTRIBUTE_NAME_LONG)
+
+
+
     tides_sensors = setup_sensor(
         hass,
         name,
@@ -380,6 +423,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         tide_station_distance,
         unit_to_display,
         show_on_map,
+        live_position_management,
+        source,
+        source_attr_lat,
+        source_attr_long,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
@@ -404,6 +451,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
+        live_position_management,
         unique_id,
     ):
         """Initialize the sensor."""
@@ -416,6 +464,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
 
         # DATA
         self._worldtide_data_coordinator = worldtide_data_coordinator
+        self._live_position_management = live_position_management
 
         self._unique_id = unique_id
 
@@ -1122,6 +1171,14 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 self._worldtide_data_coordinator.get_server_parameter()
             ).get_longitude()
 
+        ## Moving sensor or not
+        attr["live_location"] = self._live_position_management.get_live_position_management()
+        attr["source_id"] = self._live_position_management.get_source_id()
+        attr["ref_lat"] = self._live_position_management.get_ref_lat()
+        attr["ref_long"] = self._live_position_management.get_ref_long()
+        attr["current_lat"] = self._live_position_management.get_current_lat()
+        attr["current_long"] = self._live_position_management.get_current_long()
+
         return attr
 
     @property
@@ -1132,6 +1189,54 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # give next tide
         return next_tide_state(tide_info, current_time)
+
+
+    def _async_worldtidesinfo_sensor_state_listener(self, event):
+        """Handle sensor state changes."""
+        new_state_valid = False
+        lat = None
+        long = None
+        # retrieve state
+        new_state = event.data.get("new_state")
+        if new_state is None:
+            return
+
+        try:
+            lat = float(new_state.attributes.get(self._live_position_management.get_lat_attribute()))
+            long =  float(new_state.attributes.get(self._live_position_management.get_long_attribute()))
+            new_state_valid = True
+
+        except (ValueError, TypeError):
+            _LOGGER.warning(
+                    "%s : lat %s, long %s is not numerical",
+                    self._live_position_management.get_source_id(),
+                    self._live_position_management.get_lat_attribute(),
+                    self._live_position_management.get_long_attribute()
+            )
+
+        if new_state_valid == True:
+            self._live_position_management.update(lat,long)
+            if self._live_position_management.need_to_change_ref(lat,long):
+                self._worldtide_data_coordinator.change_reference_point(lat,long)
+                self._live_position_management.change_ref(lat,long)
+            self.async_write_ha_state()
+
+
+    async def async_added_to_hass(self):
+        """Handle added to Hass."""
+        await super().async_added_to_hass()
+
+        # listen to source ID
+        if self._live_position_management.get_live_position_management() == FROM_SENSOR_CONF:
+            self.async_on_remove(
+                async_track_state_change_event(
+                    self.hass,
+                    [self._live_position_management.get_source_id()],
+                    self._async_worldtidesinfo_sensor_state_listener,
+                )
+            )
+
+
 
     def update(self):
         """Update of sensors."""

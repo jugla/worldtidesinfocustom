@@ -22,6 +22,7 @@ from homeassistant.const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_NAME,
+    CONF_SOURCE,
     CONF_SHOW_ON_MAP,
 )
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
@@ -32,6 +33,7 @@ from .const import (
     ATTRIBUTION,
     CAMERA_CURVE_PICTURE_SUFFIX,
     CAMERA_PLOT_PICTURE_SUFFIX,
+    CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
@@ -51,9 +53,12 @@ from .const import (
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
     SCAN_INTERVAL_SECONDS,
+    STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 from .py_worldtidesinfo import SERVER_API_VERSION
+
+from .sensor_service import worldtidesinfo_unique_id
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -68,18 +73,17 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def worldtidesinfo_unique_id(lat, long):
-    return "lat:{}_long:{}".format(lat, long)
-
 
 def setup_camera(
     hass,
     name,
     lat,
     lon,
+    live_position_management,
+    source,
 ):
     """setup camera"""
-    unique_id = worldtidesinfo_unique_id(lat, lon)
+    unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
     filename = give_persistent_filename(hass, name)
 
     curve_picture = TidesCurvePicture(
@@ -101,12 +105,18 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     lat = config.get(CONF_LATITUDE, hass.config.latitude)
     lon = config.get(CONF_LONGITUDE, hass.config.longitude)
 
+    live_position_management = STATIC_CONF
+    source = None
+
+
     # what is the unit used
     tides_cameras = setup_camera(
         hass,
         name,
         lat,
         lon,
+        live_position_management,
+        source,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
@@ -128,11 +138,16 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     lat = config.get(CONF_LATITUDE)
     lon = config.get(CONF_LONGITUDE)
 
+    live_position_management = config.get(CONF_LIVE_LOCATION)
+    source = config.get(CONF_SOURCE)
+
     tides_cameras = setup_camera(
         hass,
         name,
         lat,
         lon,
+        live_position_management,
+        source,
     )
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")

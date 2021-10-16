@@ -24,6 +24,10 @@ class Plot_Manager:
         self._convert_meter_to_feet = convert_meter_to_feet
 
     def compute_new_plot(self, data, current_time):
+
+        if data == None:
+           return
+
         tide_info = give_info_from_raw_data(data)
 
         # Retrieve plot within time frame

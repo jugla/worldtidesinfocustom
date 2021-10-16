@@ -65,9 +65,12 @@ class Server_Parameter:
     def get_tide_station_distance(self):
         return self._tide_station_distance
 
+    def change_ref_point(self,lat,lon):
+        self._lat = lat
+        self._lon = lon
 
 class WorldTidesInfo_server:
-    """Class to manage the Word Tide Info serer"""
+    """Class to manage the Word Tide Info server"""
 
     def __init__(
         self,
@@ -104,6 +107,9 @@ class WorldTidesInfo_server:
         self.last_tide_request_credit = 0
         self.last_tide_request_error_value = None
 
+    def change_ref_point(self,lat,lon):
+        self._Server_Parameter.change_ref_point(lat,lon)
+
     def give_parameter(self):
         return self._Server_Parameter
 
@@ -135,9 +141,16 @@ class WorldTidesInfo_server:
             self._Server_Parameter._tide_station_distance,
         )
         try:
-            data = requests.get(resource, timeout=10).json()
-            data_has_been_received = True
-            error_value = None
+#            data = requests.get(resource, timeout=10).json()
+            data_get = requests.get(resource, timeout=10)
+            if data_get.status_code == 200:
+                data = data_get.json()
+                data_has_been_received = True
+                error_value = None
+            else:
+                error_value = data_get.status_code
+                data_has_been_received = False
+                data = None
 
         except ValueError as err:
             error_value = err.args
@@ -193,9 +206,16 @@ class WorldTidesInfo_server:
             datums_string,
         )
         try:
-            data = requests.get(resource, timeout=10).json()
-            data_has_been_received = True
-            error_value = None
+            data_get = requests.get(resource, timeout=10)
+            if data_get.status_code == 200:
+                data = data_get.json()
+                data_has_been_received = True
+                error_value = None
+            else:
+                error_value = data_get.status_code
+                data_has_been_received = False
+                data = None
+
         except ValueError as err:
             data = None
             data_has_been_received = False

@@ -250,7 +250,7 @@ class WordTide_Data_Coordinator:
                         "Error in decoding data file at: %s", int(current_time)
                     )
 
-        # the data read is empty (the snapshot retrieve is not useable) or too old
+        # the data read is empty (the snapshot retrieve is not useable) or too old or change ref
         if (
             self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
             == True
@@ -287,3 +287,9 @@ class WordTide_Data_Coordinator:
         ### (write of new data during update)
         ### The function is sync (i.e. or used with async and a LOCK)
         result = self._update_and_fetch_server_data()
+
+
+    def change_reference_point(self,lat,long):
+       self._worldtidesinfo_server.change_ref_point(lat,long)
+       worldtidesinfo_server_parameter = self._worldtidesinfo_server.give_parameter()
+       self._worldtidesinfo_server_scheduler.update_parameter(worldtidesinfo_server_parameter)
