@@ -89,6 +89,7 @@ def async_get_config_id(config_dict):
 
     return
 
+
 @callback
 def async_get_used_api_key(hass):
     """Go through coordinator to find a used API key."""
