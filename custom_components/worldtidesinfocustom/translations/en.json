@@ -33,6 +33,7 @@
           "plot_background": "plot curve background color in comma-separated RGB values",
           "unit" : "metric HA imperial",
           "live_location" : "location is static or dynamic from_sensor",
+          "update_sensor_distance": "distance that sensor shall moved to upate reference tide location",
           "source" : "source id that contains lat/long",
           "latitude_attr_name" : "latitude attribute name of sensor id",
           "longitude_attr_name" : "longitude attribute name of sensor id"

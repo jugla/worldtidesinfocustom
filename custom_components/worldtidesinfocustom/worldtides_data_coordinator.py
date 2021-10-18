@@ -178,8 +178,8 @@ class WordTide_Data_Coordinator:
             )
         else:
             _LOGGER.error(
-                "Error retrieving data from WorldTidesInfo: %s",
-                self._worldtidesinfo_server.retrieve_tide_station_err_value,
+                "Error retrieving tide station data from WorldTidesInfo: %s",
+                self._worldtidesinfo_server.retrieve_tide_station_err_value(),
             )
 
     def _retrieve_height_station(self, init_data_fetched):
@@ -221,8 +221,8 @@ class WordTide_Data_Coordinator:
 
         else:
             _LOGGER.error(
-                "Error retrieving data from WorldTidesInfo: %s",
-                self._worldtidesinfo_server.retrieve_tide_err_value,
+                "Error retrieving height station data from WorldTidesInfo: %s",
+                self._worldtidesinfo_server.retrieve_tide_err_value(),
             )
 
     def _update_and_fetch_server_data(self):

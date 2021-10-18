@@ -25,6 +25,7 @@ from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
+    CONF_SENSOR_UPDATE_DISTANCE,
     CONF_UNIT,
     CONF_UNIT_TYPES,
     CONF_VERTICAL_REF,
@@ -32,6 +33,7 @@ from .const import (
     DEFAULT_CONF_ATTRIBUTE_NAME_LAT,
     DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
     DEFAULT_CONF_LIVE_LOCATION,
+    DEFAULT_SENSOR_UPDATE_DISTANCE,
     DEFAULT_CONF_UNIT,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
@@ -135,6 +137,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
                     ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_SENSOR_UPDATE_DISTANCE, default=DEFAULT_SENSOR_UPDATE_DISTANCE): cv.positive_int,
                     vol.Optional(CONF_SOURCE): cv.string,
                     vol.Optional(
                         CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
@@ -176,6 +179,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
                     ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_SENSOR_UPDATE_DISTANCE, default=DEFAULT_SENSOR_UPDATE_DISTANCE): cv.positive_int,
                     vol.Optional(CONF_SOURCE): cv.string,
                     vol.Optional(
                         CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
