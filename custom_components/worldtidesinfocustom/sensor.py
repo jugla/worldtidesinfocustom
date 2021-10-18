@@ -74,6 +74,7 @@ from .const import (
 )
 
 # Live Position Management
+# Live Position Management
 from .live_position_management import Live_Position_Management
 
 # import .storage_mngt
@@ -115,9 +116,6 @@ from .storage_mngt import File_Data_Cache, File_Picture
 
 # WorlTidesDataCoordinator
 from .worldtides_data_coordinator import WordTide_Data_Coordinator
-
-# Live Position Management
-from .live_position_management import Live_Position_Management
 
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
@@ -1270,14 +1268,6 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 self._async_worldtidesinfo_sensor_state_listener,
             )
 
-
-            #self.async_on_remove(
-            #    async_track_state_change_event(
-            #        self.hass,
-            #        [self._live_position_management.get_source_id()],
-            #        self._async_worldtidesinfo_sensor_state_listener,
-            #    )
-            #)
 
     def update(self):
         """Update of sensors."""

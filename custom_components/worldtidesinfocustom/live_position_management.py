@@ -1,6 +1,4 @@
-
 import math
-
 
 # HA library
 from homeassistant.const import (

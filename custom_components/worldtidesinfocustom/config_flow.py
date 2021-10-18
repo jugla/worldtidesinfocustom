@@ -14,7 +14,6 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 
-
 # component library
 from . import async_get_config_id, async_get_used_api_key
 from .const import (
