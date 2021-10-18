@@ -55,7 +55,13 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 **Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*.
 
 **Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
+
+**Version V6.1.0**: if you have used a moving sensor in V6.0.0 (pre-release), please remove integration for this particular sensor and re-install it.
+A parameter to indicate when to update reference data has been added.
+
 </details>
+
+
 
 ## Using the component
 - Get API key from https://www.worldtides.info/developer (buy prepaid)
