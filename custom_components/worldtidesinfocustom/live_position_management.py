@@ -17,6 +17,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 # component library
 from .const import IMPERIAL_CONF_UNIT, STATIC_CONF
 
+
 # internal function
 def distance(origin, destination):
     lat1, lon1 = origin
@@ -57,9 +58,13 @@ class Live_Position_Management:
         self._live_position_management = live_position_management
         # unit used for display, and convert tide station distance
         if unit_to_display == IMPERIAL_CONF_UNIT:
-            self._max_distance_without_lat_long_update = live_position_sensor_update_distance * KM_PER_MI
+            self._max_distance_without_lat_long_update = (
+                live_position_sensor_update_distance * KM_PER_MI
+            )
         else:
-            self._max_distance_without_lat_long_update = live_position_sensor_update_distance
+            self._max_distance_without_lat_long_update = (
+                live_position_sensor_update_distance
+            )
 
         self._source_id = source
         self._source_attr_lat = source_attr_lat

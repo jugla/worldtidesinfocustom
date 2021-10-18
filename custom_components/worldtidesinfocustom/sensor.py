@@ -41,8 +41,8 @@ from .const import (
     CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
-    CONF_STATION_DISTANCE,
     CONF_SENSOR_UPDATE_DISTANCE,
+    CONF_STATION_DISTANCE,
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
@@ -163,8 +163,14 @@ def setup_sensor(
     unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
 
     live_position_management = Live_Position_Management(
-        lat, lon, live_position_management, live_position_sensor_update_distance, unit_to_display,
-        source, source_attr_lat, source_attr_long
+        lat,
+        lon,
+        live_position_management,
+        live_position_sensor_update_distance,
+        unit_to_display,
+        source,
+        source_attr_lat,
+        source_attr_long,
     )
 
     worldtide_data_coordinator = WordTide_Data_Coordinator(
@@ -411,7 +417,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         show_on_map = False
 
     live_position_management = config.get(CONF_LIVE_LOCATION)
-    live_position_sensor_update_distance =  config.get(CONF_SENSOR_UPDATE_DISTANCE)
+    live_position_sensor_update_distance = config.get(CONF_SENSOR_UPDATE_DISTANCE)
     source = config.get(CONF_SOURCE)
     source_attr_lat = config.get(CONF_ATTRIBUTE_NAME_LAT)
     source_attr_long = config.get(CONF_ATTRIBUTE_NAME_LONG)
@@ -1200,9 +1206,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
 
     def _async_worldtidesinfo_sensor_state_listener(self, event):
         """Handle sensor state changes."""
-        _LOGGER.info(
-                "World Tide Update state %s", event.data.get("new_state")        )
-
+        _LOGGER.info("World Tide Update state %s", event.data.get("new_state"))
 
         new_state_valid = False
         lat = None
@@ -1259,7 +1263,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
 
             _LOGGER.info(
                 "World Tide add listener %s",
-                self._live_position_management.get_source_id()
+                self._live_position_management.get_source_id(),
             )
 
             async_track_state_change_event(
@@ -1267,7 +1271,6 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
                 [self._live_position_management.get_source_id()],
                 self._async_worldtidesinfo_sensor_state_listener,
             )
-
 
     def update(self):
         """Update of sensors."""
