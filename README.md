@@ -24,7 +24,7 @@ So for one location: 20000 credits will last ~18 years
 
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
-In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved from 10km
+In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved more than a user parameter defined in UI
 
 ## Installation
 Either use HACS (default), either manual
