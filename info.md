@@ -19,7 +19,7 @@ This component allows to :
 
 In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 
-In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved from 10km
+In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved more than a user parameter defined in UI
 
 ## Other information
 Detail information on use, breaking change, example are given at [worldtidesinfocustom repository](https://github.com/jugla/worldtidesinfocustom)
