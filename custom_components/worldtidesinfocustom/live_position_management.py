@@ -62,7 +62,7 @@ class Live_Position_Management:
 
         # unit used for display, and convert tide station distance
         if live_position_sensor_update_distance == None:
-           live_position_sensor_update_distance = DEFAULT_SENSOR_UPDATE_DISTANCE
+            live_position_sensor_update_distance = DEFAULT_SENSOR_UPDATE_DISTANCE
 
         if unit_to_display == IMPERIAL_CONF_UNIT:
             self._max_distance_without_lat_long_update = (
@@ -78,7 +78,6 @@ class Live_Position_Management:
         self._source_attr_long = source_attr_long
 
         self._last_distance_from_ref_point = 0
-
 
     def get_source_id(self):
         return self._source_id
@@ -116,9 +115,11 @@ class Live_Position_Management:
     def update(self, lat, long):
         self._current_lat = lat
         self._current_long = long
-        self._last_distance_from_ref_point = distance((self._ref_lat, self._ref_long), (lat, long))
+        self._last_distance_from_ref_point = distance(
+            (self._ref_lat, self._ref_long), (lat, long)
+        )
 
-    def give_distance_from_ref_point (self):
+    def give_distance_from_ref_point(self):
         return self._last_distance_from_ref_point
 
     def change_ref(self, lat, long):
