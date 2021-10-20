@@ -24,7 +24,7 @@ So for one location: 20000 credits will last ~18 years
 
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
-In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved from 10km
+In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved more than a user parameter defined in UI
 
 ## Installation
 Either use HACS (default), either manual
@@ -55,7 +55,13 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 **Version V2.7.0**: After this version *Coeff* attribute is renamed in *Coeff_resp_MWS* . MWS stands for *mean water spring*.
 
 **Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
+
+**Version V6.1.0**: if you have used a moving sensor in V6.0.0 (pre-release), please remove integration for this particular sensor and re-install it.
+A parameter to indicate when to update reference data has been added.
+
 </details>
+
+
 
 ## Using the component
 - Get API key from https://www.worldtides.info/developer (buy prepaid)
