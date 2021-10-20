@@ -50,6 +50,7 @@ from .const import (
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
+    DEFAULT_SENSOR_UPDATE_DISTANCE,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DOMAIN,
@@ -347,7 +348,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     show_on_map = True
 
     live_position_management = STATIC_CONF
-    live_position_sensor_update_distance = None
+    live_position_sensor_update_distance = DEFAULT_SENSOR_UPDATE_DISTANCE
     source = None
     source_attr_lat = None
     source_attr_long = None
@@ -1192,6 +1193,7 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         attr["ref_long"] = self._live_position_management.get_ref_long()
         attr["current_lat"] = self._live_position_management.get_current_lat()
         attr["current_long"] = self._live_position_management.get_current_long()
+        attr["distance_from_ref"] = self._live_position_management.give_distance_from_ref_point()
 
         return attr
 

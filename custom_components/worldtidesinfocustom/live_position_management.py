@@ -15,7 +15,7 @@ MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
 # component library
-from .const import IMPERIAL_CONF_UNIT, STATIC_CONF
+from .const import DEFAULT_SENSOR_UPDATE_DISTANCE, IMPERIAL_CONF_UNIT, STATIC_CONF
 
 
 # internal function
@@ -55,8 +55,15 @@ class Live_Position_Management:
         self._current_lat = None
         self._current_long = None
 
-        self._live_position_management = live_position_management
+        if live_position_management == None:
+            self._live_position_management = STATIC_CONF
+        else:
+            self._live_position_management = live_position_management
+
         # unit used for display, and convert tide station distance
+        if live_position_sensor_update_distance == None:
+           live_position_sensor_update_distance = DEFAULT_SENSOR_UPDATE_DISTANCE
+
         if unit_to_display == IMPERIAL_CONF_UNIT:
             self._max_distance_without_lat_long_update = (
                 live_position_sensor_update_distance * KM_PER_MI
@@ -69,6 +76,9 @@ class Live_Position_Management:
         self._source_id = source
         self._source_attr_lat = source_attr_lat
         self._source_attr_long = source_attr_long
+
+        self._last_distance_from_ref_point = 0
+
 
     def get_source_id(self):
         return self._source_id
@@ -92,10 +102,7 @@ class Live_Position_Management:
         return self._ref_long
 
     def get_live_position_management(self):
-        if self._live_position_management == None:
-            return STATIC_CONF
-        else:
-            return self._live_position_management
+        return self._live_position_management
 
     def need_to_change_ref(self, lat, long):
         if (
@@ -109,6 +116,10 @@ class Live_Position_Management:
     def update(self, lat, long):
         self._current_lat = lat
         self._current_long = long
+        self._last_distance_from_ref_point = distance((self._ref_lat, self._ref_long), (lat, long))
+
+    def give_distance_from_ref_point (self):
+        return self._last_distance_from_ref_point
 
     def change_ref(self, lat, long):
         self._ref_lat = lat
