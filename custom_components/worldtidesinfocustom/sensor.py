@@ -1193,7 +1193,9 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         attr["ref_long"] = self._live_position_management.get_ref_long()
         attr["current_lat"] = self._live_position_management.get_current_lat()
         attr["current_long"] = self._live_position_management.get_current_long()
-        attr["distance_from_ref"] = self._live_position_management.give_distance_from_ref_point()
+        attr[
+            "distance_from_ref"
+        ] = self._live_position_management.give_distance_from_ref_point()
 
         return attr
 
