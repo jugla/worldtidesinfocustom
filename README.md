@@ -56,9 +56,6 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 
 **Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
 
-**Version V6.1.0**: if you have used a moving sensor in V6.0.0 (pre-release), please remove integration for this particular sensor and re-install it.
-A parameter to indicate when to update reference data has been added.
-
 </details>
 
 
@@ -413,6 +410,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 | ref long | v6.0.0 |  float   | deg   | the longitude of monitored location      |
 | current lat | v6.0.0 |  float   | deg   | the current latitude of source id      |
 | current long | v6.0.0 |  float   | deg   | the current longitude of source id      |
+| distance_from_ref | v6.1.1 | float | km | distance between current lat/long and monitored location |
 
 ## Wish/Todo list
 - make this integration as default in home assistant
