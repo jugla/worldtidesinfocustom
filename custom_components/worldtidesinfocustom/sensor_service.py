@@ -26,7 +26,7 @@ from .const import (
     ROUND_HEIGTH,
     ROUND_HOUR,
     ROUND_SEC,
-    ROUND_STATION_DISTANCE,
+    ROUND_DISTANCE,
     STATIC_CONF,
 )
 
@@ -416,7 +416,7 @@ def tide_station_attribute(
     attr["station_distance"] = round(
         (worldtide_data_coordinator.get_server_parameter()).get_tide_station_distance()
         * convert_km_to_miles,
-        ROUND_STATION_DISTANCE,
+        ROUND_DISTANCE,
     )
     station_around = init_tide_info.give_station_around_info()
     if station_around.get("error") == None:

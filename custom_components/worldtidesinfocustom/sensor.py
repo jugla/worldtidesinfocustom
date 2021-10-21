@@ -58,6 +58,7 @@ from .const import (
     HA_CONF_UNIT,
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
+    ROUND_DISTANCE,
     SCAN_INTERVAL_SECONDS,
     SENSOR_CREDIT_USED_SUFFIX,
     SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX,
@@ -1195,7 +1196,10 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         attr["current_long"] = self._live_position_management.get_current_long()
         attr[
             "distance_from_ref"
-        ] = self._live_position_management.give_distance_from_ref_point()
+        ] = round(
+            self._live_position_management.give_distance_from_ref_point() * convert_km_to_miles,
+            ROUND_DISTANCE,
+        )
 
         return attr
 
