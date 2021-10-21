@@ -56,9 +56,6 @@ NB: Before *V2.6.0*, information were given only in metric. At *V2.6.0* the info
 
 **Version V3.0.0**: After this version *worldtides_request_interval* configuration optional parameter is removed.
 
-**Version V6.1.0**: if you have used a moving sensor in V6.0.0 (pre-release), please remove integration for this particular sensor and re-install it.
-A parameter to indicate when to update reference data has been added.
-
 </details>
 
 
