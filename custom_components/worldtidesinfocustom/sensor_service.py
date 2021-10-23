@@ -30,6 +30,9 @@ from .const import (
     STATIC_CONF,
 )
 
+from .basic_service import distance_lat_long
+
+
 # import .storage_mngt
 from .py_worldtidesinfo import (
     give_info_from_raw_data,
@@ -406,7 +409,7 @@ def schedule_time_attribute(worldtide_data_coordinator):
     return attr
 
 
-def tide_station_attribute(
+def tide_station_attribute(current_lat,current_long,
     tide_station_name, worldtide_data_coordinator, init_tide_info, convert_km_to_miles
 ):
     """Compute tide station attribute"""
@@ -432,11 +435,23 @@ def tide_station_attribute(
         attr["station_around_time_zone"] = tide_station_used_info.get("tide_station_timezone")
         attr["tidal_station_used_info_lat"] = tide_station_used_info.get("tide_station_lat")
         attr["tidal_station_used_info_long"] = tide_station_used_info.get("tide_station_long")
-    else:
-        attr["station_around_time_zone"] = "No station time zone"
-        attr["tidal_station_used_info_lat"] = "No Tide station lat found"
-        attr["tidal_station_used_info_long"] = "No Tide station long found"
+        if current_lat != None or current_long != None:
+           attr["current_distance_to_station"] = round(
+              distance_lat_long(
+                 (current_lat,current_long),
+                 (float(tide_station_used_info.get("tide_station_lat")),float(tide_station_used_info.get("tide_station_long"))
+                 )
+              )
+              * convert_km_to_miles,
+              ROUND_DISTANCE,
+           )
+        else:
+           attr["current_distance_to_station"] = "-"
 
+    else:
+        attr["station_around_time_zone"] = "-"
+        attr["tidal_station_used_info_lat"] = "-"
+        attr["tidal_station_used_info_long"] = "-"
 
     return attr
 

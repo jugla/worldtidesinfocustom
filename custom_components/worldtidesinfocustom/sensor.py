@@ -79,8 +79,6 @@ from .const import (
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
-# Live Position Management
-from .basic_service import distance_lat_long
 
 # Live Position Management
 from .live_position_management import Live_Position_Management
@@ -1187,7 +1185,10 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
 
         # Tide detailed characteristic
         attr.update(
-            tide_station_attribute(tide_station_name,
+            tide_station_attribute(
+                self._live_position_management.get_current_lat(),
+                self._live_position_management.get_current_long(),
+                tide_station_name,
                 self._worldtide_data_coordinator, init_tide_info, convert_km_to_miles
             )
         )
@@ -1271,39 +1272,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         if new_state_valid == True:
             self._live_position_management.update(lat, long)
 
-            ## check if the point is moving if next the reference shall be changed
-            # the tide info
-            tide_station_shall_be_changed = False
-
-            tide_info, datums_info, init_tide_info = get_all_tide_info(
-                self._worldtide_data_coordinator
-            )
-
-            tide_station_used = tide_info.give_tidal_station_used()
-            tide_station_name = None
-            if tide_station_used.get("error") == None:
-                 tide_station_name = tide_station_used.get("station")
-
-            d_min_index = None
-            d_min_value = None
-            current_distance = None
-            tide_station_list = init_tide_info.give_station_list_info()
-            if tide_station_list != None:
-               if len(tide_station_list)>0:
-                   for tide_station_index in range (len(tide_station_list)):
-                       current_distance = distance_lat_long(
-                               (lat, long), 
-                               (float(tide_station_list[tide_station_index]["lat"]),float(tide_station_list[tide_station_index]["lon"]))
-                       )
-                       if d_min_value == None or current_distance < d_min_value:
-                           d_min_value = current_distance
-                           d_min_index = tide_station_index
-            if tide_station_name != None and d_min_index != None:
-               if tide_station_name != tide_station_list[tide_station_index]["name"]:
-                  tide_station_shall_be_changed = True
-
             # check if too far from former point
-            if tide_station_shall_be_changed or self._live_position_management.need_to_change_ref(lat, long):
+            if self._live_position_management.need_to_change_ref(lat, long):
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
             self.async_write_ha_state()
