@@ -409,12 +409,14 @@ class give_info_from_raw_data:
             return {"error": "no_data"}
 
         if len(self._data["stations"]) > 0:
-            return {"tide_station_used_name" : self._data["stations"][0]["name"],
-                    "tide_station_lat" : self._data["stations"][0]["lat"],
-                    "tide_station_long" : self._data["stations"][0]["lon"]}
-        return {"error" : "used station not found"}
+            return {
+                "tide_station_used_name": self._data["stations"][0]["name"],
+                "tide_station_lat": self._data["stations"][0]["lat"],
+                "tide_station_long": self._data["stations"][0]["lon"],
+            }
+        return {"error": "used station not found"}
 
-    def give_used_station_info_from_name (self,station_name):
+    def give_used_station_info_from_name(self, station_name):
         """give used tidal station info"""
         if station_name == None:
             return {"error": "no_station_name"}
@@ -427,16 +429,21 @@ class give_info_from_raw_data:
 
         if len(self._data["stations"]) > 0:
             for name_index in range(len(self._data["stations"])):
-               if self._data["stations"][name_index]["name"] == station_name:
-                   tide_station_index = name_index
-                   tide_station_index_found = True
+                if self._data["stations"][name_index]["name"] == station_name:
+                    tide_station_index = name_index
+                    tide_station_index_found = True
         if tide_station_index_found == True:
-            return {"tide_station_used_name" : self._data["stations"][tide_station_index]["name"],
-                    "tide_station_lat" : self._data["stations"][tide_station_index]["lat"],
-                    "tide_station_long" : self._data["stations"][tide_station_index]["lon"],
-                    "tide_station_timezone" : self._data["stations"][tide_station_index]["timezone"]}
-        return {"error" : "used station detailed not found"}
-
+            return {
+                "tide_station_used_name": self._data["stations"][tide_station_index][
+                    "name"
+                ],
+                "tide_station_lat": self._data["stations"][tide_station_index]["lat"],
+                "tide_station_long": self._data["stations"][tide_station_index]["lon"],
+                "tide_station_timezone": self._data["stations"][tide_station_index][
+                    "timezone"
+                ],
+            }
+        return {"error": "used station detailed not found"}
 
     def give_station_around_info(self):
         """give tidal station around info"""

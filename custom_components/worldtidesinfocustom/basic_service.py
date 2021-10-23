@@ -15,4 +15,3 @@ def distance_lat_long(origin, destination):
     d = radius * c
 
     return abs(d)
-

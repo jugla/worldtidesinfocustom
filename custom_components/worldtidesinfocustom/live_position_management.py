@@ -1,4 +1,3 @@
-
 # HA library
 from homeassistant.const import (
     LENGTH_FEET,
@@ -13,12 +12,12 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
+# internal function
+from .basic_service import distance_lat_long
+
 # component library
 from .const import DEFAULT_SENSOR_UPDATE_DISTANCE, IMPERIAL_CONF_UNIT, STATIC_CONF
 
-
-# internal function
-from .basic_service import distance_lat_long
 
 # class
 class Live_Position_Management:

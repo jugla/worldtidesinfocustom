@@ -32,11 +32,17 @@ from homeassistant.helpers.restore_state import RestoreEntity
 
 # HA library
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
+
+# Live Position Management
+from .basic_service import distance_lat_long
 from .const import (
+    ATTR_REF_LAT,
+    ATTR_REF_LONG,
     ATTRIBUTION,
     ATTR_REF_LAT,
     ATTR_REF_LONG,
@@ -78,7 +84,6 @@ from .const import (
     STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
-
 
 # Live Position Management
 from .live_position_management import Live_Position_Management
@@ -1189,7 +1194,9 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 self._live_position_management.get_current_lat(),
                 self._live_position_management.get_current_long(),
                 tide_station_name,
-                self._worldtide_data_coordinator, init_tide_info, convert_km_to_miles
+                self._worldtide_data_coordinator,
+                init_tide_info,
+                convert_km_to_miles
             )
         )
 
@@ -1292,9 +1299,12 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             previous_ref_long = format_receive_value(
                 state_recorded.attributes.get(ATTR_REF_LONG)
             )
-            self._worldtide_data_coordinator.change_reference_point(previous_ref_lat,previous_ref_long)
-            self._live_position_management.change_ref(previous_ref_lat,previous_ref_long)
-
+            self._worldtide_data_coordinator.change_reference_point(
+                previous_ref_lat, previous_ref_long
+            )
+            self._live_position_management.change_ref(
+                previous_ref_lat, previous_ref_long
+            )
 
         # listen to source ID
         if (

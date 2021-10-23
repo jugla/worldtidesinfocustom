@@ -452,6 +452,7 @@ def tide_station_attribute(current_lat,current_long,
         attr["station_around_time_zone"] = "-"
         attr["tidal_station_used_info_lat"] = "-"
         attr["tidal_station_used_info_long"] = "-"
+        attr["current_distance_to_station"] = "-"
 
     return attr
 
