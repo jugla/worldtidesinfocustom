@@ -447,7 +447,7 @@ def tide_station_attribute(
         attr["tidal_station_used_info_long"] = tide_station_used_info.get(
             "tide_station_long"
         )
-        if current_lat != None or current_long != None:
+        if current_lat != None and current_long != None:
             attr["current_distance_to_station"] = round(
                 distance_lat_long(
                     (current_lat, current_long),
