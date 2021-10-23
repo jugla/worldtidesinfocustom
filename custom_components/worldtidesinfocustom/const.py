@@ -112,3 +112,7 @@ SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX = "_current_tide_coeff_resp_MWS"
 SENSOR_CREDIT_USED_SUFFIX = "_credit_used"
 SENSOR_GLOBAL_CREDIT_USED_SUFFIX = "_global_credit_used"
 SENSOR_NEXT_TIDE_SUFFIX = ""
+
+# set constant for attributes
+ATTR_REF_LAT = "ref_lat"
+ATTR_REF_LONG = "ref_long"

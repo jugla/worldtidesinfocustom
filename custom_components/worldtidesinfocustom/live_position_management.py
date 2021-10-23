@@ -1,4 +1,3 @@
-import math
 
 # HA library
 from homeassistant.const import (
@@ -19,21 +18,7 @@ from .const import DEFAULT_SENSOR_UPDATE_DISTANCE, IMPERIAL_CONF_UNIT, STATIC_CO
 
 
 # internal function
-def distance(origin, destination):
-    lat1, lon1 = origin
-    lat2, lon2 = destination
-    radius = 6371  # km
-
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(
-        math.radians(lat1)
-    ) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) * math.sin(dlon / 2)
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    d = radius * c
-
-    return abs(d)
-
+from .basic_service import distance_lat_long
 
 # class
 class Live_Position_Management:
@@ -105,7 +90,7 @@ class Live_Position_Management:
 
     def need_to_change_ref(self, lat, long):
         if (
-            distance((self._ref_lat, self._ref_long), (lat, long))
+            distance_lat_long((self._ref_lat, self._ref_long), (lat, long))
             > self._max_distance_without_lat_long_update
         ):
             return True
@@ -115,7 +100,7 @@ class Live_Position_Management:
     def update(self, lat, long):
         self._current_lat = lat
         self._current_long = long
-        self._last_distance_from_ref_point = distance(
+        self._last_distance_from_ref_point = distance_lat_long(
             (self._ref_lat, self._ref_long), (lat, long)
         )
 

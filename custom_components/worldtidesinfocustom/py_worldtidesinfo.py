@@ -398,6 +398,46 @@ class give_info_from_raw_data:
             "height_epoch": height_time,
         }
 
+    def give_station_list_info(self):
+        if self._data == None:
+            return None
+        return self._data["stations"]
+
+    def give_used_station_info(self):
+        """give used tidal station info"""
+        if self._data == None:
+            return {"error": "no_data"}
+
+        if len(self._data["stations"]) > 0:
+            return {"tide_station_used_name" : self._data["stations"][0]["name"],
+                    "tide_station_lat" : self._data["stations"][0]["lat"],
+                    "tide_station_long" : self._data["stations"][0]["lon"]}
+        return {"error" : "used station not found"}
+
+    def give_used_station_info_from_name (self,station_name):
+        """give used tidal station info"""
+        if station_name == None:
+            return {"error": "no_station_name"}
+
+        if self._data == None:
+            return {"error": "no_data"}
+
+        tide_station_index = 0
+        tide_station_index_found = False
+
+        if len(self._data["stations"]) > 0:
+            for name_index in range(len(self._data["stations"])):
+               if self._data["stations"][name_index]["name"] == station_name:
+                   tide_station_index = name_index
+                   tide_station_index_found = True
+        if tide_station_index_found == True:
+            return {"tide_station_used_name" : self._data["stations"][tide_station_index]["name"],
+                    "tide_station_lat" : self._data["stations"][tide_station_index]["lat"],
+                    "tide_station_long" : self._data["stations"][tide_station_index]["lon"],
+                    "tide_station_timezone" : self._data["stations"][tide_station_index]["timezone"]}
+        return {"error" : "used station detailed not found"}
+
+
     def give_station_around_info(self):
         """give tidal station around info"""
         if self._data == None:
@@ -429,6 +469,7 @@ class give_info_from_raw_data:
             return {"time_zone": self._data["stations"][0]["timezone"]}
         else:
             return {"error": "no station around"}
+
 
     def give_datum(self):
         if self._data == None:
