@@ -25,16 +25,23 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
+    STATE_UNKNOWN,
 )
 from homeassistant.helpers.entity import Entity
 
 # HA library
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
+
+# Live Position Management
+from .basic_service import distance_lat_long
 from .const import (
+    ATTR_REF_LAT,
+    ATTR_REF_LONG,
     ATTRIBUTION,
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
@@ -75,7 +82,6 @@ from .const import (
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
 
-# Live Position Management
 # Live Position Management
 from .live_position_management import Live_Position_Management
 
@@ -141,6 +147,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): cv.string,
     }
 )
+
+
+def format_receive_value(value):
+    """format if pb then return None"""
+    if value == None or value == STATE_UNKNOWN:
+        return None
+    else:
+        return float(value)
 
 
 def setup_sensor(
@@ -1088,7 +1102,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGener
         return "mdi:credit-card-multiple-outline"
 
 
-class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneric):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -1129,8 +1143,10 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
 
         # Tide station characteristics
         tide_station_used = tide_info.give_tidal_station_used()
+        tide_station_name = None
         if tide_station_used.get("error") == None:
-            attr["tidal_station_used"] = tide_station_used.get("station")
+            tide_station_name = tide_station_used.get("station")
+            attr["tidal_station_used"] = tide_station_name
         else:
             attr["tidal_station_used"] = "No Tide station used"
 
@@ -1171,7 +1187,10 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
         # Tide detailed characteristic
         attr.update(
             tide_station_attribute(
-                self._worldtide_data_coordinator, init_tide_info, convert_km_to_miles
+                tide_station_name,
+                self._worldtide_data_coordinator,
+                init_tide_info,
+                convert_km_to_miles,
             )
         )
 
@@ -1190,8 +1209,8 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
             "live_location"
         ] = self._live_position_management.get_live_position_management()
         attr["source_id"] = self._live_position_management.get_source_id()
-        attr["ref_lat"] = self._live_position_management.get_ref_lat()
-        attr["ref_long"] = self._live_position_management.get_ref_long()
+        attr[ATTR_REF_LAT] = self._live_position_management.get_ref_lat()
+        attr[ATTR_REF_LONG] = self._live_position_management.get_ref_long()
         attr["current_lat"] = self._live_position_management.get_current_lat()
         attr["current_long"] = self._live_position_management.get_current_long()
         attr["distance_from_ref"] = round(
@@ -1253,7 +1272,46 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
 
         if new_state_valid == True:
             self._live_position_management.update(lat, long)
-            if self._live_position_management.need_to_change_ref(lat, long):
+
+            ## check if the point is moving if next the reference shall be changed
+            # the tide info
+            tide_station_shall_be_changed = False
+
+            tide_info, datums_info, init_tide_info = get_all_tide_info(
+                self._worldtide_data_coordinator
+            )
+
+            tide_station_used = tide_info.give_tidal_station_used()
+            tide_station_name = None
+            if tide_station_used.get("error") == None:
+                tide_station_name = tide_station_used.get("station")
+
+            d_min_index = None
+            d_min_value = None
+            current_distance = None
+            tide_station_list = init_tide_info.give_station_list_info()
+            if tide_station_list != None:
+                if len(tide_station_list) > 0:
+                    for tide_station_index in range(len(tide_station_list)):
+                        current_distance = distance_lat_long(
+                            (lat, long),
+                            (
+                                float(tide_station_list[tide_station_index]["lat"]),
+                                float(tide_station_list[tide_station_index]["lon"]),
+                            ),
+                        )
+                        if d_min_value == None or current_distance < d_min_value:
+                            d_min_value = current_distance
+                            d_min_index = tide_station_index
+            if tide_station_name != None and d_min_index != None:
+                if tide_station_name != tide_station_list[tide_station_index]["name"]:
+                    tide_station_shall_be_changed = True
+
+            # check if too far from former point
+            if (
+                tide_station_shall_be_changed
+                or self._live_position_management.need_to_change_ref(lat, long)
+            ):
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
             self.async_write_ha_state()
@@ -1261,6 +1319,23 @@ class WorldTidesInfoCustomSensor(WorldTidesInfoCustomSensorGeneric):
     async def async_added_to_hass(self):
         """Handle added to Hass."""
         await super().async_added_to_hass()
+
+        previous_ref_lat = None
+        previous_ref_long = None
+        state_recorded = await self.async_get_last_state()
+        if state_recorded:
+            previous_ref_lat = format_receive_value(
+                state_recorded.attributes.get(ATTR_REF_LAT)
+            )
+            previous_ref_long = format_receive_value(
+                state_recorded.attributes.get(ATTR_REF_LONG)
+            )
+            self._worldtide_data_coordinator.change_reference_point(
+                previous_ref_lat, previous_ref_long
+            )
+            self._live_position_management.change_ref(
+                previous_ref_lat, previous_ref_long
+            )
 
         # listen to source ID
         if (
