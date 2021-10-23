@@ -404,6 +404,9 @@ The sensor "NAME" has a set of attributes describes hereafter
 | Station distance     | v2.0.0    | float        | km/miles   | the radius used to retrieve tide station around location |
 | Station around name  | v2.0.0    | string     | location name | tide station list separate by ";" |
 | Station around time zone | v2.0.0 | string    | time zone | Full timezone name (ex. America/Los_Angeles) |
+| Tidal station used info lat | v6.2.0 | float | deg   | the latitude of the used tide station (if exists)      |
+| Tidal station used info long | v6.2.0 | float | deg   | the latitude of the used tide station (if exists)      |
+| Current distance to station | v6.2.0 | float | km/miles   | the current distance to the used tide station (works with moving sensor)      |
 | live_location | v6.0.0 |  enum   | NA   | monitored location : static or from_sensor      |
 | source_id | v6.0.0 |  string   | NA   | the sensor that gives position      |
 | ref lat | v6.0.0 |  float   | deg   | the latitude of monitored location      |
