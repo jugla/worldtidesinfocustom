@@ -1,5 +1,6 @@
 import math
 
+
 # internal function
 def distance_lat_long(origin, destination):
     lat1, lon1 = origin

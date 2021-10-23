@@ -28,7 +28,6 @@ from homeassistant.const import (
     STATE_UNKNOWN,
 )
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.restore_state import RestoreEntity
 
 # HA library
 from homeassistant.helpers.event import async_track_state_change_event
@@ -44,8 +43,6 @@ from .const import (
     ATTR_REF_LAT,
     ATTR_REF_LONG,
     ATTRIBUTION,
-    ATTR_REF_LAT,
-    ATTR_REF_LONG,
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
     CONF_LIVE_LOCATION,
@@ -87,7 +84,6 @@ from .const import (
 
 # Live Position Management
 from .live_position_management import Live_Position_Management
-
 
 # import .storage_mngt
 from .py_worldtidesinfo import (
@@ -1196,7 +1192,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 tide_station_name,
                 self._worldtide_data_coordinator,
                 init_tide_info,
-                convert_km_to_miles
+                convert_km_to_miles,
             )
         )
 
@@ -1339,6 +1335,3 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             self._worldtide_data_coordinator.overall_count_tmp
         )
         self._worldtide_data_coordinator.overall_count_tmp = 0
-
-
-

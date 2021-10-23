@@ -477,7 +477,6 @@ class give_info_from_raw_data:
         else:
             return {"error": "no station around"}
 
-
     def give_datum(self):
         if self._data == None:
             return {"error": "no data"}
