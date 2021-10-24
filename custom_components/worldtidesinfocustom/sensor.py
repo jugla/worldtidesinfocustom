@@ -1345,10 +1345,18 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 self._async_worldtidesinfo_sensor_state_listener,
             )
 
-        if state_recorded != None and previous_ref_lat != None and previous_ref_long != None :
-           self._worldtide_data_coordinator.change_reference_point(previous_ref_lat, previous_ref_long)
-           self._live_position_management.change_ref(previous_ref_lat, previous_ref_long)
-           self.schedule_update_ha_state(force_refresh=True)
+        if (
+            state_recorded != None
+            and previous_ref_lat != None
+            and previous_ref_long != None
+        ):
+            self._worldtide_data_coordinator.change_reference_point(
+                previous_ref_lat, previous_ref_long
+            )
+            self._live_position_management.change_ref(
+                previous_ref_lat, previous_ref_long
+            )
+            self.schedule_update_ha_state(force_refresh=True)
 
     def update(self):
         """Update of sensors."""
