@@ -534,7 +534,30 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
         return
 
 
-class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
+
+    def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
+
+        # retrieve state
+        new_state = event.data.get("new_state")
+        if new_state is None:
+            return
+
+        self.schedule_update_ha_state(force_refresh=True)
+
+
+    async def async_added_to_hass(self):
+        """Handle added to Hass."""
+        await super().async_added_to_hass()
+
+        async_track_state_change_event(
+            self._hass,
+            ["sensor."+ self._name + SENSOR_NEXT_TIDE_SUFFIX],
+            self._async_worldtidesinfo_follower_sensor_state_listener,
+        )
+
+
+class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -598,7 +621,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorGeneric)
         return current_height_state(tide_info, current_time, convert_meter_to_feet)
 
 
-class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -662,7 +685,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorGene
         return state_value
 
 
-class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -712,7 +735,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorGeneri
         return state_value
 
 
-class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -777,7 +800,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorGen
         return state_value
 
 
-class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -828,7 +851,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorGener
 
 
 class WorldTidesInfoCustomSensorNextRemainingTideTime(
-    WorldTidesInfoCustomSensorGeneric
+    WorldTidesInfoCustomSensorFollower
 ):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -884,7 +907,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         return state_value
 
 
-class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -955,7 +978,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorGener
         return state_value
 
 
-class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -1031,7 +1054,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorGeneri
         return state_value
 
 
-class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -1060,7 +1083,7 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorGeneric):
         return "mdi:credit-card-check-outline"
 
 
-class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorGeneric):
+class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
@@ -1280,9 +1303,9 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
                 self.schedule_update_ha_state(force_refresh=True)
-            else:
+            #else:
                 #perform nothing except write down new state
-                self.async_write_ha_state()
+            #    self.async_write_ha_state()
 
     async def async_added_to_hass(self):
         """Handle added to Hass."""
@@ -1317,7 +1340,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             )
 
             async_track_state_change_event(
-                self.hass,
+                self._hass,
                 [self._live_position_management.get_source_id()],
                 self._async_worldtidesinfo_sensor_state_listener,
             )

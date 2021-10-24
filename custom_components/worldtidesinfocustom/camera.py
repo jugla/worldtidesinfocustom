@@ -25,6 +25,7 @@ from homeassistant.const import (
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
 )
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
 # Component Library
@@ -53,6 +54,7 @@ from .const import (
     IMPERIAL_CONF_UNIT,
     METRIC_CONF_UNIT,
     SCAN_INTERVAL_SECONDS,
+    SENSOR_NEXT_TIDE_SUFFIX,
     STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
@@ -193,6 +195,28 @@ class TidesPicture_FromFile(Camera):
 
     def no_data(self):
         return self._image == None
+
+    def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
+
+        # retrieve state
+        new_state = event.data.get("new_state")
+        if new_state is None:
+            return
+
+        self.schedule_update_ha_state(force_refresh=True)
+
+
+    async def async_added_to_hass(self):
+        """Handle added to Hass."""
+        await super().async_added_to_hass()
+
+        async_track_state_change_event(
+            self._hass,
+            ["sensor."+ self._name + SENSOR_NEXT_TIDE_SUFFIX],
+            self._async_worldtidesinfo_follower_sensor_state_listener,
+        )
+
+
 
     def camera_image(self):
         """Return image response."""
