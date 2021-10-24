@@ -1279,7 +1279,10 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             if self._live_position_management.need_to_change_ref(lat, long):
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
-            self.async_write_ha_state()
+                self.schedule_update_ha_state(force_refresh=True)
+            else:
+                # perform nothing except write down new state
+                self.async_write_ha_state()
 
     async def async_added_to_hass(self):
         """Handle added to Hass."""
@@ -1318,6 +1321,19 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 [self._live_position_management.get_source_id()],
                 self._async_worldtidesinfo_sensor_state_listener,
             )
+
+        if (
+            state_recorded != None
+            and previous_ref_lat != None
+            and previous_ref_long != None
+        ):
+            self._worldtide_data_coordinator.change_reference_point(
+                previous_ref_lat, previous_ref_long
+            )
+            self._live_position_management.change_ref(
+                previous_ref_lat, previous_ref_long
+            )
+            self.schedule_update_ha_state(force_refresh=True)
 
     def update(self):
         """Update of sensors."""
