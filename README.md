@@ -329,6 +329,8 @@ Hereafter an example of update thanks to a boat tracker :
 - blue : a boat tracker
 - purple : the difference place where tide info has been taken
 
+NB: a boat tracker can be easily given by running HomeAssistant Application on your phone. The application offers to you a tracker with lat/long of your current position.
+
 <p align="center">
   <img src="./doc/picture/BoatTracker.jpg" alt="Size Limit CLI" width="400">
 </p>
