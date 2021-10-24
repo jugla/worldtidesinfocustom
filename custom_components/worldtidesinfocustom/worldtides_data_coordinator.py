@@ -235,19 +235,19 @@ class WordTide_Data_Coordinator:
         if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
             if self._tide_cache_file.Fetch_Stored_Data():
                 SchedulerSnapshot = self._tide_cache_file.Data_Read()
-                _LOGGER.debug("Snpashot retrieved data file at: %s ", int(current_time))
+                _LOGGER.debug("Snpashot retrieved data file at: %s for %s", int(current_time),self._name)
                 if self._worldtidesinfo_server_scheduler.scheduler_snapshot_usable(
                     SchedulerSnapshot
                 ):
                     _LOGGER.debug(
-                        "Snpashot decoding data file at: %s ", int(current_time)
+                        "Snpashot decoding data file at: %s for %s", int(current_time), self._name
                     )
                     self._worldtidesinfo_server_scheduler.use_scheduler_image_if_possible(
                         SchedulerSnapshot
                     )
                 else:
                     _LOGGER.debug(
-                        "Error in decoding data file at: %s", int(current_time)
+                        "Error in decoding data file at: %s for %s", int(current_time), self._name
                     )
 
         # the data read is empty (the snapshot retrieve is not useable) or too old or change ref
@@ -255,6 +255,9 @@ class WordTide_Data_Coordinator:
             self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
             == True
         ):
+            _LOGGER.debug(
+                "Init Tide data need to be requeried at: %s for %s", int(current_time), self._name
+            )
             # Retrieve station from server
             self._retrieve_tide_station()
             self._worldtidesinfo_server_scheduler.setup_next_init_data_midnight()
@@ -271,7 +274,7 @@ class WordTide_Data_Coordinator:
             )
         else:
             _LOGGER.debug(
-                "Tide data not need to be requeried at: %s", int(current_time)
+                "Tide data not need to be requeried at: %s for %s", int(current_time), self._name
             )
 
         # generate a plot curve at each update

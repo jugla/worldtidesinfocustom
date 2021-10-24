@@ -4,6 +4,12 @@ import time
 
 import requests
 
+# Python library
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
+
 # Component library
 PLOT_CURVE_UNIT_FT = "feet"
 PLOT_CURVE_UNIT_M = "meters"
@@ -51,6 +57,12 @@ class Server_Parameter:
             ):
                 result = True
             else:
+                _LOGGER.debug(
+                   "Parameter differ : lat recorded %s vs expected %s",  parameter._lat, self._lat
+                )
+                _LOGGER.debug(
+                   "Parameter differ : lon recorded %s vs expected %s",  parameter._lon, self._lon
+                )
                 result = False
         except:
             result = False

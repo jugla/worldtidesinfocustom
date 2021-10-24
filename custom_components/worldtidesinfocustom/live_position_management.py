@@ -1,3 +1,10 @@
+# Python library
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
+
+
 # HA library
 from homeassistant.const import (
     LENGTH_FEET,
@@ -97,6 +104,8 @@ class Live_Position_Management:
             return False
 
     def update(self, lat, long):
+        _LOGGER.debug("LivePositionUpdate Lat %s Long %s RefLat %s RefLong %s", lat, long,self._ref_lat,self._ref_long)
+
         self._current_lat = lat
         self._current_long = long
         self._last_distance_from_ref_point = distance_lat_long(

@@ -387,11 +387,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         source_attr_long,
     )
 
-    for tides in tides_sensors:
-        tides.update()
-        if tides._worldtide_data_coordinator.no_data():
-            _LOGGER.error(f"No data available for this location: {name}")
-            return
+    #for tides in tides_sensors:
+    #    tides.update()
+    #    if tides._worldtide_data_coordinator.no_data():
+    #        _LOGGER.error(f"No data available for this location: {name}")
+    #        return
 
     add_entities(tides_sensors)
 
@@ -459,12 +459,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    for tides in tides_sensors:
-        await tides.async_update()
-
-        if tides._worldtide_data_coordinator.no_data():
-            _LOGGER.error(f"No data available for this location: {name}")
-            return
+    #for tides in tides_sensors:
+    #    await tides.async_update()
+    #
+    #    if tides._worldtide_data_coordinator.no_data():
+    #        _LOGGER.error(f"No data available for this location: {name}")
+    #        return
 
     async_add_entities(tides_sensors)
 
@@ -1279,10 +1279,12 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             new_state_valid = True
 
             _LOGGER.info(
-                "World Tide Update %s : lat %s, long %s",
+                "World Tide Update %s : lat %s %s, long %s %s",
                 self._live_position_management.get_source_id(),
                 self._live_position_management.get_lat_attribute(),
+                lat,
                 self._live_position_management.get_long_attribute(),
+                long,
             )
 
         except (ValueError, TypeError):
@@ -1294,12 +1296,20 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             )
 
         if new_state_valid == True:
+            need_update = False
+            if (self._live_position_management.get_current_lat() == None
+                or self._live_position_management.get_current_lat() == None):
+                need_update = True
+
             self._live_position_management.update(lat, long)
+
 
             # check if too far from former point
             if self._live_position_management.need_to_change_ref(lat, long):
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
+                need_update = True
+            if need_update:
                 self.schedule_update_ha_state(force_refresh=True)
             # else:
             # perform nothing except write down new state
@@ -1319,12 +1329,12 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             previous_ref_long = format_receive_value(
                 state_recorded.attributes.get(ATTR_REF_LONG)
             )
-            self._worldtide_data_coordinator.change_reference_point(
-                previous_ref_lat, previous_ref_long
-            )
-            self._live_position_management.change_ref(
-                previous_ref_lat, previous_ref_long
-            )
+        #    self._worldtide_data_coordinator.change_reference_point(
+        #        previous_ref_lat, previous_ref_long
+        #    )
+        #    self._live_position_management.change_ref(
+        #        previous_ref_lat, previous_ref_long
+        #    )
 
         # listen to source ID
         if (
@@ -1354,7 +1364,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             self._live_position_management.change_ref(
                 previous_ref_lat, previous_ref_long
             )
-            self.schedule_update_ha_state(force_refresh=True)
+            #self.schedule_update_ha_state(force_refresh=True)
+        self.schedule_update_ha_state(force_refresh=True)
 
     def update(self):
         """Update of sensors."""

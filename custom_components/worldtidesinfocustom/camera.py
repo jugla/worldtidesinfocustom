@@ -120,8 +120,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    for camera in tides_cameras:
-        camera.update()
+    #for camera in tides_cameras:
+    #    camera.update()
 
     add_entities(tides_cameras)
 
@@ -151,8 +151,8 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    for camera in tides_cameras:
-        await camera.async_update()
+    #for camera in tides_cameras:
+    #    await camera.async_update()
 
     async_add_entities(tides_cameras)
 
@@ -214,6 +214,9 @@ class TidesPicture_FromFile(Camera):
             ["sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX],
             self._async_worldtidesinfo_follower_sensor_state_listener,
         )
+
+        # pure async i.e. wait for update of main sensor
+        # no need to call self.schedule_update_ha_state
 
     def camera_image(self):
         """Return image response."""

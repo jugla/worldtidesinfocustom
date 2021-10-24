@@ -17,6 +17,11 @@ DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 # snapshot 2 : add previous data
 snapshot_version = 2
 
+# Python library
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
 
 class Data_Retrieve:
     """Data retrieve from server."""
@@ -175,6 +180,11 @@ class WorldTidesInfo_server_scheduler:
                 self._Data_Scheduling.store_read_input(Read_Data_Scheduling)
                 self._Data_Retrieve.store_read_input(Read_Data_Retrieve)
                 scheduler_image_used = True
+            else:
+               _LOGGER.debug(
+                   "World Tide Disc Image not usable"
+               )
+
         return scheduler_image_used
 
     def data_to_be_fetched(self, init_data_has_been_fetched, current_time):
