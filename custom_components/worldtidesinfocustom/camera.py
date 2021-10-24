@@ -205,18 +205,15 @@ class TidesPicture_FromFile(Camera):
 
         self.schedule_update_ha_state(force_refresh=True)
 
-
     async def async_added_to_hass(self):
         """Handle added to Hass."""
         await super().async_added_to_hass()
 
         async_track_state_change_event(
             self._hass,
-            ["sensor."+ self._name + SENSOR_NEXT_TIDE_SUFFIX],
+            ["sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX],
             self._async_worldtidesinfo_follower_sensor_state_listener,
         )
-
-
 
     def camera_image(self):
         """Return image response."""
