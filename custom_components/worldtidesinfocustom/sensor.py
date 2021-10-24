@@ -535,7 +535,6 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
 
 
 class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
-
     def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
 
         # retrieve state
@@ -545,14 +544,13 @@ class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
 
         self.schedule_update_ha_state(force_refresh=True)
 
-
     async def async_added_to_hass(self):
         """Handle added to Hass."""
         await super().async_added_to_hass()
 
         async_track_state_change_event(
             self._hass,
-            ["sensor."+ self._name + SENSOR_NEXT_TIDE_SUFFIX],
+            ["sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX],
             self._async_worldtidesinfo_follower_sensor_state_listener,
         )
 
@@ -1303,8 +1301,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
                 self._live_position_management.change_ref(lat, long)
                 self.schedule_update_ha_state(force_refresh=True)
-            #else:
-                #perform nothing except write down new state
+            # else:
+            # perform nothing except write down new state
             #    self.async_write_ha_state()
 
     async def async_added_to_hass(self):
