@@ -387,7 +387,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         source_attr_long,
     )
 
-    #for tides in tides_sensors:
+    # for tides in tides_sensors:
     #    tides.update()
     #    if tides._worldtide_data_coordinator.no_data():
     #        _LOGGER.error(f"No data available for this location: {name}")
@@ -459,7 +459,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    #for tides in tides_sensors:
+    # for tides in tides_sensors:
     #    await tides.async_update()
     #
     #    if tides._worldtide_data_coordinator.no_data():
@@ -1297,12 +1297,13 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
 
         if new_state_valid == True:
             need_update = False
-            if (self._live_position_management.get_current_lat() == None
-                or self._live_position_management.get_current_lat() == None):
+            if (
+                self._live_position_management.get_current_lat() == None
+                or self._live_position_management.get_current_lat() == None
+            ):
                 need_update = True
 
             self._live_position_management.update(lat, long)
-
 
             # check if too far from former point
             if self._live_position_management.need_to_change_ref(lat, long):
@@ -1364,7 +1365,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             self._live_position_management.change_ref(
                 previous_ref_lat, previous_ref_long
             )
-            #self.schedule_update_ha_state(force_refresh=True)
+            # self.schedule_update_ha_state(force_refresh=True)
         self.schedule_update_ha_state(force_refresh=True)
 
     def update(self):

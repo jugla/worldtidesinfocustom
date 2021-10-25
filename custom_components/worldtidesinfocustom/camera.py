@@ -120,7 +120,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    #for camera in tides_cameras:
+    # for camera in tides_cameras:
     #    camera.update()
 
     add_entities(tides_cameras)
@@ -151,7 +151,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    #for camera in tides_cameras:
+    # for camera in tides_cameras:
     #    await camera.async_update()
 
     async_add_entities(tides_cameras)
