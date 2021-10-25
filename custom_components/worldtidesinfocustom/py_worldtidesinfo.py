@@ -1,11 +1,10 @@
 """gather function objects thal allow to manage Word Tides Info server API V2"""
 # python library
+# Python library
+import logging
 import time
 
 import requests
-
-# Python library
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,10 +57,14 @@ class Server_Parameter:
                 result = True
             else:
                 _LOGGER.debug(
-                   "Parameter differ : lat recorded %s vs expected %s",  parameter._lat, self._lat
+                    "Parameter differ : lat recorded %s vs expected %s",
+                    parameter._lat,
+                    self._lat,
                 )
                 _LOGGER.debug(
-                   "Parameter differ : lon recorded %s vs expected %s",  parameter._lon, self._lon
+                    "Parameter differ : lon recorded %s vs expected %s",
+                    parameter._lon,
+                    self._lon,
                 )
                 result = False
         except:

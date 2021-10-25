@@ -181,9 +181,7 @@ class WorldTidesInfo_server_scheduler:
                 self._Data_Retrieve.store_read_input(Read_Data_Retrieve)
                 scheduler_image_used = True
             else:
-               _LOGGER.debug(
-                   "World Tide Disc Image not usable"
-               )
+                _LOGGER.debug("World Tide Disc Image not usable")
 
         return scheduler_image_used
 
