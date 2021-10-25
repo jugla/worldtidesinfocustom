@@ -214,6 +214,7 @@ def remaining_time_to_next_tide(tide_info, current_time):
 
     return remaining_time
 
+
 def amplitude_attribute(
     next_flag, tide_info, datums_info, current_time, convert_meter_to_feet
 ):
@@ -241,15 +242,15 @@ def amplitude_attribute(
         # The coeff tide_highlow_over the Mean Water Spring
         if MWS_datum_offset.get("error") == None:
             attr[next_string + "Coeff_resp_MWS"] = round(
-               (
-                   diff_high_tide_low_tide
-                   / (
+                (
+                    diff_high_tide_low_tide
+                    / (
                         MWS_datum_offset.get("datum_offset_MHWS")
                         - MWS_datum_offset.get("datum_offset_MLWS")
-                   )
-               )
-               * 100,
-               ROUND_COEFF,
+                    )
+                )
+                * 100,
+                ROUND_COEFF,
             )
     return attr
 
