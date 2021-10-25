@@ -124,7 +124,7 @@ def current_height_attribute(tide_info, current_time, convert_meter_to_feet):
 
 def current_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute state linked to current height"""
-    state_value = 0
+    state_value = None
     attr = current_height_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("current_height") != None:
         state_value = attr.get("current_height")
@@ -159,7 +159,7 @@ def next_tide_attribute(tide_info, current_time, convert_meter_to_feet):
 
 def next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute low tide state linked to next tide"""
-    state_value = 0
+    state_value = None
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("low_tide_height") != None:
         state_value = attr.get("low_tide_height")
@@ -168,7 +168,7 @@ def next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet):
 
 def next_low_tide_time_state(tide_info, current_time):
     """Compute low tide state linked to next tide"""
-    state_value = ""
+    state_value = None
     # do as if no conversion in meter
     convert_meter_to_feet = 1
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
@@ -179,7 +179,7 @@ def next_low_tide_time_state(tide_info, current_time):
 
 def next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute hight tide state linked to next tide"""
-    state_value = 0
+    state_value = None
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
     if attr.get("high_tide_height") != None:
         state_value = attr.get("high_tide_height")
@@ -188,7 +188,7 @@ def next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet):
 
 def next_high_tide_time_state(tide_info, current_time):
     """Compute hight tide state linked to next tide"""
-    state_value = ""
+    state_value = None
     # do as if no conversion in meter
     convert_meter_to_feet = 1
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
@@ -199,6 +199,7 @@ def next_high_tide_time_state(tide_info, current_time):
 
 def remaining_time_to_next_tide(tide_info, current_time):
     """Compute the time needed to reach next tide"""
+    remaining_time = None
     # time_to_next_tide
     next_tide_in_epoch = tide_info.give_next_tide_in_epoch(current_time)
 
@@ -208,9 +209,10 @@ def remaining_time_to_next_tide(tide_info, current_time):
     # compute delta tide to next tide
     if next_tide_in_epoch.get("error") == None:
         delta_current_time_to_next = next_tide_in_epoch.get("tide_time") - current_time
-    # convert in second in hour
-    return round(delta_current_time_to_next / 60 / 60, ROUND_HOUR)
+        # convert in second in hour
+        remaining_time = round(delta_current_time_to_next / 60 / 60, ROUND_HOUR)
 
+    return remaining_time
 
 def amplitude_attribute(
     next_flag, tide_info, datums_info, current_time, convert_meter_to_feet
@@ -224,31 +226,31 @@ def amplitude_attribute(
         next_string = ""
         tide_UTC = tide_info.give_current_high_low_tide_in_UTC(current_time)
 
-    diff_high_tide_low_tide = 0
+    diff_high_tide_low_tide = None
     if tide_UTC.get("error") == None:
         diff_high_tide_low_tide = abs(
             tide_UTC.get("high_tide_height") - tide_UTC.get("low_tide_height")
         )
-    attr[next_string + "tide_amplitude"] = round(
-        diff_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
-    )
-
-    # compute the Mean Water Spring offset
-    MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
-
-    # The coeff tide_highlow_over the Mean Water Spring
-    if MWS_datum_offset.get("error") == None:
-        attr[next_string + "Coeff_resp_MWS"] = round(
-            (
-                diff_high_tide_low_tide
-                / (
-                    MWS_datum_offset.get("datum_offset_MHWS")
-                    - MWS_datum_offset.get("datum_offset_MLWS")
-                )
-            )
-            * 100,
-            ROUND_COEFF,
+        attr[next_string + "tide_amplitude"] = round(
+            diff_high_tide_low_tide * convert_meter_to_feet, ROUND_HEIGTH
         )
+
+        # compute the Mean Water Spring offset
+        MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
+
+        # The coeff tide_highlow_over the Mean Water Spring
+        if MWS_datum_offset.get("error") == None:
+            attr[next_string + "Coeff_resp_MWS"] = round(
+               (
+                   diff_high_tide_low_tide
+                   / (
+                        MWS_datum_offset.get("datum_offset_MHWS")
+                        - MWS_datum_offset.get("datum_offset_MLWS")
+                   )
+               )
+               * 100,
+               ROUND_COEFF,
+            )
     return attr
 
 
@@ -276,7 +278,7 @@ def current_amplitude_state(
     tide_info, datums_info, current_time, convert_meter_to_feet
 ):
     """Compute amplitude tide state linked to current tide"""
-    state_value = 0
+    state_value = None
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
     )
@@ -287,7 +289,7 @@ def current_amplitude_state(
 
 def current_coeff_state(tide_info, datums_info, current_time, convert_meter_to_feet):
     """Compute coeff MWS tide state linked to current tide"""
-    state_value = 0
+    state_value = None
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
     )

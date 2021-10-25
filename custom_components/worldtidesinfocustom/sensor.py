@@ -664,7 +664,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFoll
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = 0
+        state_value = None
         current_time = time.time()
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
@@ -720,7 +720,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorFollow
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = ""
+        state_value = None
         current_time = time.time()
 
         if self._worldtide_data_coordinator.no_data():
@@ -778,7 +778,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorFol
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = 0
+        state_value = None
         current_time = time.time()
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
@@ -835,7 +835,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorFollo
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = ""
+        state_value = None
         current_time = time.time()
 
         if self._worldtide_data_coordinator.no_data():
@@ -893,7 +893,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
     def state(self):
         """Return the state of the device."""
         current_time = time.time()
-        state_value = 0
+        state_value = None
 
         if self._worldtide_data_coordinator.no_data():
             return state_value
@@ -955,7 +955,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = 0
+        state_value = None
         current_time = time.time()
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
@@ -1031,7 +1031,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
     @property
     def state(self):
         """Return the state of the device."""
-        state_value = 0
+        state_value = None
         current_time = time.time()
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
