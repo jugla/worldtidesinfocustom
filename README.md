@@ -19,12 +19,12 @@ This component allows to :
 
 In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
 
-The request per day per location uses 3 credits.
+The request per day per location uses 3 credits. NB: At init 5 credits.
 So for one location: 20000 credits will last ~18 years
 
 Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
 
-In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day, or if the position has moved more than a user parameter defined in UI
+In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits), or if the position has moved more than a user parameter defined in UI (the new position information are then request : 5 credits)
 
 ## Installation
 Either use HACS (default), either manual
@@ -332,8 +332,20 @@ Hereafter an example of update thanks to a boat tracker :
 NB: a boat tracker can be easily given by running HomeAssistant Application on your phone. The application offers to you a tracker with lat/long of your current position.
 
 <p align="center">
-  <img src="./doc/picture/BoatTracker.jpg" alt="Size Limit CLI" width="400">
+  <img src="./doc/picture/BoatTracker.jpg" alt="Size Limit CLI" width="300">
 </p>
+
+with the change of tide station
+
+<p align="center">
+  <img src="./doc/picture/BoatTrackerTideStation.jpg" alt="Size Limit CLI" width="400">
+</p>
+
+Each time the position is changed the information is request to server (shown by the credit used)
+<p align="center">
+  <img src="./doc/picture/BoatTrackerCredit.jpg" alt="Size Limit CLI" width="400">
+</p>
+
 
 ## Detail Configuration parameter for UI, (*Deprecated* for YAML for sensor)
 
