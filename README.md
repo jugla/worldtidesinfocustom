@@ -440,7 +440,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 ## Detail Option parameter for UI
 
-| Name              | Type                                                           | request to server| Supported | Description                                                                                                   |
+| Name              | Type                                                           | request to server (if value changes)| Supported | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|-----------|-----------|-------------------------|
 | show_on_map             | boolean                                                         | No | v3.1.0    | bolean that allow to display on map the monitored tide location                                            |
 | station_distance  | positive int                                                   | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
