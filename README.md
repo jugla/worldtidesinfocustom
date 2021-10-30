@@ -439,6 +439,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 | distance_from_ref | v6.1.1 | float | km/miles | distance between current lat/long and monitored location |
 
 ## Detail Option parameter for UI
+The value has the default one or the last set (either during 1rst declaration through UI, either during option phase through UI).
 
 | Name                    | Type          | unit     |    request to server (if value changes)| Supported | Description                                                                                                   |
 |-------------------------|---------------|----------|----|-----------| ---------------------------|
