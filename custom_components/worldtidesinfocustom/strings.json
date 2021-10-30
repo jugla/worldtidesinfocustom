@@ -52,7 +52,9 @@
       "init": {
         "title": "Configure WorldTidesInfoCustom",
         "data": {
-          "show_on_map": "Show monitored tides on the map"
+          "show_on_map": "Show monitored tides on the map",
+          "station_distance" : "tidal station distance",
+          "plot_color": "plot curve color in comma-separated RGB values"
         }
       }
     }

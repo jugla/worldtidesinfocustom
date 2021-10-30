@@ -27,6 +27,9 @@ from homeassistant.const import (
 )
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
+from homeassistant.helpers.entity_registry import async_get_registry
+
+
 
 # Component Library
 from . import give_persistent_filename
@@ -64,7 +67,6 @@ from .sensor_service import worldtidesinfo_unique_id
 # Sensor HA parameter
 SCAN_INTERVAL = timedelta(seconds=SCAN_INTERVAL_SECONDS)
 ATTR_GENERATED_AT = "generated_at"
-GET_IMAGE_TIMEOUT = 10
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
@@ -209,26 +211,35 @@ class TidesPicture_FromFile(Camera):
         """Handle added to Hass."""
         await super().async_added_to_hass()
 
+
+        entity_id_main_sensor = None
+
+        #Fetch the name of sensor
+        registry = await async_get_registry(self.hass)
+        entity_id_main_sensor = registry.async_get_entity_id("sensor",DOMAIN,self._unique_id + SENSOR_NEXT_TIDE_SUFFIX)
+        _LOGGER.debug("Camera: entity main sensor %s",entity_id_main_sensor)
+
+        if entity_id_main_sensor == None:
+           entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
+
         async_track_state_change_event(
             self._hass,
-            ["sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX],
+            [entity_id_main_sensor],
             self._async_worldtidesinfo_follower_sensor_state_listener,
         )
 
+        _LOGGER.debug("Camera: listen main sensor %s",entity_id_main_sensor)
         # pure async i.e. wait for update of main sensor
         # no need to call self.schedule_update_ha_state
+        # be robust to be sure to be update
+        self.schedule_update_ha_state(force_refresh=True)
 
-    def camera_image(self):
-        """Return image response."""
-        self.update()
-        return self._image
-
-    def update(self):
+    def _get_image(self):
         """Read the contents of the file."""
         current_time = time.time()
         read_ok = False
         read_image = None
-        _LOGGER.debug("Sync Fetch new picture image from %s", self._image_filename)
+        _LOGGER.debug("Camera: Sync Fetch new picture image from %s", self._image_filename)
         """Return image response."""
         try:
             with open(self._image_filename, "rb") as file:
@@ -245,9 +256,26 @@ class TidesPicture_FromFile(Camera):
             self._last_requested_date = current_time
             self._generated_at = time.ctime(os.path.getmtime(self._image_filename))
 
+
+    def camera_image(self):
+        """Return image response."""
+        _LOGGER.debug("Camera : Sync Image Tides sensor %s", self._name)
+        return self._image
+
+    async def async_camera_image(self):
+        """Fetch new image."""
+        _LOGGER.debug("Camera : Async Image Tides sensor %s", self._name)
+        return self._image
+
+
+    def update(self):
+        """Read the contents of the file."""
+        self._get_image()
+        _LOGGER.debug("Camera update :  %s", self._image_filename)
+
     async def async_update(self):
         """Fetch new state data for the camera."""
-        _LOGGER.debug("Async Update Tides sensor %s", self._name)
+        _LOGGER.debug("Camera Async Update %s", self._name)
         ##Watch Out : only method name is given to function i.e. without ()
         await self._hass.async_add_executor_job(self.update)
 

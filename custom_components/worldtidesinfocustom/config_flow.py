@@ -286,7 +286,16 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         CONF_SHOW_ON_MAP,
                         default=self.config_entry.options.get(CONF_SHOW_ON_MAP),
-                    ): bool
+                    ): bool,
+                    vol.Optional(
+                        CONF_STATION_DISTANCE, default=self.config_entry.options.get(CONF_STATION_DISTANCE,
+                                         self.config_entry.data.get(CONF_STATION_DISTANCE,DEFAULT_STATION_DISTANCE))
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_PLOT_COLOR, default=self.config_entry.options.get(CONF_PLOT_COLOR, 
+                                                    self.config_entry.data.get(CONF_PLOT_COLOR,
+                                                 DEFAULT_PLOT_COLOR))
+                    ): cv.string,
                 }
             ),
         )
