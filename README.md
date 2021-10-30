@@ -442,7 +442,7 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 | Name              | Type                                                           | Supported | Description                                                                                                   |
 |-------------------|----------------------------------------------------------------|-----------|-------------------------|
-| Display on Map              | boolean                                                         | v7.0.0    | bolean that allow to display on map the monitored tide location                                            |
+| Display on Map              | boolean                                                         | v3.1.0    | bolean that allow to display on map the monitored tide location                                            |
 | station_distance  | positive int                                                   | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | plot_color      | string                                                         | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
 
