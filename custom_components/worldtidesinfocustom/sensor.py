@@ -28,13 +28,12 @@ from homeassistant.const import (
     STATE_UNKNOWN,
 )
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_registry import async_get_registry
 
 # HA library
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
-from homeassistant.helpers.entity_registry import async_get_registry
-
 
 # Component Library
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
@@ -419,14 +418,13 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     vertical_ref = config.get(CONF_VERTICAL_REF)
     plot_color = config.get(CONF_PLOT_COLOR)
     if config_entry.options.get(CONF_PLOT_COLOR):
-       plot_color = config_entry.options.get(CONF_PLOT_COLOR)
+        plot_color = config_entry.options.get(CONF_PLOT_COLOR)
 
     plot_background = config.get(CONF_PLOT_BACKGROUND)
 
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
     if config_entry.options.get(CONF_STATION_DISTANCE):
-       tide_station_distance = config_entry.options.get(CONF_STATION_DISTANCE)
-
+        tide_station_distance = config_entry.options.get(CONF_STATION_DISTANCE)
 
     # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
@@ -559,14 +557,15 @@ class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
 
         entity_id_main_sensor = None
 
-        #Fetch the name of sensor
+        # Fetch the name of sensor
         registry = await async_get_registry(self.hass)
-        entity_id_main_sensor = registry.async_get_entity_id("sensor",DOMAIN,self._unique_id + SENSOR_NEXT_TIDE_SUFFIX)
-        _LOGGER.debug("Sensor: entity main sensor %s",entity_id_main_sensor)
+        entity_id_main_sensor = registry.async_get_entity_id(
+            "sensor", DOMAIN, self._unique_id + SENSOR_NEXT_TIDE_SUFFIX
+        )
+        _LOGGER.debug("Sensor: entity main sensor %s", entity_id_main_sensor)
 
         if entity_id_main_sensor == None:
-           entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
-
+            entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
 
         async_track_state_change_event(
             self._hass,
@@ -1339,9 +1338,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
     async def async_added_to_hass(self):
         """Handle added to Hass."""
         await super().async_added_to_hass()
-        _LOGGER.info(
-             "add entity %s",
-                self.entity_id)
+        _LOGGER.info("add entity %s", self.entity_id)
 
         previous_ref_lat = None
         previous_ref_long = None
