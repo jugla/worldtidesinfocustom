@@ -440,11 +440,11 @@ The sensor "NAME" has a set of attributes describes hereafter
 
 ## Detail Option parameter for UI
 
-| Name              | Type                                                           | request to server (if value changes)| Supported | Description                                                                                                   |
-|-------------------|----------------------------------------------------------------|-----------|-----------|-------------------------|
-| show_on_map             | boolean                                                         | No | v3.1.0    | bolean that allow to display on map the monitored tide location                                            |
-| station_distance  | positive int                                                   | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
-| plot_color      | string                                                         | Yes | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
+| Name                    | Type          | unit     |    request to server (if value changes)| Supported | Description                                                                                                   |
+|-------------------------|---------------|----------|----|-----------| ---------------------------|
+| show_on_map             | boolean       | n.a.     | No | v3.1.0    | bolean that allow to display on map the monitored tide location                                            |
+| station_distance        | positive int  | km/miles | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
+| plot_color              | string        | n.a.     | Yes | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
 
 
 ## Wish/Todo list
