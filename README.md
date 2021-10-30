@@ -107,6 +107,8 @@ and  optional parameter
 - plot_background : the comma-separated RGB values for the tide graph background color
 - scan_interval : the scan rate to refresh entity (should not be used)
 
+NB:UI allows to have more features. 
+  
 </details>
 
 - Several sensors and one camera are provided with attibutes. 
@@ -436,9 +438,17 @@ The sensor "NAME" has a set of attributes describes hereafter
 | current long | v6.0.0 |  float   | deg   | the current longitude of source id      |
 | distance_from_ref | v6.1.1 | float | km/miles | distance between current lat/long and monitored location |
 
+## Detail Option parameter for UI
+
+| Name              | Type                                                           | Supported | Description                                                                                                   |
+|-------------------|----------------------------------------------------------------|-----------|-------------------------|
+| Display on Map              | boolean                                                         | v7.0.0    | bolean that allow to display on map the monitored tide location                                            |
+| station_distance  | positive int                                                   | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
+| plot_color      | string                                                         | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
+
+
 ## Wish/Todo list
 - make this integration as default in home assistant
-- add online parameter changes (e.g. color, ...) i.e. without re-install the integration through UI
 
 
 ## Thanks to
