@@ -17,14 +17,14 @@ This component allows to :
 
 ==> the monitored location is either static, either given by GPS data (tracker)
 
-In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day
+WorldTidesInfo uses credit :
+- In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits). NB: At init 5 credits.
 
-The request per day per location uses 3 credits. NB: At init 5 credits.
-So for one location: 20000 credits will last ~18 years
+- In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits), or if the position has moved more than a user parameter defined in UI (the new position information are then request : 5 credits)
 
-Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal). 
-
-In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits), or if the position has moved more than a user parameter defined in UI (the new position information are then request : 5 credits)
+- Please refer to [https://www.worldtides.info/developer](https://www.worldtides.info/developer) for pricing (as few requests are done per month, prepaid seems to be the best deal).
+  - As an example, in static, as the request per day per location uses 3 credits : for one location, 20000 credits will last ~18 years
+ 
 
 ## Installation
 Either use HACS (default), either manual
