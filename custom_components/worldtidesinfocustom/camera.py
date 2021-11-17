@@ -186,14 +186,14 @@ class TidesPicture_FromFile(Camera):
     @property
     def device_info(self):
         """Device info for WorldTideInfo Server."""
-        return DeviceInfo (
-            identifiers= {(DOMAIN, self._unique_id)},
-            manufacturer= "WorldTidesInfo",
-            sw_version= SERVER_API_VERSION,
-            name= self._name + "_server",
-            model= "WorldTidesInfoAPI",
-            entry_type= "service",
-            configuration_url= DEVICE_CONF_URL,
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._unique_id)},
+            manufacturer="WorldTidesInfo",
+            sw_version=SERVER_API_VERSION,
+            name=self._name + "_server",
+            model="WorldTidesInfoAPI",
+            entry_type="service",
+            configuration_url=DEVICE_CONF_URL,
         )
 
     def no_data(self):
