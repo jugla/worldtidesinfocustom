@@ -890,6 +890,14 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         return "h"
 
     @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
+        return STATE_CLASS_MEASUREMENT
+
+    @property
     def device_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
@@ -946,6 +954,14 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
             return "ft"
         else:
             return "m"
+
+    @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
+        return STATE_CLASS_MEASUREMENT
 
     @property
     def device_state_attributes(self):
@@ -1097,6 +1113,14 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
         return "credit"
 
     @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
+        return STATE_CLASS_MEASUREMENT
+
+    @property
     def state(self):
         """Return the state of the device."""
         # The credit used to display the update
@@ -1129,6 +1153,14 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "credit"
+
+    @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+        )
+        return STATE_CLASS_MEASUREMENT
 
     @property
     def device_state_attributes(self):
