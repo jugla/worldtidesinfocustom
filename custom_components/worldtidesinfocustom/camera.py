@@ -25,6 +25,7 @@ from homeassistant.const import (
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
 )
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
@@ -49,6 +50,7 @@ from .const import (
     DEFAULT_PLOT_COLOR,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
+    DEVICE_CONF_URL,
     DOMAIN,
     HA_CONF_UNIT,
     HALF_TIDE_SLACK_DURATION,
@@ -184,14 +186,15 @@ class TidesPicture_FromFile(Camera):
     @property
     def device_info(self):
         """Device info for WorldTideInfo Server."""
-        return {
-            "identifiers": {(DOMAIN, self._unique_id)},
-            "manufacturer": "WorldTidesInfo",
-            "sw_version": SERVER_API_VERSION,
-            "name": self._name + "_server",
-            "model": "WorldTidesInfoAPI",
-            "entry_type": "service",
-        }
+        return DeviceInfo (
+            identifiers= {(DOMAIN, self._unique_id)},
+            manufacturer= "WorldTidesInfo",
+            sw_version= SERVER_API_VERSION,
+            name= self._name + "_server",
+            model= "WorldTidesInfoAPI",
+            entry_type= "service",
+            configuration_url= DEVICE_CONF_URL,
+        )
 
     def no_data(self):
         return self._image == None

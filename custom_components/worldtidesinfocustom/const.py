@@ -116,3 +116,8 @@ SENSOR_NEXT_TIDE_SUFFIX = ""
 # set constant for attributes
 ATTR_REF_LAT = "ref_lat"
 ATTR_REF_LONG = "ref_long"
+
+
+#Device info
+DEVICE_CONF_URL="https://www.worldtides.info/login"
+

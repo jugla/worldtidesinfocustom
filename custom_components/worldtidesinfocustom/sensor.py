@@ -27,7 +27,7 @@ from homeassistant.const import (
     CONF_SOURCE,
     STATE_UNKNOWN,
 )
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.entity_registry import async_get_registry
 
 # HA library
@@ -61,6 +61,7 @@ from .const import (
     DEFAULT_SENSOR_UPDATE_DISTANCE,
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
+    DEVICE_CONF_URL,
     DOMAIN,
     FROM_SENSOR_CONF,
     HA_CONF_UNIT,
@@ -510,14 +511,15 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
     @property
     def device_info(self):
         """Device info for WorldTideInfo Server."""
-        return {
-            "identifiers": {(DOMAIN, self._unique_id)},
-            "manufacturer": "WorldTidesInfo",
-            "sw_version": SERVER_API_VERSION,
-            "name": self._name + "_server",
-            "model": "WorldTidesInfoAPI",
-            "entry_type": "service",
-        }
+        return DeviceInfo (
+            identifiers= {(DOMAIN, self._unique_id)},
+            manufacturer= "WorldTidesInfo",
+            sw_version= SERVER_API_VERSION,
+            name= self._name + "_server",
+            model= "WorldTidesInfoAPI",
+            entry_type= "service",
+            configuration_url= DEVICE_CONF_URL,
+        )
 
     @property
     def icon(self):
