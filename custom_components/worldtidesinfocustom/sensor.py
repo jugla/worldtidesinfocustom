@@ -25,6 +25,7 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     STATE_UNKNOWN,
 )
 from homeassistant.helpers.entity import DeviceInfo, Entity
@@ -1077,6 +1078,11 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
     @property
+    def entity_category(self):
+        """Return the entity category."""
+        return ENTITY_CATEGORY_DIAGNOSTIC
+
+    @property
     def name(self):
         """Return the name of the sensor."""
         return self._name + SENSOR_CREDIT_USED_SUFFIX
@@ -1104,6 +1110,11 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
 
 class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def entity_category(self):
+        """Return the entity category."""
+        return ENTITY_CATEGORY_DIAGNOSTIC
 
     @property
     def name(self):
