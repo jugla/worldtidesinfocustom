@@ -439,10 +439,11 @@ The sensor "NAME" has a set of attributes describes hereafter
 | distance_from_ref | v6.1.1 | float | km/miles | distance between current lat/long and monitored location |
 
 ## Detail Option parameter for UI
+The value has the default one or the last set (either during 1rst declaration through UI, either during option phase through UI).
 
 | Name                    | Type          | unit     |    request to server (if value changes)| Supported | Description                                                                                                   |
 |-------------------------|---------------|----------|----|-----------| ---------------------------|
-| show_on_map             | boolean       | n.a.     | No | v3.1.0    | bolean that allow to display on map the monitored tide location                                            |
+| show_on_map             | boolean       | n.a.     | No | v3.1.0    | boolean that allows to display on map the monitored tide location                                            |
 | station_distance        | positive int  | km/miles | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | plot_color              | string        | n.a.     | Yes | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
 
