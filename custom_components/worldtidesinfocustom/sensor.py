@@ -1102,6 +1102,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
 
         return state_value
 
+
 class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollower):
     """Representation of a WorldTidesInfo sensor."""
 
@@ -1156,11 +1157,11 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
         # in the entity attributes with "latitude" and "longitude" as the keys.
         if self._show_on_map:
             if tide_station_name:
-               attr[ATTR_LATITUDE] = attr["tidal_station_used_info_lat"]
-               attr[ATTR_LONGITUDE] = attr["tidal_station_used_info_long"]
+                attr[ATTR_LATITUDE] = attr["tidal_station_used_info_lat"]
+                attr[ATTR_LONGITUDE] = attr["tidal_station_used_info_long"]
             else:
-               attr[ATTR_LATITUDE] = self._live_position_management.get_ref_lat()
-               attr[ATTR_LONGITUDE] = self._live_position_management.get_ref_long()
+                attr[ATTR_LATITUDE] = self._live_position_management.get_ref_lat()
+                attr[ATTR_LONGITUDE] = self._live_position_management.get_ref_long()
 
         return attr
 
@@ -1174,9 +1175,7 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
             return state_value
 
         # the tide info
-        tide_info = get_tide_info(
-            self._worldtide_data_coordinator
-        )
+        tide_info = get_tide_info(self._worldtide_data_coordinator)
 
         # Tide station characteristics
         tide_station_used = tide_info.give_tidal_station_used()
