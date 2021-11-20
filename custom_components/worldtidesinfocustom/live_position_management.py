@@ -84,6 +84,19 @@ class Live_Position_Management:
     def get_current_long(self):
         return self._current_long
 
+    def get_current_lat_or_ref_if_static(self):
+        if self._live_position_management == STATIC_CONF:
+            return self._ref_lat
+        else:
+            return self._current_lat
+
+    def get_current_long_or_ref_if_static(self):
+        if self._live_position_management == STATIC_CONF:
+            return self._ref_long
+        else:
+            return self._current_long
+
+
     def get_ref_lat(self):
         return self._ref_lat
 

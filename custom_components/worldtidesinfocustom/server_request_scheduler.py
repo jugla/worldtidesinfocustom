@@ -103,14 +103,22 @@ class WorldTidesInfo_server_scheduler:
     def no_datum(self):
         return self._Data_Retrieve.data_datums_offset == None
 
+    def store_init_data (self, init_data, init_data_request_time):
+        self._Data_Retrieve.init_data = init_data
+        self._Data_Retrieve.init_data_request_time = init_data_request_time
+
     def store_new_data(self, data, data_request_time):
         """Store new data and backup previous"""
 
-        # in order to manage midnight (ie. switch between 2 requests)
-        self._Data_Retrieve.previous_data = self._Data_Retrieve.data
-        self._Data_Retrieve.previous_data_request_time = (
-            self._Data_Retrieve.data_request_time
-        )
+        if self._parameter_updated:
+            self._Data_Retrieve.previous_data = None
+            self._Data_Retrieve.previous_data_request_time = None
+        else :
+            # in order to manage midnight (ie. switch between 2 requests)
+            self._Data_Retrieve.previous_data = self._Data_Retrieve.data
+            self._Data_Retrieve.previous_data_request_time = (
+                self._Data_Retrieve.data_request_time
+            )
         # normal process
         self._Data_Retrieve.data = data
         self._Data_Retrieve.data_request_time = data_request_time
