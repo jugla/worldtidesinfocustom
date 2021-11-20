@@ -96,7 +96,6 @@ class Live_Position_Management:
         else:
             return self._current_long
 
-
     def get_ref_lat(self):
         return self._ref_lat
 

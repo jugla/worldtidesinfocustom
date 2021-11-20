@@ -392,6 +392,7 @@ The platform create several sensors (name given in UI/configuration.yaml).
 | NAME_next_high_tide_time | v4.2.0 |  H:M   | local  | gives local time of next high tide      |
 | NAME_current_tide_coeff_resp_MWS | v4.2.0 |  float   | %   | gives coeff sensors.      |
 | NAME_current_tide_amplitude | v4.2.0 |  float   | m/ft   | gives current amplitude.      |
+| NAME_tide_station_info | v7.2.0 |  string   | N/A   | gives the current tide station used.      |
 
 
 The platform create cameras (name given in UI/configuration.yaml). 
