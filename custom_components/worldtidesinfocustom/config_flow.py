@@ -305,6 +305,24 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                             ),
                         ),
                     ): cv.string,
+                    vol.Optional(
+                        CONF_PLOT_BACKGROUND,
+                        default=self.config_entry.options.get(
+                            CONF_PLOT_BACKGROUND,
+                            self.config_entry.data.get(
+                                CONF_PLOT_BACKGROUND, DEFAULT_PLOT_BACKGROUND
+                            ),
+                        ),
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_SENSOR_UPDATE_DISTANCE,
+                        default=self.config_entry.options.get(
+                            CONF_SENSOR_UPDATE_DISTANCE,
+                            self.config_entry.data.get(
+                                CONF_SENSOR_UPDATE_DISTANCE, DEFAULT_SENSOR_UPDATE_DISTANCE
+                            ),
+                        ),
+                    ): cv.positive_int,
                 }
             ),
         )

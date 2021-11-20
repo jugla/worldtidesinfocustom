@@ -54,7 +54,9 @@
         "data": {
           "show_on_map": "Show monitored tides on the map",
           "station_distance" : "tidal station distance",
-          "plot_color": "plot curve color in comma-separated RGB values"
+          "plot_color": "plot curve color in comma-separated RGB values",
+          "plot_background": "plot curve background color in comma-separated RGB values",
+          "update_sensor_distance": "distance that sensor shall moved to upate reference tide location"
         }
       }
     }

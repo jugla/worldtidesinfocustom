@@ -436,6 +436,8 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         plot_color = config_entry.options.get(CONF_PLOT_COLOR)
 
     plot_background = config.get(CONF_PLOT_BACKGROUND)
+    if config_entry.options.get(CONF_PLOT_BACKGROUND):
+        plot_background = config_entry.options.get(CONF_PLOT_BACKGROUND)
 
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
     if config_entry.options.get(CONF_STATION_DISTANCE):
@@ -456,6 +458,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     live_position_management = config.get(CONF_LIVE_LOCATION)
     live_position_sensor_update_distance = config.get(CONF_SENSOR_UPDATE_DISTANCE)
+    if config_entry.options.get(CONF_SENSOR_UPDATE_DISTANCE):
+        live_position_sensor_update_distance = config_entry.options.get(CONF_SENSOR_UPDATE_DISTANCE)
+
     source = config.get(CONF_SOURCE)
     source_attr_lat = config.get(CONF_ATTRIBUTE_NAME_LAT)
     source_attr_long = config.get(CONF_ATTRIBUTE_NAME_LONG)
