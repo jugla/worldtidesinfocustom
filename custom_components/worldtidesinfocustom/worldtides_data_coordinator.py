@@ -170,12 +170,14 @@ class WordTide_Data_Coordinator:
                 self._credit_used
                 + self._worldtidesinfo_server.retrieve_tide_station_credit()
             )
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data = (
-                self._worldtidesinfo_server.retrieve_tide_station_raw_data()
-            )
-            self._worldtidesinfo_server_scheduler._Data_Retrieve.init_data_request_time = (
+            init_data = self._worldtidesinfo_server.retrieve_tide_station_raw_data()
+            init_data_request_time = (
                 self._worldtidesinfo_server.retrieve_tide_station_request_time()
             )
+            self._worldtidesinfo_server_scheduler.store_init_data(
+                init_data, init_data_request_time
+            )
+
         else:
             _LOGGER.error(
                 "Error retrieving tide station data from WorldTidesInfo: %s",
