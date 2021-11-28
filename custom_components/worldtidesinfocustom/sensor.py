@@ -524,7 +524,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
         self._unique_id = unique_id
 
     # Name : to be defined by class
-    # unit_of_measurement : to be defined by class
+    # native_unit_of_measurement : to be defined by class
     # device_state_attributes : to be defined by class
 
     @property
@@ -608,7 +608,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower
         return self._unique_id + SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             return "ft"
@@ -645,7 +645,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
 
         current_time = time.time()
@@ -672,7 +672,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFoll
         return self._unique_id + SENSOR_NEXT_LOW_TIDE_HEIGHT_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             return "ft"
@@ -702,7 +702,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFoll
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -758,7 +758,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorFollow
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -786,7 +786,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorFol
         return self._unique_id + SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             return "ft"
@@ -816,7 +816,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorFol
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -873,7 +873,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorFollo
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -903,7 +903,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         return self._unique_id + SENSOR_REMAINING_TIME_FOR_NEXT_TIDE_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "h"
 
@@ -938,7 +938,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         current_time = time.time()
         state_value = None
@@ -966,7 +966,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
         return self._unique_id + SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         if self._unit_to_display == IMPERIAL_CONF_UNIT:
             return "ft"
@@ -1009,7 +1009,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -1045,7 +1045,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
         return self._unique_id + SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "%"
 
@@ -1085,7 +1085,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
         current_time = time.time()
@@ -1171,7 +1171,7 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         state_value = None
 
@@ -1210,7 +1210,7 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
         return self._unique_id + SENSOR_CREDIT_USED_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "credit"
 
@@ -1223,7 +1223,7 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
         return STATE_CLASS_MEASUREMENT
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         # The credit used to display the update
         return self._worldtide_data_coordinator.get_credit_used()
@@ -1252,7 +1252,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
         return self._unique_id + SENSOR_GLOBAL_CREDIT_USED_SUFFIX
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return "credit"
 
@@ -1278,7 +1278,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         # The credit used to display the update
         return self._worldtide_data_coordinator.overall_count
@@ -1415,7 +1415,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         return attr
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the device."""
         current_time = time.time()
         # the tide info
