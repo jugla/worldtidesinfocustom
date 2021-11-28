@@ -447,7 +447,8 @@ The value has the default one or the last set (either during 1rst declaration th
 | show_on_map             | boolean       | n.a.     | No | v3.1.0    | boolean that allows to display on map the monitored tide location                                            |
 | station_distance        | positive int  | km/miles | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
 | plot_color              | string        | n.a.     | Yes | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
-
+| plot_background         | string        | n.a.     | Yes | v7.3.0    | string that represents the comma-separated RGB values for the tide graph background color | 
+| update_sensor_distance  | positive int  | km/miles | No  | v7.3.0    | if the sensor moves by *update_sensor_distance* then the tide info are updated from server  |  
 
 ## Wish/Todo list
 - make this integration as default in home assistant
