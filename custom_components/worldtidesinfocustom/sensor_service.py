@@ -33,7 +33,7 @@ from .const import (
 )
 
 # import .storage_mngt
-from .py_worldtidesinfo import (
+from pyworldtidesinfo.worldtidesinfo_server import (
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,

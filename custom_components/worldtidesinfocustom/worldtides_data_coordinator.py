@@ -25,7 +25,7 @@ FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 from . import give_persistent_filename
 from .const import IMPERIAL_CONF_UNIT, WWW_PATH
 from .plot_mngt import Plot_Manager
-from .py_worldtidesinfo import (
+from pyworldtidesinfo.worldtidesinfo_server import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
     WorldTidesInfo_server,

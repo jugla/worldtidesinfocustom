@@ -90,7 +90,7 @@ from .const import (
 from .live_position_management import Live_Position_Management
 
 # import .storage_mngt
-from .py_worldtidesinfo import (
+from pyworldtidesinfo.worldtidesinfo_server import (
     SERVER_API_VERSION,
     give_info_from_raw_data,
     give_info_from_raw_data_N_and_N_1,

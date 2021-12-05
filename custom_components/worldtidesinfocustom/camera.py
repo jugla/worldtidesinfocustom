@@ -61,7 +61,7 @@ from .const import (
     STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
-from .py_worldtidesinfo import SERVER_API_VERSION
+from pyworldtidesinfo.worldtidesinfo_server import SERVER_API_VERSION
 from .sensor_service import worldtidesinfo_unique_id
 
 # Sensor HA parameter
