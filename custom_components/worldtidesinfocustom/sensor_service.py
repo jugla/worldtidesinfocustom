@@ -17,6 +17,13 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
+# import .storage_mngt
+from pyworldtidesinfo.worldtidesinfo_server import (
+    give_info_from_raw_data,
+    give_info_from_raw_data_N_and_N_1,
+    give_info_from_raw_datums_data,
+)
+
 from .basic_service import distance_lat_long
 
 # import component
@@ -30,13 +37,6 @@ from .const import (
     ROUND_HOUR,
     ROUND_SEC,
     STATIC_CONF,
-)
-
-# import .storage_mngt
-from pyworldtidesinfo.worldtidesinfo_server import (
-    give_info_from_raw_data,
-    give_info_from_raw_data_N_and_N_1,
-    give_info_from_raw_datums_data,
 )
 
 # service
