@@ -36,6 +36,14 @@ from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
+# import .storage_mngt
+from pyworldtidesinfo.worldtidesinfo_server import (
+    SERVER_API_VERSION,
+    give_info_from_raw_data,
+    give_info_from_raw_data_N_and_N_1,
+    give_info_from_raw_datums_data,
+)
+
 # Component Library
 from . import give_persistent_filename, worldtidesinfo_data_coordinator
 
@@ -88,14 +96,6 @@ from .const import (
 
 # Live Position Management
 from .live_position_management import Live_Position_Management
-
-# import .storage_mngt
-from pyworldtidesinfo.worldtidesinfo_server import (
-    SERVER_API_VERSION,
-    give_info_from_raw_data,
-    give_info_from_raw_data_N_and_N_1,
-    give_info_from_raw_datums_data,
-)
 
 # sensor_service
 from .sensor_service import (
@@ -459,7 +459,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     live_position_management = config.get(CONF_LIVE_LOCATION)
     live_position_sensor_update_distance = config.get(CONF_SENSOR_UPDATE_DISTANCE)
     if config_entry.options.get(CONF_SENSOR_UPDATE_DISTANCE):
-        live_position_sensor_update_distance = config_entry.options.get(CONF_SENSOR_UPDATE_DISTANCE)
+        live_position_sensor_update_distance = config_entry.options.get(
+            CONF_SENSOR_UPDATE_DISTANCE
+        )
 
     source = config.get(CONF_SOURCE)
     source_attr_lat = config.get(CONF_ATTRIBUTE_NAME_LAT)

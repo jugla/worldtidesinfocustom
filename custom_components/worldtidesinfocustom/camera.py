@@ -29,6 +29,7 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
+from pyworldtidesinfo.worldtidesinfo_server import SERVER_API_VERSION
 
 # Component Library
 from . import give_persistent_filename
@@ -61,7 +62,6 @@ from .const import (
     STATIC_CONF,
     WORLD_TIDES_INFO_CUSTOM_DOMAIN,
 )
-from pyworldtidesinfo.worldtidesinfo_server import SERVER_API_VERSION
 from .sensor_service import worldtidesinfo_unique_id
 
 # Sensor HA parameter
