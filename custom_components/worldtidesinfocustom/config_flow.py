@@ -319,7 +319,8 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                         default=self.config_entry.options.get(
                             CONF_SENSOR_UPDATE_DISTANCE,
                             self.config_entry.data.get(
-                                CONF_SENSOR_UPDATE_DISTANCE, DEFAULT_SENSOR_UPDATE_DISTANCE
+                                CONF_SENSOR_UPDATE_DISTANCE,
+                                DEFAULT_SENSOR_UPDATE_DISTANCE,
                             ),
                         ),
                     ): cv.positive_int,

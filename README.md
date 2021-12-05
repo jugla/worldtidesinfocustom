@@ -471,3 +471,6 @@ Since V1.0.0 :
 Since V5.0.0 : 
 - [matplotlib](https://matplotlib.org/) is used
 
+Since V8.0.0 :
+- [pyworldtidesinfo](https://pypi.org/project/pyworldtidesinfo/) is used. The package was formely included within worldtidesinfo custom.
+

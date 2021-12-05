@@ -21,10 +21,6 @@ KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
 MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
 FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
 
-# Component library
-from . import give_persistent_filename
-from .const import IMPERIAL_CONF_UNIT, WWW_PATH
-from .plot_mngt import Plot_Manager
 from pyworldtidesinfo.worldtidesinfo_server import (
     PLOT_CURVE_UNIT_FT,
     PLOT_CURVE_UNIT_M,
@@ -33,6 +29,11 @@ from pyworldtidesinfo.worldtidesinfo_server import (
     give_info_from_raw_data_N_and_N_1,
     give_info_from_raw_datums_data,
 )
+
+# Component library
+from . import give_persistent_filename
+from .const import IMPERIAL_CONF_UNIT, WWW_PATH
+from .plot_mngt import Plot_Manager
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
