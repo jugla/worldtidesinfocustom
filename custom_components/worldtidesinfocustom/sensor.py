@@ -26,6 +26,7 @@ from homeassistant.const import (
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
     ENTITY_CATEGORY_DIAGNOSTIC,
+    STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
 from homeassistant.helpers.entity import DeviceInfo, Entity
@@ -155,7 +156,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 def format_receive_value(value):
     """format if pb then return None"""
-    if value == None or value == STATE_UNKNOWN:
+    if value == None or value == STATE_UNKNOWN or value == STATE_UNAVAILABLE:
         return None
     else:
         return float(value)
