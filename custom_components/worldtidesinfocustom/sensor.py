@@ -12,7 +12,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import (
     PLATFORM_SCHEMA,
-    STATE_CLASS_MEASUREMENT,
+    SensorStateClass,
     SensorEntity,
 )
 from homeassistant.const import (
@@ -25,11 +25,10 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
-    ENTITY_CATEGORY_DIAGNOSTIC,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.entity import DeviceInfo, Entity, EntityCategory
 from homeassistant.helpers.entity_registry import async_get_registry
 
 # HA library
@@ -622,9 +621,9 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def device_state_attributes(self):
@@ -914,9 +913,9 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def device_state_attributes(self):
@@ -980,9 +979,9 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def device_state_attributes(self):
@@ -1056,9 +1055,9 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def device_state_attributes(self):
@@ -1201,7 +1200,7 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
     @property
     def entity_category(self):
         """Return the entity category."""
-        return ENTITY_CATEGORY_DIAGNOSTIC
+        return EntityCategory.DIAGNOSTIC
 
     @property
     def name(self):
@@ -1221,9 +1220,9 @@ class WorldTidesInfoCustomSensorCreditUsed(WorldTidesInfoCustomSensorFollower):
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def native_value(self):
@@ -1243,7 +1242,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
     @property
     def entity_category(self):
         """Return the entity category."""
-        return ENTITY_CATEGORY_DIAGNOSTIC
+        return EntityCategory.DIAGNOSTIC
 
     @property
     def name(self):
@@ -1263,9 +1262,9 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
     def state_class(self):
         """Return the state class for long term statistics."""
         _LOGGER.debug(
-            "StateClass Tides sensor %s %s", self._name, STATE_CLASS_MEASUREMENT
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
         )
-        return STATE_CLASS_MEASUREMENT
+        return SensorStateClass.MEASUREMENT
 
     @property
     def device_state_attributes(self):
