@@ -9,6 +9,7 @@ import time
 from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.device_registry import DeviceEntryType
 
 # PyPy Library
 import requests
@@ -192,7 +193,7 @@ class TidesPicture_FromFile(Camera):
             sw_version=SERVER_API_VERSION,
             name=self._name + "_server",
             model="WorldTidesInfoAPI",
-            entry_type="service",
+            entry_type=DeviceEntryType.SERVICE,
             configuration_url=DEVICE_CONF_URL,
         )
 

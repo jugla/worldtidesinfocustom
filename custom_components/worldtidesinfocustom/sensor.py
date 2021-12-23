@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 # HA library
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.device_registry import DeviceEntryType
 import voluptuous as vol
 from homeassistant.components.sensor import (
     PLATFORM_SCHEMA,
@@ -538,7 +539,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
             sw_version=SERVER_API_VERSION,
             name=self._name + "_server",
             model="WorldTidesInfoAPI",
-            entry_type="service",
+            entry_type=DeviceEntryType.SERVICE,
             configuration_url=DEVICE_CONF_URL,
         )
 
