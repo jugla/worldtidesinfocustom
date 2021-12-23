@@ -9,7 +9,6 @@ import time
 from datetime import datetime, timedelta
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.device_registry import DeviceEntryType
 
 # PyPy Library
 import requests
@@ -26,6 +25,7 @@ from homeassistant.const import (
     CONF_SHOW_ON_MAP,
     CONF_SOURCE,
 )
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.event import async_track_state_change_event
