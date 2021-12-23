@@ -9,12 +9,11 @@ from datetime import datetime, timedelta
 
 # HA library
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.device_registry import DeviceEntryType
 import voluptuous as vol
 from homeassistant.components.sensor import (
     PLATFORM_SCHEMA,
-    SensorStateClass,
     SensorEntity,
+    SensorStateClass,
 )
 from homeassistant.const import (
     ATTR_ATTRIBUTION,
@@ -29,6 +28,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo, Entity, EntityCategory
 from homeassistant.helpers.entity_registry import async_get_registry
 
