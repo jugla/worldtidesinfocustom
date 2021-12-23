@@ -529,7 +529,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
 
     # Name : to be defined by class
     # native_unit_of_measurement : to be defined by class
-    # device_state_attributes : to be defined by class
+    # extra_state_attributes : to be defined by class
 
     @property
     def device_info(self):
@@ -628,7 +628,7 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower
         return SensorStateClass.MEASUREMENT
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -684,7 +684,7 @@ class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFoll
             return "m"
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -740,7 +740,7 @@ class WorldTidesInfoCustomSensorNextLowTideTime(WorldTidesInfoCustomSensorFollow
         return self._unique_id + SENSOR_NEXT_LOW_TIDE_TIME_SUFFIX
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -798,7 +798,7 @@ class WorldTidesInfoCustomSensorNextHighTideHeight(WorldTidesInfoCustomSensorFol
             return "m"
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -855,7 +855,7 @@ class WorldTidesInfoCustomSensorNextHighTideTime(WorldTidesInfoCustomSensorFollo
         return self._unique_id + SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -920,7 +920,7 @@ class WorldTidesInfoCustomSensorNextRemainingTideTime(
         return SensorStateClass.MEASUREMENT
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -986,7 +986,7 @@ class WorldTidesInfoCustomSensorCurrentAmplitude(WorldTidesInfoCustomSensorFollo
         return SensorStateClass.MEASUREMENT
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -1062,7 +1062,7 @@ class WorldTidesInfoCustomSensorCurrentCoeffMWS(WorldTidesInfoCustomSensorFollow
         return SensorStateClass.MEASUREMENT
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -1125,7 +1125,7 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
         return self._unique_id + SENSOR_TIDE_STATION_INFO_SUFFIX
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
@@ -1269,7 +1269,7 @@ class WorldTidesInfoCustomSensorGlobalCreditUsed(WorldTidesInfoCustomSensorFollo
         return SensorStateClass.MEASUREMENT
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {}
 
@@ -1306,7 +1306,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         return self._unique_id + SENSOR_NEXT_TIDE_SUFFIX
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of this device."""
         attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
         current_time = time.time()
