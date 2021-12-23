@@ -111,7 +111,7 @@ NB:UI allows to have more features.
   
 </details>
 
-- Several sensors and one camera are provided with attibutes. 
+- Several sensors and several cameras are provided with attibutes. 
 To see some attributes as sensor, you have to use template inside `configuration.yaml`. 
 <details><summary>Please follow the hereafter example</summary>
 
@@ -343,7 +343,7 @@ with the change of tide station
   <img src="./doc/picture/BoatTrackerTideStation.jpg" alt="Size Limit CLI" width="400">
 </p>
 
-Each time the position is changed the information is request to server (shown by the credit used)
+Each time the position is changed (distance greater than the UI parameter) the information is request to server (shown by the credit used)
 <p align="center">
   <img src="./doc/picture/BoatTrackerCredit.jpg" alt="Size Limit CLI" width="400">
 </p>
