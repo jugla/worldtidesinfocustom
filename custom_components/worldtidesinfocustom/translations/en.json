@@ -19,6 +19,20 @@
           "longitude": "location longitude"
         }
       },
+      "config_def_std_moving": {
+        "title": "Configure standard with moving sensor",
+        "description": "Use the WorldTidesInfo cloud API to monitor a latitude/longitude attached to a sensor tracker.",
+        "data": {
+          "name": "name",
+          "api_key": "api key of world tides info",
+          "latitude": "location latitude for init",
+          "longitude": "location longitude for init",
+          "live_location" : "location is static or dynamic from_sensor",
+          "source" : "source id that contains lat/long",
+          "latitude_attr_name" : "latitude attribute name of sensor id",
+          "longitude_attr_name" : "longitude attribute name of sensor id"
+        }
+      },
       "config_def_expert": {
         "title": "Configure expert",
         "description": "Use the WorldTidesInfo cloud API to monitor a static/live latitude/longitude with additional parameters.",

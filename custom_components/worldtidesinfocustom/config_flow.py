@@ -40,11 +40,13 @@ from .const import (
     DEFAULT_STATION_DISTANCE,
     DEFAULT_VERTICAL_REF,
     DOMAIN,
+    FROM_SENSOR_CONF,
 )
 
 CONF_INTEGRATION_TYPE = "integration_type"
 
 INTEGRATION_TYPE_STD = "standard_definition"
+INTEGRATION_TYPE_STD_MOVING = "standard_definition_moving"
 INTEGRATION_TYPE_EXPERT = "expert_definition"
 
 BASIC_DATA_SCHEMA = vol.Schema(
@@ -60,6 +62,7 @@ INTEGRATION_TYPE_SCHEMA = vol.Schema(
         vol.Required("type"): vol.In(
             [
                 INTEGRATION_TYPE_STD,
+                INTEGRATION_TYPE_STD_MOVING,
                 INTEGRATION_TYPE_EXPERT,
             ]
         )
@@ -104,6 +107,57 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(
                         CONF_LONGITUDE, default=self.hass.config.longitude
                     ): cv.longitude,
+                }
+            )
+
+    def config_standard_moving_schema(self):
+        """Return the data schema for the cloud API."""
+        if async_get_used_api_key(self.hass) == None:
+            return BASIC_DATA_SCHEMA.extend(
+                {
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                    vol.Optional(
+                        CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF
+                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_SOURCE): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LONG,
+                        default=DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
+                    ): cv.string,
+                }
+            )
+        else:
+            return vol.Schema(
+                {
+                    vol.Required(CONF_NAME): cv.string,
+                    vol.Required(
+                        CONF_API_KEY, default=async_get_used_api_key(self.hass)
+                    ): cv.string,
+                    vol.Required(
+                        CONF_LATITUDE, default=self.hass.config.latitude
+                    ): cv.latitude,
+                    vol.Required(
+                        CONF_LONGITUDE, default=self.hass.config.longitude
+                    ): cv.longitude,
+                    vol.Optional(
+                        CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF
+                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_SOURCE): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
+                    ): cv.string,
+                    vol.Optional(
+                        CONF_ATTRIBUTE_NAME_LONG,
+                        default=DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
+                    ): cv.string,
                 }
             )
 
@@ -239,6 +293,18 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             user_input, INTEGRATION_TYPE_STD
         )
 
+    async def async_step_config_def_std_moving(self, user_input=None):
+        """Handle the initialization of the cloud API based on latitude/longitude."""
+        if not user_input:
+            new_schema = self.config_standard_moving_schema()
+            return self.async_show_form(
+                step_id="config_def_std_moving", data_schema=new_schema
+            )
+
+        return await self._async_init_config_definition(
+            user_input, INTEGRATION_TYPE_STD_MOVING
+        )
+
     async def async_step_config_def_expert(self, user_input=None):
         """Handle the initialization of the cloud API based on lat/long/tuning parameter."""
         if not user_input:
@@ -260,6 +326,8 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input["type"] == INTEGRATION_TYPE_STD:
             return await self.async_step_config_def_std()
+        elif user_input["type"] == INTEGRATION_TYPE_STD_MOVING:
+            return await self.async_step_config_def_std_moving()
         elif user_input["type"] == INTEGRATION_TYPE_EXPERT:
             return await self.async_step_config_def_expert()
         # shall not occur
