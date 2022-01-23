@@ -114,7 +114,7 @@ class WorldTidesInfo_server_scheduler:
         self._Data_Retrieve.init_data_request_time = init_data_request_time
         self._Data_Scheduling.last_init_request_time = init_data_request_time
 
-    def process_no_new_init_data(self, last_request_time):
+    def process_no_new_init_data(self, last_init_request_time):
         if self._parameter_updated:
             self._Data_Retrieve.init_data = None
             self._Data_Retrieve.init_data_request_time = None
