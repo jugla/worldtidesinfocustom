@@ -123,12 +123,10 @@ class Live_Position_Management:
             > self._max_distance_without_lat_long_update
         ):
             need_to_change_ref_flag = True
-        elif current_time >= (
-            self._ref_update_time + DEFAULT_DISTANCE_TIME_INTERVAL
-        ):
+        elif current_time >= (self._ref_update_time + DEFAULT_DISTANCE_TIME_INTERVAL):
             need_to_change_ref_flag = True
         else:
-            need_to_change_ref_flag =  False
+            need_to_change_ref_flag = False
         return need_to_change_ref_flag
 
     def update(self, lat, long, current_time):

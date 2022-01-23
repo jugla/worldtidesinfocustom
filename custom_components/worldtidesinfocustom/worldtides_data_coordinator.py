@@ -186,7 +186,7 @@ class WordTide_Data_Coordinator:
                 self._name,
                 self._worldtidesinfo_server.retrieve_tide_station_err_value(),
             )
-            self._worldtidesinfo_server_scheduler.process_no_new_init_data (
+            self._worldtidesinfo_server_scheduler.process_no_new_init_data(
                 self._worldtidesinfo_server.retrieve_tide_station_request_time()
             )
 
@@ -233,7 +233,7 @@ class WordTide_Data_Coordinator:
                 self._name,
                 self._worldtidesinfo_server.retrieve_tide_err_value(),
             )
-            self._worldtidesinfo_server_scheduler.process_no_new_data (
+            self._worldtidesinfo_server_scheduler.process_no_new_data(
                 self._worldtidesinfo_server.retrieve_tide_request_time()
             )
 
@@ -245,7 +245,7 @@ class WordTide_Data_Coordinator:
 
         # Init data (initialisation or refresh or retrieve from a file)
         # if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
-        if self._tide_cache_file_first_update :
+        if self._tide_cache_file_first_update:
             self._tide_cache_file_first_update = False
             if self._tide_cache_file.Fetch_Stored_Data():
                 SchedulerSnapshot = self._tide_cache_file.Data_Read()

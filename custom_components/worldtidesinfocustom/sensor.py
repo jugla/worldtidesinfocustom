@@ -1407,9 +1407,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         attr["source_id"] = self._live_position_manager.get_source_id()
         attr[ATTR_REF_LAT] = self._live_position_manager.get_ref_lat()
         attr[ATTR_REF_LONG] = self._live_position_manager.get_ref_long()
-        attr[
-            ATTR_REF_POSITION_TIME
-        ] = self._live_position_manager.get_ref_update_time()
+        attr[ATTR_REF_POSITION_TIME] = self._live_position_manager.get_ref_update_time()
         attr[
             "current_lat"
         ] = self._live_position_manager.get_current_lat_or_ref_if_static()
@@ -1515,7 +1513,6 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             previous_ref_time = format_receive_value(
                 state_recorded.attributes.get(ATTR_REF_POSITION_TIME)
             )
-
 
         # listen to source ID
         if (
