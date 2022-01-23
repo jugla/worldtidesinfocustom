@@ -236,7 +236,8 @@ class WorldTidesInfo_server_scheduler:
             data_to_require = True
             reason = "last_request_time is None"
         elif current_time >= (
-            self._Data_Scheduling.last_request_time + DEFAULT_WORLDTIDES_REQUEST_INTERVAL
+            self._Data_Scheduling.last_request_time
+            + DEFAULT_WORLDTIDES_REQUEST_INTERVAL
         ):
             data_to_require = True
             reason = "Data Scheduling too old"

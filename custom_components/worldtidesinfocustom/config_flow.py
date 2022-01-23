@@ -121,9 +121,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(
                         CONF_LONGITUDE, default=self.hass.config.longitude
                     ): cv.longitude,
-                    vol.Optional(
-                        CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF
-                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF): vol.In(
+                        CONF_LIVE_LOCATION_TYPES
+                    ),
                     vol.Optional(CONF_SOURCE): cv.string,
                     vol.Optional(
                         CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
@@ -147,9 +147,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(
                         CONF_LONGITUDE, default=self.hass.config.longitude
                     ): cv.longitude,
-                    vol.Optional(
-                        CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF
-                    ): vol.In(CONF_LIVE_LOCATION_TYPES),
+                    vol.Optional(CONF_LIVE_LOCATION, default=FROM_SENSOR_CONF): vol.In(
+                        CONF_LIVE_LOCATION_TYPES
+                    ),
                     vol.Optional(CONF_SOURCE): cv.string,
                     vol.Optional(
                         CONF_ATTRIBUTE_NAME_LAT, default=DEFAULT_CONF_ATTRIBUTE_NAME_LAT
