@@ -53,6 +53,7 @@ from .basic_service import distance_lat_long
 from .const import (
     ATTR_REF_LAT,
     ATTR_REF_LONG,
+    ATTR_REF_POSITION_TIME,
     ATTRIBUTION,
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
@@ -183,10 +184,12 @@ def setup_sensor(
 ):
     """setup sensor with server, server scheduler in async or sync configuration"""
     unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
+    current_time = time.time()
 
-    live_position_management = Live_Position_Management(
+    live_position_manager = Live_Position_Management(
         lat,
         lon,
+        current_time,
         live_position_management,
         live_position_sensor_update_distance,
         unit_to_display,
@@ -216,7 +219,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -227,7 +230,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -238,7 +241,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -248,7 +251,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -258,7 +261,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -268,7 +271,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -278,7 +281,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -289,7 +292,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -299,7 +302,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -310,7 +313,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -321,7 +324,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -331,7 +334,7 @@ def setup_sensor(
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     )
 
@@ -510,7 +513,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
         unit_to_display,
         show_on_map,
         worldtide_data_coordinator,
-        live_position_management,
+        live_position_manager,
         unique_id,
     ):
         """Initialize the sensor."""
@@ -523,7 +526,7 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
 
         # DATA
         self._worldtide_data_coordinator = worldtide_data_coordinator
-        self._live_position_management = live_position_management
+        self._live_position_manager = live_position_manager
 
         self._unique_id = unique_id
 
@@ -1153,8 +1156,8 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
         # Tide detailed characteristic
         attr.update(
             tide_station_attribute(
-                self._live_position_management.get_current_lat_or_ref_if_static(),
-                self._live_position_management.get_current_long_or_ref_if_static(),
+                self._live_position_manager.get_current_lat_or_ref_if_static(),
+                self._live_position_manager.get_current_long_or_ref_if_static(),
                 tide_station_name,
                 self._worldtide_data_coordinator,
                 init_tide_info,
@@ -1169,8 +1172,8 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
                 attr[ATTR_LATITUDE] = attr["tidal_station_used_info_lat"]
                 attr[ATTR_LONGITUDE] = attr["tidal_station_used_info_long"]
             else:
-                attr[ATTR_LATITUDE] = self._live_position_management.get_ref_lat()
-                attr[ATTR_LONGITUDE] = self._live_position_management.get_ref_long()
+                attr[ATTR_LATITUDE] = self._live_position_manager.get_ref_lat()
+                attr[ATTR_LONGITUDE] = self._live_position_manager.get_ref_long()
 
         return attr
 
@@ -1188,7 +1191,7 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
 
         # Tide station characteristics
         tide_station_used = tide_info.give_tidal_station_used()
-        if tide_station_used.get("error") == None:
+        if tide_station_used.get("error") is None:
             state_value = tide_station_used.get("station")
         else:
             state_value = "No Tide station used"
@@ -1378,8 +1381,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         # Tide detailed characteristic
         attr.update(
             tide_station_attribute(
-                self._live_position_management.get_current_lat_or_ref_if_static(),
-                self._live_position_management.get_current_long_or_ref_if_static(),
+                self._live_position_manager.get_current_lat_or_ref_if_static(),
+                self._live_position_manager.get_current_long_or_ref_if_static(),
                 tide_station_name,
                 self._worldtide_data_coordinator,
                 init_tide_info,
@@ -1400,18 +1403,21 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         ## Moving sensor or not
         attr[
             "live_location"
-        ] = self._live_position_management.get_live_position_management()
-        attr["source_id"] = self._live_position_management.get_source_id()
-        attr[ATTR_REF_LAT] = self._live_position_management.get_ref_lat()
-        attr[ATTR_REF_LONG] = self._live_position_management.get_ref_long()
+        ] = self._live_position_manager.get_live_position_management()
+        attr["source_id"] = self._live_position_manager.get_source_id()
+        attr[ATTR_REF_LAT] = self._live_position_manager.get_ref_lat()
+        attr[ATTR_REF_LONG] = self._live_position_manager.get_ref_long()
+        attr[
+            ATTR_REF_POSITION_TIME
+        ] = self._live_position_manager.get_ref_update_time()
         attr[
             "current_lat"
-        ] = self._live_position_management.get_current_lat_or_ref_if_static()
+        ] = self._live_position_manager.get_current_lat_or_ref_if_static()
         attr[
             "current_long"
-        ] = self._live_position_management.get_current_long_or_ref_if_static()
+        ] = self._live_position_manager.get_current_long_or_ref_if_static()
         attr["distance_from_ref"] = round(
-            self._live_position_management.give_distance_from_ref_point()
+            self._live_position_manager.give_distance_from_ref_point()
             * convert_km_to_miles,
             ROUND_DISTANCE,
         )
@@ -1430,6 +1436,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
     def _async_worldtidesinfo_sensor_state_listener(self, event):
         """Handle sensor state changes."""
         _LOGGER.info("World Tide Update state %s", event.data.get("new_state"))
+        current_time = time.time()
 
         new_state_valid = False
         lat = None
@@ -1442,47 +1449,47 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         try:
             lat = float(
                 new_state.attributes.get(
-                    self._live_position_management.get_lat_attribute()
+                    self._live_position_manager.get_lat_attribute()
                 )
             )
             long = float(
                 new_state.attributes.get(
-                    self._live_position_management.get_long_attribute()
+                    self._live_position_manager.get_long_attribute()
                 )
             )
             new_state_valid = True
 
             _LOGGER.info(
                 "World Tide Update %s : lat %s %s, long %s %s",
-                self._live_position_management.get_source_id(),
-                self._live_position_management.get_lat_attribute(),
+                self._live_position_manager.get_source_id(),
+                self._live_position_manager.get_lat_attribute(),
                 lat,
-                self._live_position_management.get_long_attribute(),
+                self._live_position_manager.get_long_attribute(),
                 long,
             )
 
         except (ValueError, TypeError):
             _LOGGER.warning(
                 "%s : lat %s, long %s is not numerical",
-                self._live_position_management.get_source_id(),
-                self._live_position_management.get_lat_attribute(),
-                self._live_position_management.get_long_attribute(),
+                self._live_position_manager.get_source_id(),
+                self._live_position_manager.get_lat_attribute(),
+                self._live_position_manager.get_long_attribute(),
             )
 
         if new_state_valid == True:
             need_update = False
             if (
-                self._live_position_management.get_current_lat() == None
-                or self._live_position_management.get_current_lat() == None
+                self._live_position_manager.get_current_lat() == None
+                or self._live_position_manager.get_current_lat() == None
             ):
                 need_update = True
 
-            self._live_position_management.update(lat, long)
+            self._live_position_manager.update(lat, long, current_time)
 
             # check if too far from former point
-            if self._live_position_management.need_to_change_ref(lat, long):
+            if self._live_position_manager.need_to_change_ref(lat, long, current_time):
                 self._worldtide_data_coordinator.change_reference_point(lat, long)
-                self._live_position_management.change_ref(lat, long)
+                self._live_position_manager.change_ref(lat, long, current_time)
                 need_update = True
             if need_update:
                 self.schedule_update_ha_state(force_refresh=True)
@@ -1505,34 +1512,39 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             previous_ref_long = format_receive_value(
                 state_recorded.attributes.get(ATTR_REF_LONG)
             )
+            previous_ref_time = format_receive_value(
+                state_recorded.attributes.get(ATTR_REF_POSITION_TIME)
+            )
+
 
         # listen to source ID
         if (
-            self._live_position_management.get_live_position_management()
+            self._live_position_manager.get_live_position_management()
             == FROM_SENSOR_CONF
         ):
 
             _LOGGER.info(
                 "World Tide add listener %s",
-                self._live_position_management.get_source_id(),
+                self._live_position_manager.get_source_id(),
             )
 
             async_track_state_change_event(
                 self._hass,
-                [self._live_position_management.get_source_id()],
+                [self._live_position_manager.get_source_id()],
                 self._async_worldtidesinfo_sensor_state_listener,
             )
 
         if (
-            state_recorded != None
-            and previous_ref_lat != None
-            and previous_ref_long != None
+            state_recorded is not None
+            and previous_ref_lat is not None
+            and previous_ref_long is not None
+            and previous_ref_time is not None
         ):
             self._worldtide_data_coordinator.change_reference_point(
                 previous_ref_lat, previous_ref_long
             )
-            self._live_position_management.change_ref(
-                previous_ref_lat, previous_ref_long
+            self._live_position_manager.change_ref(
+                previous_ref_lat, previous_ref_long, previous_ref_time
             )
             # self.schedule_update_ha_state(force_refresh=True)
         self.schedule_update_ha_state(force_refresh=True)

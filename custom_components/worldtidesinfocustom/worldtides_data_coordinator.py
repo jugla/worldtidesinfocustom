@@ -85,6 +85,7 @@ class WordTide_Data_Coordinator:
             key,
         )
         self._tide_cache_file = tide_cache_file
+        self._tide_cache_file_first_update = True
 
         ### Self
         self._plot_manager = Plot_Manager(
@@ -181,8 +182,12 @@ class WordTide_Data_Coordinator:
 
         else:
             _LOGGER.error(
-                "Error retrieving tide station data from WorldTidesInfo: %s",
+                "Error retrieving tide station data from WorldTidesInfo %s : %s",
+                self._name,
                 self._worldtidesinfo_server.retrieve_tide_station_err_value(),
+            )
+            self._worldtidesinfo_server_scheduler.process_no_new_init_data (
+                self._worldtidesinfo_server.retrieve_tide_station_request_time()
             )
 
     def _retrieve_height_station(self, init_data_fetched):
@@ -224,8 +229,12 @@ class WordTide_Data_Coordinator:
 
         else:
             _LOGGER.error(
-                "Error retrieving height station data from WorldTidesInfo: %s",
+                "Error retrieving height station data from WorldTidesInfo %s: %s",
+                self._name,
                 self._worldtidesinfo_server.retrieve_tide_err_value(),
+            )
+            self._worldtidesinfo_server_scheduler.process_no_new_data (
+                self._worldtidesinfo_server.retrieve_tide_request_time()
             )
 
     def _update_and_fetch_server_data(self):
@@ -235,7 +244,9 @@ class WordTide_Data_Coordinator:
         current_time = time.time()
 
         # Init data (initialisation or refresh or retrieve from a file)
-        if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
+        # if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
+        if self._tide_cache_file_first_update :
+            self._tide_cache_file_first_update = False
             if self._tide_cache_file.Fetch_Stored_Data():
                 SchedulerSnapshot = self._tide_cache_file.Data_Read()
                 _LOGGER.debug(

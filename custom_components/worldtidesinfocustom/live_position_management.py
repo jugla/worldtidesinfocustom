@@ -1,8 +1,9 @@
 # Python library
 import logging
 
-_LOGGER = logging.getLogger(__name__)
-
+# python library
+import time
+from datetime import datetime, timedelta
 
 # HA library
 from homeassistant.const import (
@@ -24,6 +25,10 @@ from .basic_service import distance_lat_long
 # component library
 from .const import DEFAULT_SENSOR_UPDATE_DISTANCE, IMPERIAL_CONF_UNIT, STATIC_CONF
 
+# default time to update in second (6h)
+DEFAULT_DISTANCE_TIME_INTERVAL = 21600
+_LOGGER = logging.getLogger(__name__)
+
 
 # class
 class Live_Position_Management:
@@ -33,6 +38,7 @@ class Live_Position_Management:
         self,
         ref_lat,
         ref_long,
+        ref_update_time,
         live_position_management,
         live_position_sensor_update_distance,
         unit_to_display,
@@ -42,8 +48,10 @@ class Live_Position_Management:
     ):
         self._ref_lat = ref_lat
         self._ref_long = ref_long
+        self._ref_update_time = ref_update_time
         self._current_lat = None
         self._current_long = None
+        self._current_update_time = None
 
         if live_position_management == None:
             self._live_position_management = STATIC_CONF
@@ -102,19 +110,28 @@ class Live_Position_Management:
     def get_ref_long(self):
         return self._ref_long
 
+    def get_ref_update_time(self):
+        return self._ref_update_time
+
     def get_live_position_management(self):
         return self._live_position_management
 
-    def need_to_change_ref(self, lat, long):
+    def need_to_change_ref(self, lat, long, current_time):
+        need_to_change_ref_flag = False
         if (
             distance_lat_long((self._ref_lat, self._ref_long), (lat, long))
             > self._max_distance_without_lat_long_update
         ):
-            return True
+            need_to_change_ref_flag = True
+        elif current_time >= (
+            self._ref_update_time + DEFAULT_DISTANCE_TIME_INTERVAL
+        ):
+            need_to_change_ref_flag = True
         else:
-            return False
+            need_to_change_ref_flag =  False
+        return need_to_change_ref_flag
 
-    def update(self, lat, long):
+    def update(self, lat, long, current_time):
         _LOGGER.debug(
             "LivePositionUpdate Lat %s Long %s RefLat %s RefLong %s",
             lat,
@@ -125,6 +142,7 @@ class Live_Position_Management:
 
         self._current_lat = lat
         self._current_long = long
+        self._current_update_time = current_time
         self._last_distance_from_ref_point = distance_lat_long(
             (self._ref_lat, self._ref_long), (lat, long)
         )
@@ -132,6 +150,7 @@ class Live_Position_Management:
     def give_distance_from_ref_point(self):
         return self._last_distance_from_ref_point
 
-    def change_ref(self, lat, long):
+    def change_ref(self, lat, long, current_time):
         self._ref_lat = lat
         self._ref_long = long
+        self._ref_update_time = current_time

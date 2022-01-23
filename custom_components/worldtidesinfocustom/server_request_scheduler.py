@@ -15,7 +15,9 @@ DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 # snapshot_version
 # snapshot 1 : 1rst one
 # snapshot 2 : add previous data
-snapshot_version = 2
+# snapshot 3 : add last request time
+# snapshot 4 : add last init request time
+snapshot_version = 4
 
 # Python library
 import logging
@@ -54,6 +56,8 @@ class Data_Scheduling:
     def __init__(self):
         self.next_day_midnight = None
         self.next_month_midnight = None
+        self.last_request_time = None
+        self.last_init_request_time = None
 
     def setup_next_data_midnight(self):
         self.next_day_midnight = timedelta(days=1) + (datetime.today()).replace(
@@ -72,6 +76,8 @@ class Data_Scheduling:
     def store_read_input(self, read_data):
         self.next_day_midnight = read_data.next_day_midnight
         self.next_month_midnight = read_data.next_month_midnight
+        self.last_request_time = read_data.last_request_time
+        self.last_init_request_time = read_data.last_request_time
 
 
 class WorldTidesInfo_server_scheduler:
@@ -106,6 +112,14 @@ class WorldTidesInfo_server_scheduler:
     def store_init_data(self, init_data, init_data_request_time):
         self._Data_Retrieve.init_data = init_data
         self._Data_Retrieve.init_data_request_time = init_data_request_time
+        self._Data_Scheduling.last_init_request_time = init_data_request_time
+
+    def process_no_new_init_data(self, last_request_time):
+        if self._parameter_updated:
+            self._Data_Retrieve.init_data = None
+            self._Data_Retrieve.init_data_request_time = None
+            self._Data_Scheduling.last_init_request_time = None
+        self._Data_Scheduling.last_init_request_time = last_init_request_time
 
     def store_new_data(self, data, data_request_time):
         """Store new data and backup previous"""
@@ -113,6 +127,7 @@ class WorldTidesInfo_server_scheduler:
         if self._parameter_updated:
             self._Data_Retrieve.previous_data = None
             self._Data_Retrieve.previous_data_request_time = None
+            self._Data_Scheduling.last_request_time = None
         else:
             # in order to manage midnight (ie. switch between 2 requests)
             self._Data_Retrieve.previous_data = self._Data_Retrieve.data
@@ -122,7 +137,17 @@ class WorldTidesInfo_server_scheduler:
         # normal process
         self._Data_Retrieve.data = data
         self._Data_Retrieve.data_request_time = data_request_time
+        self._Data_Scheduling.last_request_time = data_request_time
 
+        self._parameter_updated = False
+
+    def process_no_new_data(self, last_request_time):
+        if self._parameter_updated:
+            self._Data_Retrieve.previous_data = None
+            self._Data_Retrieve.previous_data_request_time = None
+            self._Data_Scheduling.last_request_time = None
+
+        self._Data_Scheduling.last_request_time = last_request_time
         self._parameter_updated = False
 
     def setup_next_midnights(self):
@@ -138,17 +163,24 @@ class WorldTidesInfo_server_scheduler:
     def init_data_to_be_fetched(self, current_time):
         """Decide whether or not Init Data has to be retrieved"""
         init_data_to_require = False
-        if self._Data_Retrieve.init_data == None:
+        reason = "No Reason"
+        if self._Data_Scheduling.last_init_request_time is None:
             init_data_to_require = True
+            reason = "last_init_request_time equal to None"
         elif (
             datetime.fromtimestamp(current_time)
             >= self._Data_Scheduling.next_month_midnight
         ):
             init_data_to_require = True
+            reason = "month midnight reached"
         elif self._parameter_updated:
             init_data_to_require = True
+            reason = "parameter has changed"
         else:
             init_data_to_require = False
+        if init_data_to_require:
+            _LOGGER.debug("Init Tide to be fetched due to : %s", reason)
+
         return init_data_to_require
 
     def give_scheduler_image(self):
@@ -196,19 +228,26 @@ class WorldTidesInfo_server_scheduler:
     def data_to_be_fetched(self, init_data_has_been_fetched, current_time):
         """Decide whether or not data has to be retrieved"""
         data_to_require = False
+        reason = "No Reason"
         if init_data_has_been_fetched:
             data_to_require = True
-        elif self._Data_Retrieve.data_request_time == None:
+            reason = "Station has been reinit"
+        elif self._Data_Scheduling.last_request_time is None:
             data_to_require = True
+            reason = "last_request_time is None"
         elif current_time >= (
-            self._Data_Retrieve.data_request_time + DEFAULT_WORLDTIDES_REQUEST_INTERVAL
+            self._Data_Scheduling.last_request_time + DEFAULT_WORLDTIDES_REQUEST_INTERVAL
         ):
             data_to_require = True
+            reason = "Data Scheduling too old"
         elif (
             datetime.fromtimestamp(current_time)
             >= self._Data_Scheduling.next_day_midnight
         ):
             data_to_require = True
+            reason = "Midnight is reached"
         else:
             data_to_require = False
+        if data_to_require:
+            _LOGGER.debug("Tide Height to be fetched due to : %s", reason)
         return data_to_require
