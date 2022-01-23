@@ -83,7 +83,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def config_standard_schema(self):
         """Return the data schema for the cloud API."""
-        if async_get_used_api_key(self.hass) == None:
+        if async_get_used_api_key(self.hass) is None:
             return BASIC_DATA_SCHEMA.extend(
                 {
                     vol.Required(
@@ -112,7 +112,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def config_standard_moving_schema(self):
         """Return the data schema for the cloud API."""
-        if async_get_used_api_key(self.hass) == None:
+        if async_get_used_api_key(self.hass) is None:
             return BASIC_DATA_SCHEMA.extend(
                 {
                     vol.Required(
@@ -163,7 +163,7 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def config_expert_schema(self):
         """Return the data schema for the cloud API."""
-        if async_get_used_api_key(self.hass) == None:
+        if async_get_used_api_key(self.hass) is None:
             return BASIC_DATA_SCHEMA.extend(
                 {
                     vol.Required(

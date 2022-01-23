@@ -94,13 +94,13 @@ def async_get_config_id(config_dict):
 def async_get_used_api_key(hass):
     """Go through coordinator to find a used API key."""
     # first time the entry does not exist and so nothing is created
-    if hass.data.get(DOMAIN) == None:
+    if hass.data.get(DOMAIN) is None:
         return None
 
     # look for existing key
     for entry_id, coordinator in hass.data[DOMAIN][DATA_COORDINATOR].items():
         config_entry = hass.config_entries.async_get_entry(entry_id)
-        if config_entry.data.get(CONF_API_KEY) != None:
+        if config_entry.data.get(CONF_API_KEY) is not None:
             return config_entry.data.get(CONF_API_KEY)
 
     # nothing found

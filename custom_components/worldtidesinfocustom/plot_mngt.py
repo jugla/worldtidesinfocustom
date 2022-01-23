@@ -26,7 +26,7 @@ class Plot_Manager:
 
     def compute_new_plot(self, data, current_time):
 
-        if data == None:
+        if data is None:
             return
 
         tide_info = give_info_from_raw_data(data)

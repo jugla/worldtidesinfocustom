@@ -158,7 +158,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 def format_receive_value(value):
     """format if pb then return None"""
-    if value == None or value == STATE_UNKNOWN or value == STATE_UNAVAILABLE:
+    if value is None or value == STATE_UNKNOWN or value == STATE_UNAVAILABLE:
         return None
     else:
         return float(value)
@@ -592,7 +592,7 @@ class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
         )
         _LOGGER.debug("Sensor: entity main sensor %s", entity_id_main_sensor)
 
-        if entity_id_main_sensor == None:
+        if entity_id_main_sensor is None:
             entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
 
         async_track_state_change_event(
@@ -1150,7 +1150,7 @@ class WorldTidesInfoCustomSensorTideStationInfo(WorldTidesInfoCustomSensorFollow
         # Tide station characteristics
         tide_station_used = tide_info.give_tidal_station_used()
         tide_station_name = None
-        if tide_station_used.get("error") == None:
+        if tide_station_used.get("error") is None:
             tide_station_name = tide_station_used.get("station")
 
         # Tide detailed characteristic
@@ -1330,7 +1330,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
 
         # The vertical reference used : LAT, ...
         vertical_ref = tide_info.give_vertical_ref()
-        if vertical_ref.get("error") == None:
+        if vertical_ref.get("error") is None:
             attr["vertical_reference"] = vertical_ref.get("vertical_ref")
         else:
             attr["vertical_reference"] = "No vertical ref"
@@ -1338,7 +1338,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         # Tide station characteristics
         tide_station_used = tide_info.give_tidal_station_used()
         tide_station_name = None
-        if tide_station_used.get("error") == None:
+        if tide_station_used.get("error") is None:
             tide_station_name = tide_station_used.get("station")
             attr["tidal_station_used"] = tide_station_name
         else:
@@ -1477,8 +1477,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
         if new_state_valid == True:
             need_update = False
             if (
-                self._live_position_manager.get_current_lat() == None
-                or self._live_position_manager.get_current_lat() == None
+                self._live_position_manager.get_current_lat() is None
+                or self._live_position_manager.get_current_lat() is None
             ):
                 need_update = True
 

@@ -53,13 +53,13 @@ class Live_Position_Management:
         self._current_long = None
         self._current_update_time = None
 
-        if live_position_management == None:
+        if live_position_management is None:
             self._live_position_management = STATIC_CONF
         else:
             self._live_position_management = live_position_management
 
         # unit used for display, and convert tide station distance
-        if live_position_sensor_update_distance == None:
+        if live_position_sensor_update_distance is None:
             live_position_sensor_update_distance = DEFAULT_SENSOR_UPDATE_DISTANCE
 
         if unit_to_display == IMPERIAL_CONF_UNIT:

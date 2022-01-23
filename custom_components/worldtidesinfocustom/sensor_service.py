@@ -45,7 +45,7 @@ from .const import (
 
 def worldtidesinfo_unique_id(lat, long, live_position_management, source):
     """give a unique id for sensor"""
-    if live_position_management == None:
+    if live_position_management is None:
         return "lat:{}_long:{}".format(lat, long)
     elif live_position_management == STATIC_CONF:
         return "lat:{}_long:{}".format(lat, long)
@@ -112,7 +112,7 @@ def current_height_attribute(tide_info, current_time, convert_meter_to_feet):
     attr = {}
 
     current_height_value = tide_info.give_current_height_in_UTC(current_time)
-    if current_height_value.get("error") == None:
+    if current_height_value.get("error") is None:
         attr["current_height_utc"] = current_height_value.get("current_height_utc")
         attr["current_height"] = round(
             current_height_value.get("current_height") * convert_meter_to_feet,
@@ -136,7 +136,7 @@ def next_tide_attribute(tide_info, current_time, convert_meter_to_feet):
     attr = {}
 
     next_tide_UTC = tide_info.give_next_high_low_tide_in_UTC(current_time)
-    if next_tide_UTC.get("error") == None:
+    if next_tide_UTC.get("error") is None:
         attr["high_tide_time_utc"] = next_tide_UTC.get("high_tide_time_utc")
         attr["high_tide_time_local"] = time.strftime(
             "%H:%M", time.localtime(next_tide_UTC.get("high_tide_time_epoch"))
@@ -161,7 +161,7 @@ def next_low_tide_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute low tide state linked to next tide"""
     state_value = None
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
-    if attr.get("low_tide_height") != None:
+    if attr.get("low_tide_height") is not None:
         state_value = attr.get("low_tide_height")
     return state_value
 
@@ -172,7 +172,7 @@ def next_low_tide_time_state(tide_info, current_time):
     # do as if no conversion in meter
     convert_meter_to_feet = 1
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
-    if attr.get("low_tide_time_local") != None:
+    if attr.get("low_tide_time_local") is not None:
         state_value = attr.get("low_tide_time_local")
     return state_value
 
@@ -181,7 +181,7 @@ def next_high_tide_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute hight tide state linked to next tide"""
     state_value = None
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
-    if attr.get("high_tide_height") != None:
+    if attr.get("high_tide_height") is not None:
         state_value = attr.get("high_tide_height")
     return state_value
 
@@ -192,7 +192,7 @@ def next_high_tide_time_state(tide_info, current_time):
     # do as if no conversion in meter
     convert_meter_to_feet = 1
     attr = next_tide_attribute(tide_info, current_time, convert_meter_to_feet)
-    if attr.get("high_tide_time_local") != None:
+    if attr.get("high_tide_time_local") is not None:
         state_value = attr.get("high_tide_time_local")
     return state_value
 
@@ -207,7 +207,7 @@ def remaining_time_to_next_tide(tide_info, current_time):
     delta_current_time_to_next = 0
 
     # compute delta tide to next tide
-    if next_tide_in_epoch.get("error") == None:
+    if next_tide_in_epoch.get("error") is None:
         delta_current_time_to_next = next_tide_in_epoch.get("tide_time") - current_time
         # convert in second in hour
         remaining_time = round(delta_current_time_to_next / 60 / 60, ROUND_HOUR)
@@ -228,7 +228,7 @@ def amplitude_attribute(
         tide_UTC = tide_info.give_current_high_low_tide_in_UTC(current_time)
 
     diff_high_tide_low_tide = None
-    if tide_UTC.get("error") == None:
+    if tide_UTC.get("error") is None:
         diff_high_tide_low_tide = abs(
             tide_UTC.get("high_tide_height") - tide_UTC.get("low_tide_height")
         )
@@ -240,7 +240,7 @@ def amplitude_attribute(
         MWS_datum_offset = datums_info.give_mean_water_spring_datums_offset()
 
         # The coeff tide_highlow_over the Mean Water Spring
-        if MWS_datum_offset.get("error") == None:
+        if MWS_datum_offset.get("error") is None:
             attr[next_string + "Coeff_resp_MWS"] = round(
                 (
                     diff_high_tide_low_tide
@@ -283,7 +283,7 @@ def current_amplitude_state(
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
     )
-    if attr.get("tide_amplitude") != None:
+    if attr.get("tide_amplitude") is not None:
         state_value = attr.get("tide_amplitude")
     return state_value
 
@@ -294,7 +294,7 @@ def current_coeff_state(tide_info, datums_info, current_time, convert_meter_to_f
     attr = current_amplitude_attribute(
         tide_info, datums_info, current_time, convert_meter_to_feet
     )
-    if attr.get("Coeff_resp_MWS") != None:
+    if attr.get("Coeff_resp_MWS") is not None:
         state_value = attr.get("Coeff_resp_MWS")
     return state_value
 
@@ -311,11 +311,11 @@ def tide_tendancy_attribute(tide_info, current_time):
     delta_current_time_from_previous = 0
 
     # compute delta tide to next tide
-    if next_tide_in_epoch.get("error") == None:
+    if next_tide_in_epoch.get("error") is None:
         delta_current_time_to_next = next_tide_in_epoch.get("tide_time") - current_time
 
     # compute delta time from previous tide
-    if previous_tide_in_epoch.get("error") == None:
+    if previous_tide_in_epoch.get("error") is None:
         delta_current_time_from_previous = current_time - previous_tide_in_epoch.get(
             "tide_time"
         )
@@ -335,7 +335,7 @@ def tide_tendancy_attribute(tide_info, current_time):
     if next_tide_in_epoch.get("tide_type") == "High":
         if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
             tide_tendancy = "Tides Slack (Up)"
-        elif previous_tide_in_epoch.get("error") != None:
+        elif previous_tide_in_epoch.get("error") is not None:
             # if the previous tide is not found, assume that
             # we are not in slack
             tide_tendancy = "Tides Up"
@@ -346,7 +346,7 @@ def tide_tendancy_attribute(tide_info, current_time):
     else:
         if delta_current_time_to_next < HALF_TIDE_SLACK_DURATION:
             tide_tendancy = "Tides Slack (Down)"
-        elif previous_tide_in_epoch.get("error") != None:
+        elif previous_tide_in_epoch.get("error") is not None:
             # if the previous tide is not found, assume that
             # we are not in slack
             tide_tendancy = "Tides Down"
@@ -390,7 +390,7 @@ def schedule_time_attribute(worldtide_data_coordinator):
     )
     # KEEP FOR DEBUG:
     if DEBUG_FLAG:
-        if schedule_time_result.get("previous_data_request_time") != None:
+        if schedule_time_result.get("previous_data_request_time") is not None:
             attr["Previous_Data_request_time"] = time.strftime(
                 "%H:%M:%S %d/%m/%y",
                 time.localtime(schedule_time_result.get("previous_data_request_time")),
@@ -430,7 +430,7 @@ def tide_station_attribute(
     )
 
     station_around = init_tide_info.give_station_around_info()
-    if station_around.get("error") == None:
+    if station_around.get("error") is None:
         attr["station_around_nb"] = station_around.get("station_around_nb")
         attr["station_around_name"] = station_around.get("station_around_name")
     else:
@@ -440,7 +440,7 @@ def tide_station_attribute(
     tide_station_used_info = init_tide_info.give_used_station_info_from_name(
         tide_station_name
     )
-    if tide_station_used_info.get("error") == None:
+    if tide_station_used_info.get("error") is None:
         attr["station_around_time_zone"] = tide_station_used_info.get(
             "tide_station_timezone"
         )
@@ -450,7 +450,7 @@ def tide_station_attribute(
         attr["tidal_station_used_info_long"] = tide_station_used_info.get(
             "tide_station_long"
         )
-        if current_lat != None and current_long != None:
+        if current_lat is not None and current_long is not None:
             attr["current_distance_to_station"] = round(
                 distance_lat_long(
                     (current_lat, current_long),
@@ -478,7 +478,7 @@ def next_tide_state(tide_info, current_time):
     """Compute next tide state"""
     # Get next tide time
     next_tide = tide_info.give_next_tide_in_epoch(current_time)
-    if next_tide.get("error") == None:
+    if next_tide.get("error") is None:
         tidetime = time.strftime("%H:%M", time.localtime(next_tide.get("tide_time")))
         tidetype = next_tide.get("tide_type")
         tide_string = f"{tidetype} tide at {tidetime}"

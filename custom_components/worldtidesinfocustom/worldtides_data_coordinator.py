@@ -215,12 +215,12 @@ class WordTide_Data_Coordinator:
             # process information
             tide_info = give_info_from_raw_data(data)
             datum_content = tide_info.give_datum()
-            if datum_content.get("error") == None:
+            if datum_content.get("error") is None:
                 self._worldtidesinfo_server_scheduler._Data_Retrieve.data_datums_offset = datum_content.get(
                     "datums"
                 )
             string_picture = tide_info.give_plot_picture_without_header()
-            if string_picture.get("error") == None:
+            if string_picture.get("error") is None:
                 self._tide_picture_file.store_picture_base64(
                     string_picture.get("image")
                 )

@@ -104,10 +104,10 @@ class WorldTidesInfo_server_scheduler:
         return self._Server_Parameter
 
     def no_data(self):
-        return self._Data_Retrieve.data == None or self._Data_Retrieve.data == None
+        return self._Data_Retrieve.data is None or self._Data_Retrieve.data is None
 
     def no_datum(self):
-        return self._Data_Retrieve.data_datums_offset == None
+        return self._Data_Retrieve.data_datums_offset is None
 
     def store_init_data(self, init_data, init_data_request_time):
         self._Data_Retrieve.init_data = init_data
@@ -194,9 +194,9 @@ class WorldTidesInfo_server_scheduler:
     def scheduler_snapshot_usable(self, snapshot_read):
         Usable = False
         try:
-            if snapshot_read.get("Version") != None:
+            if snapshot_read.get("Version") is not None:
                 if snapshot_read.get("Version") == snapshot_version:
-                    if snapshot_read.get("Parameter") != None:
+                    if snapshot_read.get("Parameter") is not None:
                         if self._Server_Parameter.compare_parameter(
                             snapshot_read.get("Parameter")
                         ):
@@ -216,7 +216,7 @@ class WorldTidesInfo_server_scheduler:
         except:
             scheduler_image_usable = False
         if scheduler_image_usable:
-            if Read_Data_Scheduling != None and Read_Data_Retrieve != None:
+            if Read_Data_Scheduling is not None and Read_Data_Retrieve is not None:
                 self._Data_Scheduling.store_read_input(Read_Data_Scheduling)
                 self._Data_Retrieve.store_read_input(Read_Data_Retrieve)
                 scheduler_image_used = True

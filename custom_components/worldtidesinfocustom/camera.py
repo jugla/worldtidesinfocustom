@@ -199,7 +199,7 @@ class TidesPicture_FromFile(Camera):
         )
 
     def no_data(self):
-        return self._image == None
+        return self._image is None
 
     def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
 
@@ -223,7 +223,7 @@ class TidesPicture_FromFile(Camera):
         )
         _LOGGER.debug("Camera: entity main sensor %s", entity_id_main_sensor)
 
-        if entity_id_main_sensor == None:
+        if entity_id_main_sensor is None:
             entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
 
         async_track_state_change_event(
