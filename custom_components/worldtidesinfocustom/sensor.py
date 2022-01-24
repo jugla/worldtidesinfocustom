@@ -1474,7 +1474,7 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 self._live_position_manager.get_long_attribute(),
             )
 
-        if new_state_valid == True:
+        if new_state_valid:
             need_update = False
             if (
                 self._live_position_manager.get_current_lat() is None

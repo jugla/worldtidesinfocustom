@@ -195,7 +195,7 @@ class WordTide_Data_Coordinator:
         data = None
         datum_flag = (
             self._worldtidesinfo_server_scheduler.no_datum()
-            or init_data_fetched == True
+            or init_data_fetched
         )
         if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
             _LOGGER.debug(
@@ -274,10 +274,7 @@ class WordTide_Data_Coordinator:
         current_time = time.time()
 
         # no data has been retrieved -at least once- or too old or change ref
-        if (
-            self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
-            == True
-        ):
+        if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
             _LOGGER.debug(
                 "Init Tide data need to be requeried at: %s for %s",
                 int(current_time),
