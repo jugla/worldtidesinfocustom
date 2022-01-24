@@ -97,6 +97,9 @@ class WorldTidesInfo_server_scheduler:
 
     def update_parameter(self, worldtidesinfo_server_parameter):
         self._Server_Parameter = worldtidesinfo_server_parameter
+        # if parameter has been already reinit , no need to reinit
+        # whatch out : at init , there is no data. So it's usefull to not go
+        # in parameter = True (If doing then it will request data from server)
         if self._Data_Retrieve.init_data != None:
             self._parameter_updated = True
 

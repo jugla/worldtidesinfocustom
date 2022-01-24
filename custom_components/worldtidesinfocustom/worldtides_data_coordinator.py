@@ -237,12 +237,7 @@ class WordTide_Data_Coordinator:
                 self._worldtidesinfo_server.retrieve_tide_request_time()
             )
 
-    def _update_and_fetch_server_data(self):
-        init_data_fetched = False
-
-        self._credit_used = 0
-        current_time = time.time()
-
+    def check_if_tide_file_exist_for_init(self, current_time):
         # Init data (initialisation or refresh or retrieve from a file)
         # if self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time):
         if self._tide_cache_file_first_update:
@@ -272,7 +267,13 @@ class WordTide_Data_Coordinator:
                         self._name,
                     )
 
-        # the data read is empty (the snapshot retrieve is not useable) or too old or change ref
+    def _update_and_fetch_server_data(self):
+        init_data_fetched = False
+
+        self._credit_used = 0
+        current_time = time.time()
+
+        # no data has been retrieved -at least once- or too old or change ref
         if (
             self._worldtidesinfo_server_scheduler.init_data_to_be_fetched(current_time)
             == True

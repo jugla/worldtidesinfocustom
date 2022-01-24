@@ -1544,6 +1544,10 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
                 previous_ref_lat, previous_ref_long, previous_ref_time
             )
             # self.schedule_update_ha_state(force_refresh=True)
+
+        current_time = time.time()
+        self._worldtide_data_coordinator.check_if_tide_file_exist_for_init(current_time)
+
         self.schedule_update_ha_state(force_refresh=True)
 
     def update(self):
