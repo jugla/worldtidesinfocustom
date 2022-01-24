@@ -126,7 +126,7 @@ def current_height_state(tide_info, current_time, convert_meter_to_feet):
     """Compute state linked to current height"""
     state_value = None
     attr = current_height_attribute(tide_info, current_time, convert_meter_to_feet)
-    if attr.get("current_height") != None:
+    if attr.get("current_height") is not None:
         state_value = attr.get("current_height")
     return state_value
 
