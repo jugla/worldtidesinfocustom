@@ -84,6 +84,7 @@ sensor:
     longitude: -1.0318721687376207
 #    unit: home_assistant
 #    station_distance: 50
+#    day_tide_prediction : 1
 #    vertical_ref : LAT
 #    plot_color: 2,102,255
 #    plot_background: 255,255,255
@@ -102,6 +103,7 @@ where :
 and  optional parameter
 - unit: the unit that you have chosen in *home_assistant* or *metric* or *imperial* (to display height in meter or feet, to specify station_distance in km or miles)
 - station_distance: the radius in km/miles from location to retrieve tide station
+- day_tide_prediction: the prediction you want to display (cf. camera)
 - vertical_ref : the reference you want to use for tide (default is LAT). See [datum ref](https://www.worldtides.info/datums)
 - plot_color : the comma-separated RGB values for the tide graph foreground color
 - plot_background : the comma-separated RGB values for the tide graph background color
@@ -359,6 +361,7 @@ Each time the position is changed (distance greater than the UI parameter) the i
 | longitude         | float                                                          | **Optional** | v1.0.0    | longitude in your Home Assistant configuration | YAML  / UI                                                                                                                                                                  | Longitude (in decimal degrees) of the location for which to return the tidal data .    |
 | unit              |  enumerated                                                        | **Optional** | V2.6.0    | home_assistant | YAML / UI  | either unit are **home_assistant** , **metric** or **imperial**. *home_assistant* means that unit system will be taken from Home Assistant configuration |
 | station_distance  | positive int                                                   | **Optional** | v2.0.0    | 50km/miles | YAML / UI                                                                                                                                                                  | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
+| day_tide_prediction        | positive int                                          | **Optional** | v10.0.0    | 1 day | YAML / UI                                                                                                                                                                  | The number of day in advance, you want to see in long_plot camera         |
 | vertical_ref      | string                                                         | **Optional** | v1.0.0    | LAT | YAML  / UI                                                                                                                                                                  | string that represents the vertical reference you want to use for tide (NB: LAT = Lowest Astronomical Tide as reference). See [datum ref](https://www.worldtides.info/datums) |  
 | plot_color      | string                                                         | **Optional** | v2.4.0    | 2,102,255 | YAML  / UI                                                                                                                                                                  | string that represents the comma-separated RGB values for the tide graph foreground color |  
 | plot_background      | string                                                         | **Optional** | v2.4.0    | 255,255,255 | YAML  / UI                                                                                                                                                                   | string that represents the comma-separated RGB values for the tide graph background color |  
@@ -400,6 +403,7 @@ The platform create cameras (name given in UI/configuration.yaml).
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
 | NAME_curve_picture   |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to local time (0h-24h)     |
 | NAME_plot_picture    |  v5.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to current time with current position (time frame from -6h to +18h)    |
+| NAME_long_plot_picture    |  v10.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to current time with current position (time frame from -6h to +18h + (day_tide_prediction-1))    |
 
 
 The sensor "NAME" has a set of attributes describes hereafter
@@ -446,13 +450,13 @@ The value has the default one or the last set (either during 1rst declaration th
 |-------------------------|---------------|----------|----|-----------| ---------------------------|
 | show_on_map             | boolean       | n.a.     | No | v3.1.0    | boolean that allows to display on map the monitored tide location                                            |
 | station_distance        | positive int  | km/miles | Yes | v7.0.0    | The maximum distance (in kilometers if metric, in miles if imperial) for which to return tidal data from a tidal station instead of from the global background data (i.e. prediction from satellite data)         |
+| day_tide_prediction        | positive int  | day | Yes | v10.0.0    | The number of day in advance, you want to see in long_plot camera         |
 | plot_color              | string        | n.a.     | Yes | v7.0.0    | string that represents the comma-separated RGB values for the tide graph foreground color | 
 | plot_background         | string        | n.a.     | Yes | v7.3.0    | string that represents the comma-separated RGB values for the tide graph background color | 
 | update_sensor_distance  | positive int  | km/miles | No  | v7.3.0    | if the sensor moves by *update_sensor_distance* then the tide info are updated from server  |  
 
 ## Wish/Todo list
 - make this integration as default in home assistant
-- make an option for forecast (5 or 7 days)
 - on x-axis, allow to put time instead of relative time
 
 
