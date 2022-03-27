@@ -19,6 +19,7 @@ from . import async_get_config_id, async_get_used_api_key
 from .const import (
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
+    CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
     CONF_LIVE_LOCATION_TYPES,
     CONF_PLOT_BACKGROUND,
@@ -33,6 +34,7 @@ from .const import (
     DEFAULT_CONF_ATTRIBUTE_NAME_LONG,
     DEFAULT_CONF_LIVE_LOCATION,
     DEFAULT_CONF_UNIT,
+    DEFAULT_DAY_TIDE_PREDICTION,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -179,6 +181,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
                     ): cv.positive_int,
                     vol.Optional(
+                        CONF_DAY_TIDE_PREDICTION, default=DEFAULT_DAY_TIDE_PREDICTION
+                    ): cv.positive_int,
+                    vol.Optional(
                         CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
                     ): cv.string,
                     vol.Optional(
@@ -222,6 +227,9 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ): vol.In(CONF_VERTICAL_REF_TYPES),
                     vol.Optional(
                         CONF_STATION_DISTANCE, default=DEFAULT_STATION_DISTANCE
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_DAY_TIDE_PREDICTION, default=DEFAULT_DAY_TIDE_PREDICTION
                     ): cv.positive_int,
                     vol.Optional(
                         CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR
@@ -361,6 +369,15 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                             CONF_STATION_DISTANCE,
                             self.config_entry.data.get(
                                 CONF_STATION_DISTANCE, DEFAULT_STATION_DISTANCE
+                            ),
+                        ),
+                    ): cv.positive_int,
+                    vol.Optional(
+                        CONF_DAY_TIDE_PREDICTION,
+                        default=self.config_entry.options.get(
+                            CONF_DAY_TIDE_PREDICTION,
+                            self.config_entry.data.get(
+                                CONF_DAY_TIDE_PREDICTION, DEFAULT_DAY_TIDE_PREDICTION
                             ),
                         ),
                     ): cv.positive_int,

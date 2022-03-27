@@ -57,6 +57,7 @@ from .const import (
     ATTRIBUTION,
     CONF_ATTRIBUTE_NAME_LAT,
     CONF_ATTRIBUTE_NAME_LONG,
+    CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
@@ -66,6 +67,7 @@ from .const import (
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
     DEFAULT_CONF_UNIT,
+    DEFAULT_DAY_TIDE_PREDICTION,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -149,6 +151,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
             CONF_STATION_DISTANCE,
             default=DEFAULT_STATION_DISTANCE,
         ): cv.positive_int,
+        vol.Optional(
+            CONF_DAY_TIDE_PREDICTION,
+            default=DEFAULT_DAY_TIDE_PREDICTION,
+        ): cv.positive_int,
         vol.Optional(CONF_PLOT_COLOR, default=DEFAULT_PLOT_COLOR): cv.string,
         vol.Optional(CONF_PLOT_BACKGROUND, default=DEFAULT_PLOT_BACKGROUND): cv.string,
         vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): cv.string,
@@ -174,6 +180,7 @@ def setup_sensor(
     plot_color,
     plot_background,
     tide_station_distance,
+    tide_prediction_duration,
     unit_to_display,
     show_on_map,
     live_position_management,
@@ -208,6 +215,7 @@ def setup_sensor(
         plot_color,
         plot_background,
         tide_station_distance,
+        tide_prediction_duration,
         unit_to_display,
     )
     worldtidesinfo_data_coordinator[name] = worldtide_data_coordinator
@@ -372,6 +380,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     plot_background = config.get(CONF_PLOT_BACKGROUND)
     # worldides_request_interval = config.get(CONF_WORLDTIDES_REQUEST_INTERVAL)
     tide_station_distance = config.get(CONF_STATION_DISTANCE)
+    tide_prediction_duration = config.get(CONF_DAY_TIDE_PREDICTION)
 
     # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
@@ -399,6 +408,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         plot_color,
         plot_background,
         tide_station_distance,
+        tide_prediction_duration,
         unit_to_display,
         show_on_map,
         live_position_management,
@@ -448,6 +458,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     if config_entry.options.get(CONF_STATION_DISTANCE):
         tide_station_distance = config_entry.options.get(CONF_STATION_DISTANCE)
 
+    tide_prediction_duration = config.get(CONF_DAY_TIDE_PREDICTION)
+    if config_entry.options.get(CONF_DAY_TIDE_PREDICTION):
+        tide_prediction_duration = config_entry.options.get(CONF_DAY_TIDE_PREDICTION)
+
+
     # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
         unit_to_display = IMPERIAL_CONF_UNIT
@@ -482,6 +497,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         plot_color,
         plot_background,
         tide_station_distance,
+        tide_prediction_duration,
         unit_to_display,
         show_on_map,
         live_position_management,

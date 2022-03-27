@@ -9,14 +9,19 @@ from pyworldtidesinfo.worldtidesinfo_server import give_info_from_raw_data
 
 from .sensor_service import convert_to_perform
 
+# duration type
+LONG_DURATION = "Long"
+NORMAL_DURATION = "Normal"
 
 class Plot_Manager:
     """Class to manage MatPlotLib"""
 
-    def __init__(self, name, unit_to_display, filename):
+    def __init__(self, name, duration_type, unit_to_display, tide_prediction_duration, filename):
         ### for trace
-        self._name = name
+        self._name = name + duration_type
+        self._duration_type = duration_type
         self._unit_to_display = unit_to_display
+        self._tide_prediction_duration = tide_prediction_duration
         self._filename = filename
 
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
@@ -32,12 +37,22 @@ class Plot_Manager:
         tide_info = give_info_from_raw_data(data)
 
         # Retrieve plot within time frame
-        # draw below 24h : from -6h to 18h
+        # draw below 24h : from -6h to 18h (for one day)
+        # otherwise : from -6h to 18h (+ time of prediction - 1)
         epoch_frame_min = current_time - 6 * 60 * 60
-        epoch_frame_max = current_time + 3 * 6 * 60 * 60
+        epoch_frame_max = current_time + 3 * 6 * 60 * 60 + ((self._tide_prediction_duration - 1) * 24 * 60 * 60)
         height_data = tide_info.give_tide_prediction_within_time_frame(
             epoch_frame_min, epoch_frame_max
         )
+
+        if self._duration_type == NORMAL_DURATION:
+            # 1 hour
+            time_scale = 60 * 60
+            time_scale_string = "hour"
+        else:
+            # 1 day
+            time_scale = 60 * 60 * 24
+            time_scale_string = "day"
 
         height_value = []
         height_time = []
@@ -49,7 +64,7 @@ class Plot_Manager:
 
             height_current_time = (height_data.get("height_epoch"))[height_index]
             height_relative_current_time = (
-                (height_current_time - current_time) / 60 / 60
+                (height_current_time - current_time) / time_scale
             )
             height_time.append(height_relative_current_time)
 
@@ -62,7 +77,7 @@ class Plot_Manager:
 
         current_height_time_sample = current_height_data.get("current_height_epoch")
         height_relative_current_time_sample = (
-            (current_height_time_sample - current_time) / 60 / 60
+            (current_height_time_sample - current_time) / time_scale
         )
         current_height_time = [height_relative_current_time_sample]
 
@@ -78,7 +93,7 @@ class Plot_Manager:
         # label on axis
         ax.set_ylabel("height " + self._unit_to_display)
         current_time_string = time.strftime("%H:%M", time.localtime(current_time))
-        ax.set_xlabel("time in hour respect to " + current_time_string)
+        ax.set_xlabel("time in " + time_scale_string + " respect to " + current_time_string)
         # grid + filling
         ax.grid()
         ax.fill_between(height_time, 0, height_value, color="lightblue")

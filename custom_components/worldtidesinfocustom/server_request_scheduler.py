@@ -17,7 +17,8 @@ DEFAULT_WORLDTIDES_REQUEST_INTERVAL = 90000
 # snapshot 2 : add previous data
 # snapshot 3 : add last request time
 # snapshot 4 : add last init request time
-snapshot_version = 4
+# snapshot 5 : in parameter add prediction time
+snapshot_version = 5
 
 # Python library
 import logging

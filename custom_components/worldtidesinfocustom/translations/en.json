@@ -43,6 +43,7 @@
           "longitude": "location longitude",
           "vertical_ref" : "vertical reference",
           "station_distance" : "tidal station distance",
+          "day_tide_prediction" : "tide prediction duration in day",
           "plot_color": "plot curve color in comma-separated RGB values",
           "plot_background": "plot curve background color in comma-separated RGB values",
           "unit" : "metric HA imperial",
@@ -68,6 +69,7 @@
         "data": {
           "show_on_map": "Show monitored tides on the map",
           "station_distance" : "tidal station distance",
+          "day_tide_prediction" : "tide prediction duration in day",
           "plot_color": "plot curve color in comma-separated RGB values",
           "plot_background": "plot curve background color in comma-separated RGB values",
           "update_sensor_distance": "distance that sensor shall moved to upate reference tide location"

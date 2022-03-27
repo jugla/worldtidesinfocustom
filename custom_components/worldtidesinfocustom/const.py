@@ -50,6 +50,10 @@ CONF_VERTICAL_REF_TYPES = [
 DEFAULT_STATION_DISTANCE = 50
 CONF_STATION_DISTANCE = "station_distance"
 
+# tide prediction
+DEFAULT_DAY_TIDE_PREDICTION = 1
+CONF_DAY_TIDE_PREDICTION = "day_tide_prediction"
+
 # plot color
 DEFAULT_PLOT_COLOR = "2,102,255"
 CONF_PLOT_COLOR = "plot_color"

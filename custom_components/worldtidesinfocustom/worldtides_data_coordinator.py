@@ -33,7 +33,7 @@ from pyworldtidesinfo.worldtidesinfo_server import (
 # Component library
 from . import give_persistent_filename
 from .const import IMPERIAL_CONF_UNIT, WWW_PATH
-from .plot_mngt import Plot_Manager
+from .plot_mngt import LONG_DURATION, NORMAL_DURATION, Plot_Manager
 from .server_request_scheduler import WorldTidesInfo_server_scheduler
 from .storage_mngt import File_Data_Cache, File_Picture
 
@@ -52,6 +52,7 @@ class WordTide_Data_Coordinator:
         plot_color,
         plot_background,
         tide_station_distance,
+        tide_prediction_duration,
         unit_to_display,
     ):
         ### for trace
@@ -88,8 +89,12 @@ class WordTide_Data_Coordinator:
         self._tide_cache_file_first_update = True
 
         ### Self
+        one_day_prediction = 1
         self._plot_manager = Plot_Manager(
-            name, unit_to_display, filenames.get("plot_filename")
+            name, NORMAL_DURATION, unit_to_display, one_day_prediction, filenames.get("plot_filename")
+        )
+        self._long_plot_manager = Plot_Manager(
+            name, LONG_DURATION, unit_to_display, tide_prediction_duration, filenames.get("plot_long_prediction_filename")
         )
 
         # unit used for display, and convert tide station distance
@@ -110,6 +115,7 @@ class WordTide_Data_Coordinator:
             lon,
             vertical_ref,
             server_tide_station_distance,
+            tide_prediction_duration,
             plot_color,
             plot_background,
             unit_curve_picture,
@@ -305,6 +311,7 @@ class WordTide_Data_Coordinator:
         # create a plot
         data = self._worldtidesinfo_server_scheduler._Data_Retrieve.data
         self._plot_manager.compute_new_plot(data, current_time)
+        self._long_plot_manager.compute_new_plot(data, current_time)
 
         return True
 

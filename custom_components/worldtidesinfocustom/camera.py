@@ -95,10 +95,14 @@ def setup_camera(
     )
 
     plot_picture = TidesPlotPicture(
-        hass, name, unique_id, filename.get("plot_filename")
+        hass, name, "", unique_id, filename.get("plot_filename")
     )
 
-    return [curve_picture, plot_picture]
+    long_plot_picture = TidesPlotPicture(
+        hass, name, "_long" , unique_id, filename.get("plot_long_prediction_filename")
+    )
+
+    return [curve_picture, plot_picture, long_plot_picture]
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -320,11 +324,23 @@ class TidesCurvePicture(TidesPicture_FromFile):
 class TidesPlotPicture(TidesPicture_FromFile):
     """Plot Picture."""
 
+    def __init__(
+        self,
+        hass,
+        name,
+        suffix_name,
+        unique_id,
+        image_filename,
+    ):
+        """Initialize Curve Picture."""
+        super().__init__(hass, name, unique_id, image_filename)
+        self._suffix_name = suffix_name
+
     @property
     def name(self):
         """Return the name."""
-        return self._name + CAMERA_PLOT_PICTURE_SUFFIX
+        return self._name + self._suffix_name + CAMERA_PLOT_PICTURE_SUFFIX
 
     @property
     def unique_id(self):
-        return self._unique_id + CAMERA_PLOT_PICTURE_SUFFIX
+        return self._unique_id + self._suffix_name + CAMERA_PLOT_PICTURE_SUFFIX

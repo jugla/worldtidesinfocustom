@@ -30,11 +30,13 @@ from .const import (
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
+    CONF_DAY_TIDE_PREDICTION,
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
     DEFAULT_CONF_LIVE_LOCATION,
     DEFAULT_CONF_UNIT,
+    DEFAULT_DAY_TIDE_PREDICTION,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -134,6 +136,8 @@ def _standardize_config_entry(hass, config_entry):
         entry_updates["data"][CONF_VERTICAL_REF] = DEFAULT_VERTICAL_REF
     if not config_entry.data.get(CONF_STATION_DISTANCE):
         entry_updates["data"][CONF_STATION_DISTANCE] = DEFAULT_STATION_DISTANCE
+    if not config_entry.data.get(CONF_DAY_TIDE_PREDICTION):
+        entry_updates["data"][CONF_DAY_TIDE_PREDICTION] = DEFAULT_DAY_TIDE_PREDICTION
     if not config_entry.data.get(CONF_PLOT_COLOR):
         entry_updates["data"][CONF_PLOT_COLOR] = DEFAULT_PLOT_COLOR
     if not config_entry.data.get(CONF_PLOT_BACKGROUND):
@@ -142,6 +146,7 @@ def _standardize_config_entry(hass, config_entry):
         entry_updates["data"][CONF_UNIT] = DEFAULT_CONF_UNIT
     if not config_entry.data.get(CONF_LIVE_LOCATION):
         entry_updates["data"][CONF_LIVE_LOCATION] = DEFAULT_CONF_LIVE_LOCATION
+
 
     if not entry_updates:
         # Do no thing !
@@ -205,6 +210,7 @@ def give_persistent_filename(hass, name):
     """give persistent data filename"""
     curve_filename = hass.config.path(WWW_PATH, name + ".png")
     plot_filename = hass.config.path(WWW_PATH, name + "_plot.png")
+    plot_long_prediction_filename = hass.config.path(WWW_PATH, name + "_plot_long.png")
 
     persistent_data_filename = hass.config.path(
         STORAGE_DIR, WORLD_TIDES_INFO_CUSTOM_DOMAIN + "." + name + ".ser"
@@ -213,6 +219,7 @@ def give_persistent_filename(hass, name):
     return {
         "curve_filename": curve_filename,
         "plot_filename": plot_filename,
+        "plot_long_prediction_filename" : plot_long_prediction_filename,
         "persistent_data_filename": persistent_data_filename,
     }
 
@@ -232,6 +239,8 @@ async def async_remove_entry(hass, config_entry):
     ## picture compute with matplotlib
     if os.path.isfile(filenames.get("plot_filename")):
         os.remove(filenames.get("plot_filename"))
+    if os.path.isfile(filenames.get("plot_long_prediction_filename")):
+        os.remove(filenames.get("plot_long_prediction_filename"))
     ## persistent data
     if os.path.isfile(filenames.get("persistent_data_filename")):
         os.remove(filenames.get("persistent_data_filename"))
