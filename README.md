@@ -17,7 +17,7 @@ This component allows to :
 
 ==> the monitored location is either static, either given by GPS data (tracker)
 
-WorldTidesInfo uses credit :
+WorldTidesInfo uses credit. Hereafter example with 1 day prediction :
 - In static, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits). NB: At init 5 credits.
 
 - In motion, refresh rate (Scan Interval) is every 15minutes with refresh of data from server once a day (3 credits), or if the position has moved more than a user parameter defined in UI (the new position information are then request : 5 credits)
