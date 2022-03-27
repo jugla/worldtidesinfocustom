@@ -452,6 +452,8 @@ The value has the default one or the last set (either during 1rst declaration th
 
 ## Wish/Todo list
 - make this integration as default in home assistant
+- make an option for forecast (5 or 7 days)
+- on x-axis, allow to put time instead of relative time
 
 
 ## Thanks to
