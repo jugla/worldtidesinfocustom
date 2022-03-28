@@ -131,13 +131,13 @@ class Plot_Manager:
         ax.plot(next_tide_height_relative_time_sample, next_tide_height_value, color="black", marker="o", linestyle="none")
         # label on axis
         ax.set_ylabel("height " + self._unit_to_display)
-        current_time_string = time.strftime("%H:%M", time.localtime(current_time))
+        current_time_string = time.strftime("%a %H:%M", time.localtime(current_time))
         ax.set_xlabel("time in " + self._time_scale_string + " respect to " + current_time_string)
         # grid + filling
         ax.grid()
         ax.fill_between(height_time, 0, height_value, color="lightblue")
         # annotate the current position
-        label = "{:.1f} @ {}".format(current_height_value[0], current_time_string)
+        label = "{:.2f}\n@ {}".format(current_height_value[0], current_time_string)
         ax.annotate(
             label,  # this is the text
             (
@@ -145,20 +145,20 @@ class Plot_Manager:
                 current_height_value[0],
             ),  # this is the point to label
             textcoords="offset points",  # how to position the text
-            xytext=(0, 10),  # distance from text to points (x,y)
+            xytext=(0, 15),  # distance from text to points (x,y)
             ha="center",  # horizontal alignment can be left, right or center
             color="red",
         )  # color
         # annotate the next tide
         for extrema_index in range(len(next_tide_height_value)):
             next_tide_time_string = time.strftime(
-                "%H:%M",
+                "%a %H:%M",
                 time.localtime(
                     (next_tide_height_relative_time_sample[extrema_index] * self._time_scale)
                     + current_time
                 )
             )
-            label = "{:.1f} @ {}".format(
+            label = "{:.2f}\n@ {}".format(
                 next_tide_height_value[extrema_index], next_tide_time_string
             )
             ax.annotate(
@@ -168,7 +168,7 @@ class Plot_Manager:
                     next_tide_height_value[extrema_index],
                 ),  # this is the point to label
                 textcoords="offset points",  # how to position the text
-                xytext=(0, -15),  # distance from text to points (x,y)
+                xytext=(0, -26),  # distance from text to points (x,y)
                 ha="center",  # horizontal alignment can be left, right or center
                 color="black",
             )  # color
