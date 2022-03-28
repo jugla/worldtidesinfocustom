@@ -17,7 +17,9 @@ NORMAL_DURATION = "Normal"
 class Plot_Manager:
     """Class to manage MatPlotLib"""
 
-    def __init__(self, name, duration_type, unit_to_display, tide_prediction_duration, filename):
+    def __init__(
+        self, name, duration_type, unit_to_display, tide_prediction_duration, filename
+    ):
         ### for trace
         self._name = name + duration_type
         self._duration_type = duration_type
@@ -38,8 +40,6 @@ class Plot_Manager:
             # 1 day
             self._time_scale = 60 * 60 * 24
             self._time_scale_string = "day"
-
-
 
     def convert_to_unit_to_display(self, heigh_array):
         heigh_value = []
@@ -66,9 +66,11 @@ class Plot_Manager:
         # draw below 24h : from -6h to 18h (for one day)
         # otherwise : from -6h to 18h (+ time of prediction - 1)
         epoch_frame_min = current_time - 6 * 60 * 60
-        epoch_frame_max = current_time + 3 * 6 * 60 * 60 + ((self._tide_prediction_duration - 1) * 24 * 60 * 60)
-
-
+        epoch_frame_max = (
+            current_time
+            + 3 * 6 * 60 * 60
+            + ((self._tide_prediction_duration - 1) * 24 * 60 * 60)
+        )
 
         # Retrieve heigh within time frame
         height_data = tide_info.give_tide_prediction_within_time_frame(
@@ -83,19 +85,18 @@ class Plot_Manager:
         # current time and height
         current_height_data = tide_info.give_current_height_in_UTC(current_time)
         current_height_value = self.convert_to_unit_to_display(
-            [ current_height_data.get("current_height") ]
+            [current_height_data.get("current_height")]
         )
         current_height_time = self.convert_to_relative_time(
-            [ current_height_data.get("current_height_epoch") ], current_time
+            [current_height_data.get("current_height_epoch")], current_time
         )
 
         # next tide extrema low/high
         next_high_low_tide_data = tide_info.give_next_high_low_tide_in_UTC(current_time)
 
-        if (
-            next_high_low_tide_data.get("high_tide_time_epoch")
-            > next_high_low_tide_data.get("low_tide_time_epoch")
-            ):
+        if next_high_low_tide_data.get(
+            "high_tide_time_epoch"
+        ) > next_high_low_tide_data.get("low_tide_time_epoch"):
             next_tide_height_data = [
                 next_high_low_tide_data.get("low_tide_height"),
                 next_high_low_tide_data.get("high_tide_height"),
@@ -128,11 +129,19 @@ class Plot_Manager:
         # plot the current position
         ax.plot(current_height_time, current_height_value, color="red", marker="o")
         # plot the next tide
-        ax.plot(next_tide_height_relative_time_sample, next_tide_height_value, color="black", marker="o", linestyle="none")
+        ax.plot(
+            next_tide_height_relative_time_sample,
+            next_tide_height_value,
+            color="black",
+            marker="o",
+            linestyle="none",
+        )
         # label on axis
         ax.set_ylabel("height " + self._unit_to_display)
         current_time_string = time.strftime("%a %H:%M", time.localtime(current_time))
-        ax.set_xlabel("time in " + self._time_scale_string + " respect to " + current_time_string)
+        ax.set_xlabel(
+            "time in " + self._time_scale_string + " respect to " + current_time_string
+        )
         # grid + filling
         ax.grid()
         ax.fill_between(height_time, 0, height_value, color="lightblue")
@@ -154,9 +163,12 @@ class Plot_Manager:
             next_tide_time_string = time.strftime(
                 "%a %H:%M",
                 time.localtime(
-                    (next_tide_height_relative_time_sample[extrema_index] * self._time_scale)
+                    (
+                        next_tide_height_relative_time_sample[extrema_index]
+                        * self._time_scale
+                    )
                     + current_time
-                )
+                ),
             )
             label = "{:.2f}\n@ {}".format(
                 next_tide_height_value[extrema_index], next_tide_time_string

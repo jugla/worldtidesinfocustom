@@ -26,11 +26,11 @@ from homeassistant.helpers.update_coordinator import (
 
 # internal library
 from .const import (
+    CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
-    CONF_DAY_TIDE_PREDICTION,
     CONF_UNIT,
     CONF_VERTICAL_REF,
     DATA_COORDINATOR,
@@ -147,7 +147,6 @@ def _standardize_config_entry(hass, config_entry):
     if not config_entry.data.get(CONF_LIVE_LOCATION):
         entry_updates["data"][CONF_LIVE_LOCATION] = DEFAULT_CONF_LIVE_LOCATION
 
-
     if not entry_updates:
         # Do no thing !
         return
@@ -219,7 +218,7 @@ def give_persistent_filename(hass, name):
     return {
         "curve_filename": curve_filename,
         "plot_filename": plot_filename,
-        "plot_long_prediction_filename" : plot_long_prediction_filename,
+        "plot_long_prediction_filename": plot_long_prediction_filename,
         "persistent_data_filename": persistent_data_filename,
     }
 
