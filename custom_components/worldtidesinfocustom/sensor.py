@@ -462,7 +462,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     if config_entry.options.get(CONF_DAY_TIDE_PREDICTION):
         tide_prediction_duration = config_entry.options.get(CONF_DAY_TIDE_PREDICTION)
 
-
     # what is the unit used
     if config.get(CONF_UNIT) == HA_CONF_UNIT and hass.config.units == IMPERIAL_SYSTEM:
         unit_to_display = IMPERIAL_CONF_UNIT
