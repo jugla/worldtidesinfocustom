@@ -96,7 +96,9 @@ class Plot_Manager:
             epoch_frame_min, epoch_frame_max
         )
 
-        extrema_value = self.convert_to_unit_to_display(extrema_data.get("extrema_value"))
+        extrema_value = self.convert_to_unit_to_display(
+            extrema_data.get("extrema_value")
+        )
         extrema_time = self.convert_to_relative_time(
             extrema_data.get("extrema_epoch"), current_time
         )
@@ -145,20 +147,16 @@ class Plot_Manager:
             extrema_time_string = time.strftime(
                 "%a %H:%M",
                 time.localtime(
-                    (
-                        extrema_time[extrema_index]
-                        * self._time_scale
-                    )
-                    + current_time
+                    (extrema_time[extrema_index] * self._time_scale) + current_time
                 ),
             )
             label = "{:.2f}\n@ {}".format(
                 extrema_value[extrema_index], extrema_time_string
             )
-            if (extrema_index %4) == 0 or (extrema_index %4) == 1:
-               y_label_offset = -28
+            if (extrema_index % 4) == 0 or (extrema_index % 4) == 1:
+                y_label_offset = -28
             else:
-               y_label_offset = 16
+                y_label_offset = 16
             ax.annotate(
                 label,  # this is the text
                 (
