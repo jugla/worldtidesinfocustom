@@ -100,7 +100,7 @@ class Plot_Manager:
                 next_high_low_tide_data.get("low_tide_height"),
                 next_high_low_tide_data.get("high_tide_height"),
             ]
-            next_tide_height_relative_time_sample = [
+            next_tide_height_time_sample = [
                 next_high_low_tide_data.get("low_tide_time_epoch"),
                 next_high_low_tide_data.get("high_tide_time_epoch"),
             ]
