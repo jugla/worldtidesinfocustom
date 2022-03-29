@@ -91,32 +91,14 @@ class Plot_Manager:
             [current_height_data.get("current_height_epoch")], current_time
         )
 
-        # next tide extrema low/high
-        next_high_low_tide_data = tide_info.give_next_high_low_tide_in_UTC(current_time)
+        # Retrieve extrema within time frame
+        extrema_data = tide_info.give_tide_extrema_within_time_frame(
+            epoch_frame_min, epoch_frame_max
+        )
 
-        if next_high_low_tide_data.get(
-            "high_tide_time_epoch"
-        ) > next_high_low_tide_data.get("low_tide_time_epoch"):
-            next_tide_height_data = [
-                next_high_low_tide_data.get("low_tide_height"),
-                next_high_low_tide_data.get("high_tide_height"),
-            ]
-            next_tide_height_time_sample = [
-                next_high_low_tide_data.get("low_tide_time_epoch"),
-                next_high_low_tide_data.get("high_tide_time_epoch"),
-            ]
-        else:
-            next_tide_height_data = [
-                next_high_low_tide_data.get("high_tide_height"),
-                next_high_low_tide_data.get("low_tide_height"),
-            ]
-            next_tide_height_time_sample = [
-                next_high_low_tide_data.get("high_tide_time_epoch"),
-                next_high_low_tide_data.get("low_tide_time_epoch"),
-            ]
-        next_tide_height_value = self.convert_to_unit_to_display(next_tide_height_data)
-        next_tide_height_relative_time_sample = self.convert_to_relative_time(
-            next_tide_height_time_sample, current_time
+        extrema_value = self.convert_to_unit_to_display(extrema_data.get("extrema_value"))
+        extrema_time = self.convert_to_relative_time(
+            extrema_data.get("extrema_epoch"), current_time
         )
 
         ### Perform plotting
@@ -130,8 +112,8 @@ class Plot_Manager:
         ax.plot(current_height_time, current_height_value, color="red", marker="o")
         # plot the next tide
         ax.plot(
-            next_tide_height_relative_time_sample,
-            next_tide_height_value,
+            extrema_time,
+            extrema_value,
             color="black",
             marker="o",
             linestyle="none",
@@ -159,28 +141,32 @@ class Plot_Manager:
             color="red",
         )  # color
         # annotate the next tide
-        for extrema_index in range(len(next_tide_height_value)):
-            next_tide_time_string = time.strftime(
+        for extrema_index in range(len(extrema_value)):
+            extrema_time_string = time.strftime(
                 "%a %H:%M",
                 time.localtime(
                     (
-                        next_tide_height_relative_time_sample[extrema_index]
+                        extrema_time[extrema_index]
                         * self._time_scale
                     )
                     + current_time
                 ),
             )
             label = "{:.2f}\n@ {}".format(
-                next_tide_height_value[extrema_index], next_tide_time_string
+                extrema_value[extrema_index], extrema_time_string
             )
+            if (extrema_index %4) == 0 or (extrema_index %4) == 1:
+               y_label_offset = -28
+            else:
+               y_label_offset = 16
             ax.annotate(
                 label,  # this is the text
                 (
-                    next_tide_height_relative_time_sample[extrema_index],
-                    next_tide_height_value[extrema_index],
+                    extrema_time[extrema_index],
+                    extrema_value[extrema_index],
                 ),  # this is the point to label
                 textcoords="offset points",  # how to position the text
-                xytext=(0, -26),  # distance from text to points (x,y)
+                xytext=(0, y_label_offset),  # distance from text to points (x,y)
                 ha="center",  # horizontal alignment can be left, right or center
                 color="black",
             )  # color
