@@ -91,10 +91,18 @@ class WordTide_Data_Coordinator:
         ### Self
         one_day_prediction = 1
         self._plot_manager = Plot_Manager(
-            name, NORMAL_DURATION, unit_to_display, one_day_prediction, filenames.get("plot_filename")
+            name,
+            NORMAL_DURATION,
+            unit_to_display,
+            one_day_prediction,
+            filenames.get("plot_filename"),
         )
         self._long_plot_manager = Plot_Manager(
-            name, LONG_DURATION, unit_to_display, tide_prediction_duration, filenames.get("plot_long_prediction_filename")
+            name,
+            LONG_DURATION,
+            unit_to_display,
+            tide_prediction_duration,
+            filenames.get("plot_long_prediction_filename"),
         )
 
         # unit used for display, and convert tide station distance
@@ -200,8 +208,7 @@ class WordTide_Data_Coordinator:
         """HEIGTH : Get the latest data from WorldTidesInfo."""
         data = None
         datum_flag = (
-            self._worldtidesinfo_server_scheduler.no_datum()
-            or init_data_fetched
+            self._worldtidesinfo_server_scheduler.no_datum() or init_data_fetched
         )
         if self._worldtidesinfo_server.retrieve_tide_height_over_one_day(datum_flag):
             _LOGGER.debug(

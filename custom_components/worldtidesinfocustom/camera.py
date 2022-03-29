@@ -99,7 +99,7 @@ def setup_camera(
     )
 
     long_plot_picture = TidesPlotPicture(
-        hass, name, "_long" , unique_id, filename.get("plot_long_prediction_filename")
+        hass, name, "_long", unique_id, filename.get("plot_long_prediction_filename")
     )
 
     return [curve_picture, plot_picture, long_plot_picture]
