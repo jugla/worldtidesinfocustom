@@ -101,20 +101,24 @@ class Plot_Manager:
             extrema_data.get("extrema_epoch"), current_time
         )
 
+        # color to draw
+        extrema_color = "firebrick"
+        current_height_color = "black"
+
         ### Perform plotting
         # name is used as an id --> all coordinators works in //
         fig = plt.figure(self._name)
         fig.clf()
         ax = fig.add_subplot(1, 1, 1)
         # trace the predict tides
-        ax.plot(height_time, height_value, color="darkblue")
+        ax.plot(height_time, height_value, color="cornflowerblue")
         # plot the current position
-        ax.plot(current_height_time, current_height_value, color="red", marker="o")
+        ax.plot(current_height_time, current_height_value, color=current_height_color, marker="o")
         # plot the next tide
         ax.plot(
             extrema_time,
             extrema_value,
-            color="black",
+            color=extrema_color,
             marker="o",
             linestyle="none",
         )
@@ -138,7 +142,7 @@ class Plot_Manager:
             textcoords="offset points",  # how to position the text
             xytext=(0, 15),  # distance from text to points (x,y)
             ha="center",  # horizontal alignment can be left, right or center
-            color="red",
+            color=current_height_color,
         )  # color
         # annotate the next tide
         for extrema_index in range(len(extrema_value)):
@@ -168,7 +172,7 @@ class Plot_Manager:
                 textcoords="offset points",  # how to position the text
                 xytext=(0, y_label_offset),  # distance from text to points (x,y)
                 ha="center",  # horizontal alignment can be left, right or center
-                color="black",
+                color=extrema_color,
             )  # color
 
         # save the figure
