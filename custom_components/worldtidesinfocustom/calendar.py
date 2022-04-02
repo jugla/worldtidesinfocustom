@@ -288,8 +288,8 @@ class TidesCalendarData:
                 + " "
                 + str(round(tide_height * self._convert_meter_to_feet, ROUND_HEIGTH))
                 + self._measurement_unit,
-                "start": {"date": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-                "end": {"date": tide_epoch.strftime("%Y-%m-%d %H:%M")},
+                "start": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
+                "end": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
                 "allDay": False,
             }
             events.append(event)
@@ -298,7 +298,7 @@ class TidesCalendarData:
 
     async def async_update(self, entity):
         """Get the latest data."""
-        self.event = None
+        #self.event = None
 
         worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
         if worldtide_data_coordinator is None:
@@ -343,8 +343,8 @@ class TidesCalendarData:
             + " "
             + str(round(tide_height * self._convert_meter_to_feet, ROUND_HEIGTH))
             + self._measurement_unit,
-            "start": {"date": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-            "end": {"date": tide_epoch.strftime("%Y-%m-%d %H:%M")},
+            "start": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
+            "end": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
             "allDay": False,
         }
 
