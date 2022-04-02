@@ -331,6 +331,12 @@ Hereafter an example of the default map under lovelace UI
   <img src="./doc/picture/MAPtide.jpg" alt="Size Limit CLI" width="400">
 </p>
 
+Hereafter an example of the prediction within Calendar
+
+<p align="center">
+  <img src="./doc/picture/TideCalendar.jpg" alt="Size Limit CLI" width="1000">
+</p>
+
 Hereafter an example of update thanks to a boat tracker :
 - blue : a boat tracker
 - purple : the difference place where tide info has been taken
