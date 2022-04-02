@@ -207,7 +207,7 @@ class TidesCalendarDevice(CalendarEventDevice):
         entity_id_main_sensor = registry.async_get_entity_id(
             "sensor", DOMAIN, self._unique_id + SENSOR_NEXT_TIDE_SUFFIX
         )
-        _LOGGER.debug("Camera: entity main sensor %s", entity_id_main_sensor)
+        _LOGGER.debug("Calendar: entity main sensor %s", entity_id_main_sensor)
 
         if entity_id_main_sensor is None:
             entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
@@ -246,7 +246,7 @@ class TidesCalendarDevice(CalendarEventDevice):
 
     async def async_get_events(self, hass, start_date, end_date):
         """Get all events in a specific time frame."""
-        return await self._event_data.async_get_events(hass, self._main_entity, start_date, end_date)
+        return await self._event_data.async_get_events( self._main_entity, start_date, end_date)
 
 
 class TidesCalendarData:
@@ -277,7 +277,7 @@ class TidesCalendarData:
 
 
 
-    async def async_get_events(self, hass, entity, start_date, end_date):
+    async def async_get_events(self, entity, start_date, end_date):
         """Get all tasks in a specific time frame."""
         events = []
 
