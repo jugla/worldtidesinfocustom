@@ -15,6 +15,7 @@ This component allows to :
 - give tide tendancy, amplitude
 - display location on default map
 - display tide prediction over user defined period
+- insert tide extrema in calendar
 
 ==> the monitored location is either static, either given by GPS data (tracker)
 
@@ -405,6 +406,11 @@ The platform create cameras (name given in UI/configuration.yaml).
 | NAME_curve_picture   |  v4.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to local time (0h-24h)     |
 | NAME_plot_picture    |  v5.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to current time with current position (time frame from -6h to +18h)    |
 | NAME_long_plot_picture    |  v10.0.0 |  string | state  | give the state of camera (idle) and the *image* : tide prediction figure respect to current time with current position (time frame from -6h to +18h + (day_tide_prediction-1))    |
+
+The platform create events for calendar (name given in UI/configuration.yaml). 
+| Name              | Supported | format | unit | Description                                                                                                   |
+|-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
+| NAME              |  v11.0.0 |  string | m/ft  | give time and height for extrema (prediction duration is based on day_tide_prediction)  |
 
 
 The sensor "NAME" has a set of attributes describes hereafter
