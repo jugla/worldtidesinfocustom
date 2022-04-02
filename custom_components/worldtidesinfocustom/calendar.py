@@ -226,7 +226,7 @@ class TidesCalendarDevice(CalendarEventDevice):
 
     async def async_get_events(self, hass, start_date, end_date):
         """Get all events in a specific time frame."""
-        return await self._event_data.async_get_events( self._main_entity, start_date, end_date)
+        return await self._event_data.async_get_events(self._main_entity, start_date, end_date)
 
 
 class TidesCalendarData:
@@ -255,7 +255,7 @@ class TidesCalendarData:
         else:
             self._measurement_unit = "m"
 
-    async def async_get_events(self, hass, entity, start_date, end_date):
+    async def async_get_events(self, entity, start_date, end_date):
         """Get all tasks in a specific time frame."""
         events = []
 
