@@ -115,7 +115,12 @@ class Plot_Manager:
         # trace the predict tides
         ax.plot(height_time, height_value, color="cornflowerblue")
         # plot the current position
-        ax.plot(current_height_time, current_height_value, color=current_height_color, marker="o")
+        ax.plot(
+            current_height_time,
+            current_height_value,
+            color=current_height_color,
+            marker="o",
+        )
         # plot the next tide
         ax.plot(
             extrema_time,
