@@ -15,6 +15,7 @@ This component allows to :
 - give tide tendancy, amplitude
 - display location on default map
 - display tide prediction over user defined period
+- add calendar to monitor tide extrema (over user defined period)
 
 ==> the monitored location is either static, either given by GPS data (tracker)
 
