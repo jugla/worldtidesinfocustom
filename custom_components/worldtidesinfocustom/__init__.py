@@ -49,7 +49,7 @@ from .const import (
     WWW_PATH,
 )
 
-PLATFORMS = ["sensor", "camera"]
+PLATFORMS = ["sensor", "camera", "calendar"]
 
 DATA_LISTENER = "listener"
 
