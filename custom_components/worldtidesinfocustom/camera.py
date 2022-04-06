@@ -268,12 +268,12 @@ class TidesPicture_FromFile(Camera):
             self._last_requested_date = current_time
             self._generated_at = time.ctime(os.path.getmtime(self._image_filename))
 
-    def camera_image(self):
+    def camera_image(self, width, height):
         """Return image response."""
         _LOGGER.debug("Camera : Sync Image Tides sensor %s", self._name)
         return self._image
 
-    async def async_camera_image(self):
+    async def async_camera_image(self, width, height):
         """Fetch new image."""
         _LOGGER.debug("Camera : Async Image Tides sensor %s", self._name)
         return self._image
