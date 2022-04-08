@@ -173,7 +173,7 @@ camera:
 ```
 </details>
 
-## Lovelace example
+## Dashboard example
 
 
 Hereafter the display of attributes within lovelace UI
