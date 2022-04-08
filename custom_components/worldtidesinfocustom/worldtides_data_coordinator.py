@@ -54,6 +54,7 @@ class WordTide_Data_Coordinator:
         tide_station_distance,
         tide_prediction_duration,
         unit_to_display,
+        mat_plot_transparent_background,
     ):
         ### for trace
         self._name = name
@@ -96,6 +97,7 @@ class WordTide_Data_Coordinator:
             unit_to_display,
             one_day_prediction,
             filenames.get("plot_filename"),
+            mat_plot_transparent_background,
         )
         self._long_plot_manager = Plot_Manager(
             name,
@@ -103,6 +105,7 @@ class WordTide_Data_Coordinator:
             unit_to_display,
             tide_prediction_duration,
             filenames.get("plot_long_prediction_filename"),
+            mat_plot_transparent_background,
         )
 
         # unit used for display, and convert tide station distance

@@ -59,6 +59,7 @@ from .const import (
     CONF_ATTRIBUTE_NAME_LONG,
     CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
+    CONF_MAT_PLOT_TRANS_BCKGROUND,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_SENSOR_UPDATE_DISTANCE,
@@ -68,6 +69,7 @@ from .const import (
     DATA_COORDINATOR,
     DEFAULT_CONF_UNIT,
     DEFAULT_DAY_TIDE_PREDICTION,
+    DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -182,6 +184,7 @@ def setup_sensor(
     tide_station_distance,
     tide_prediction_duration,
     unit_to_display,
+    mat_plot_transparent_background,
     show_on_map,
     live_position_management,
     live_position_sensor_update_distance,
@@ -217,6 +220,7 @@ def setup_sensor(
         tide_station_distance,
         tide_prediction_duration,
         unit_to_display,
+        mat_plot_transparent_background,
     )
     worldtidesinfo_data_coordinator[name] = worldtide_data_coordinator
 
@@ -390,6 +394,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     else:
         unit_to_display = METRIC_CONF_UNIT
 
+    mat_plot_transparent_background = DEFAULT_MAT_PLOT_TRANS_BCKGROUND
+
     show_on_map = True
 
     live_position_management = STATIC_CONF
@@ -410,6 +416,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         tide_station_distance,
         tide_prediction_duration,
         unit_to_display,
+        mat_plot_transparent_background,
         show_on_map,
         live_position_management,
         live_position_sensor_update_distance,
@@ -470,6 +477,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     else:
         unit_to_display = METRIC_CONF_UNIT
 
+    mat_plot_transparent_background = config.get(CONF_MAT_PLOT_TRANS_BCKGROUND)
+    if config_entry.options.get(CONF_MAT_PLOT_TRANS_BCKGROUND):
+        mat_plot_transparent_background = config_entry.options.get(
+            CONF_MAT_PLOT_TRANS_BCKGROUND
+        )
+
     if config_entry.options[CONF_SHOW_ON_MAP]:
         show_on_map = True
     else:
@@ -498,6 +511,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         tide_station_distance,
         tide_prediction_duration,
         unit_to_display,
+        mat_plot_transparent_background,
         show_on_map,
         live_position_management,
         live_position_sensor_update_distance,
