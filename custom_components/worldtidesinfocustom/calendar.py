@@ -226,7 +226,9 @@ class TidesCalendarDevice(CalendarEventDevice):
 
     async def async_get_events(self, hass, start_date, end_date):
         """Get all events in a specific time frame."""
-        return await self._event_data.async_get_events(self._main_entity, start_date, end_date)
+        return await self._event_data.async_get_events(
+            self._main_entity, start_date, end_date
+        )
 
 
 class TidesCalendarData:
@@ -298,7 +300,7 @@ class TidesCalendarData:
 
     async def async_update(self, entity):
         """Get the latest data."""
-        #self.event = None
+        # self.event = None
 
         worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
         if worldtide_data_coordinator is None:
