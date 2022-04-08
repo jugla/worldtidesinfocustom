@@ -22,6 +22,7 @@ from .const import (
     CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
     CONF_LIVE_LOCATION_TYPES,
+    CONF_MAT_PLOT_TRANS_BCKGROUND,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_SENSOR_UPDATE_DISTANCE,
@@ -35,6 +36,7 @@ from .const import (
     DEFAULT_CONF_LIVE_LOCATION,
     DEFAULT_CONF_UNIT,
     DEFAULT_DAY_TIDE_PREDICTION,
+    DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -193,6 +195,10 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_UNIT_TYPES
                     ),
                     vol.Optional(
+                        CONF_MAT_PLOT_TRANS_BCKGROUND,
+                        default=DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
+                    ): cv.boolean,
+                    vol.Optional(
                         CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
                     ): vol.In(CONF_LIVE_LOCATION_TYPES),
                     vol.Optional(
@@ -240,6 +246,10 @@ class WorldTidesInfoCustomFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Optional(CONF_UNIT, default=DEFAULT_CONF_UNIT): vol.In(
                         CONF_UNIT_TYPES
                     ),
+                    vol.Optional(
+                        CONF_MAT_PLOT_TRANS_BCKGROUND,
+                        default=DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
+                    ): cv.boolean,
                     vol.Optional(
                         CONF_LIVE_LOCATION, default=DEFAULT_CONF_LIVE_LOCATION
                     ): vol.In(CONF_LIVE_LOCATION_TYPES),
@@ -399,6 +409,16 @@ class WorldTidesInfoCustomOptionsFlowHandler(config_entries.OptionsFlow):
                             ),
                         ),
                     ): cv.string,
+                    vol.Optional(
+                        CONF_MAT_PLOT_TRANS_BCKGROUND,
+                        default=self.config_entry.options.get(
+                            CONF_MAT_PLOT_TRANS_BCKGROUND,
+                            self.config_entry.data.get(
+                                CONF_MAT_PLOT_TRANS_BCKGROUND,
+                                DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
+                            ),
+                        ),
+                    ): cv.boolean,
                     vol.Optional(
                         CONF_SENSOR_UPDATE_DISTANCE,
                         default=self.config_entry.options.get(

@@ -28,6 +28,7 @@ from homeassistant.helpers.update_coordinator import (
 from .const import (
     CONF_DAY_TIDE_PREDICTION,
     CONF_LIVE_LOCATION,
+    CONF_MAT_PLOT_TRANS_BCKGROUND,
     CONF_PLOT_BACKGROUND,
     CONF_PLOT_COLOR,
     CONF_STATION_DISTANCE,
@@ -37,6 +38,7 @@ from .const import (
     DEFAULT_CONF_LIVE_LOCATION,
     DEFAULT_CONF_UNIT,
     DEFAULT_DAY_TIDE_PREDICTION,
+    DEFAULT_MAT_PLOT_TRANS_BCKGROUND,
     DEFAULT_NAME,
     DEFAULT_PLOT_BACKGROUND,
     DEFAULT_PLOT_COLOR,
@@ -144,6 +146,10 @@ def _standardize_config_entry(hass, config_entry):
         entry_updates["data"][CONF_PLOT_BACKGROUND] = DEFAULT_PLOT_BACKGROUND
     if not config_entry.data.get(CONF_UNIT):
         entry_updates["data"][CONF_UNIT] = DEFAULT_CONF_UNIT
+    if not config_entry.data.get(CONF_MAT_PLOT_TRANS_BCKGROUND):
+        entry_updates["data"][
+            CONF_MAT_PLOT_TRANS_BCKGROUND
+        ] = DEFAULT_MAT_PLOT_TRANS_BCKGROUND
     if not config_entry.data.get(CONF_LIVE_LOCATION):
         entry_updates["data"][CONF_LIVE_LOCATION] = DEFAULT_CONF_LIVE_LOCATION
 

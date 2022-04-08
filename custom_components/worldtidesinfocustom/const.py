@@ -62,6 +62,10 @@ CONF_PLOT_COLOR = "plot_color"
 DEFAULT_PLOT_BACKGROUND = "255,255,255"
 CONF_PLOT_BACKGROUND = "plot_background"
 
+# mat plot background
+DEFAULT_MAT_PLOT_TRANS_BCKGROUND = False
+CONF_MAT_PLOT_TRANS_BCKGROUND = "mat_plot_transparent_background"
+
 # www directory
 WWW_PATH = "www"
 

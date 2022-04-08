@@ -18,7 +18,13 @@ class Plot_Manager:
     """Class to manage MatPlotLib"""
 
     def __init__(
-        self, name, duration_type, unit_to_display, tide_prediction_duration, filename
+        self,
+        name,
+        duration_type,
+        unit_to_display,
+        tide_prediction_duration,
+        filename,
+        transparent_background,
     ):
         ### for trace
         self._name = name + duration_type
@@ -26,6 +32,7 @@ class Plot_Manager:
         self._unit_to_display = unit_to_display
         self._tide_prediction_duration = tide_prediction_duration
         self._filename = filename
+        self._transparent_background = transparent_background
 
         convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
             self._unit_to_display
@@ -179,4 +186,4 @@ class Plot_Manager:
             )  # color
 
         # save the figure
-        fig.savefig(self._filename)
+        fig.savefig(self._filename, transparent=self._transparent_background)

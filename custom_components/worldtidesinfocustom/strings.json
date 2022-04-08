@@ -47,6 +47,7 @@
           "plot_color": "plot curve color in comma-separated RGB values",
           "plot_background": "plot curve background color in comma-separated RGB values",
           "unit" : "metric HA imperial",
+          "mat_plot_transparent_background" : "mat plot transparent background (True/False)",
           "live_location" : "location is static or dynamic from_sensor",
           "update_sensor_distance": "distance that sensor shall moved to upate reference tide location",
           "source" : "source id that contains lat/long",
@@ -72,6 +73,7 @@
           "day_tide_prediction" : "tide prediction duration in day",
           "plot_color": "plot curve color in comma-separated RGB values",
           "plot_background": "plot curve background color in comma-separated RGB values",
+          "mat_plot_transparent_background" : "mat plot transparent background (True/False)",
           "update_sensor_distance": "distance that sensor shall moved to upate reference tide location"
         }
       }
