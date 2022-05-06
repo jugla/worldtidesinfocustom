@@ -15,7 +15,11 @@ import requests
 import voluptuous as vol
 
 # HA library
-from homeassistant.components.calendar import PLATFORM_SCHEMA, CalendarEntity, CalendarEvent
+from homeassistant.components.calendar import (
+    PLATFORM_SCHEMA,
+    CalendarEntity,
+    CalendarEvent,
+)
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME, CONF_SOURCE
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.event import async_track_state_change_event
@@ -229,7 +233,9 @@ class TidesCalendarEntity(CalendarEntity):
 
     async def async_update(self):
         """Update all Calendars."""
-        self._worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
+        self._worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(
+            self._name
+        )
         if self._worldtide_data_coordinator is None:
             return
         # the tide info
@@ -264,7 +270,7 @@ class TidesCalendarEntity(CalendarEntity):
             str(tide_datetime),
         )
 
-        event = CalendarEvent (
+        event = CalendarEvent(
             summary=self._name
             + " "
             + str(tide_type)
@@ -282,7 +288,6 @@ class TidesCalendarEntity(CalendarEntity):
         )
 
         self._event = event
-
 
     async def async_get_events(self, hass, start_date, end_date):
         """Get all events in a specific time frame."""
@@ -309,7 +314,7 @@ class TidesCalendarEntity(CalendarEntity):
             tide_height = extrema_data.get("extrema_value")[index]
             tide_type = extrema_data.get("extrema_type")[index]
 
-            event = CalendarEvent (
+            event = CalendarEvent(
                 summary=self._name
                 + " "
                 + str(tide_type)
@@ -323,4 +328,3 @@ class TidesCalendarEntity(CalendarEntity):
             events.append(event)
 
         return events
-
