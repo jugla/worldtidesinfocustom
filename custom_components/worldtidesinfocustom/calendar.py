@@ -15,7 +15,7 @@ import requests
 import voluptuous as vol
 
 # HA library
-from homeassistant.components.calendar import PLATFORM_SCHEMA, CalendarEventDevice
+from homeassistant.components.calendar import PLATFORM_SCHEMA, CalendarEntity, CalendarEvent
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME, CONF_SOURCE
 from homeassistant.helpers.entity_registry import async_get_registry
 from homeassistant.helpers.event import async_track_state_change_event
@@ -55,7 +55,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-def setup_calendar_devices(
+def setup_calendar(
     hass,
     name,
     lat,
@@ -66,9 +66,9 @@ def setup_calendar_devices(
 ):
     """setup calendar"""
     unique_id = worldtidesinfo_unique_id(lat, lon, live_position_management, source)
-    tides_calendar_device = TidesCalendarDevice(hass, name, unique_id, unit_to_display)
+    tides_calendar = TidesCalendarEntity(hass, name, unique_id, unit_to_display)
 
-    return [tides_calendar_device]
+    return [tides_calendar]
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -92,7 +92,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         unit_to_display = METRIC_CONF_UNIT
 
     # what is the unit used
-    tides_calendar_devices = setup_calendar_devices(
+    tides_calendar = setup_calendar(
         hass,
         name,
         lat,
@@ -104,7 +104,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    add_entities(tides_calendar_devices)
+    add_entities(tides_calendar)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -130,7 +130,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     else:
         unit_to_display = METRIC_CONF_UNIT
 
-    tides_calendar_devices = setup_calendar_devices(
+    tides_calendar = setup_calendar(
         hass,
         name,
         lat,
@@ -142,10 +142,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     _LOGGER.debug(f"Launch fetching data available for this location: {name}")
 
-    async_add_entities(tides_calendar_devices)
+    async_add_entities(tides_calendar)
 
 
-class TidesCalendarDevice(CalendarEventDevice):
+class TidesCalendarEntity(CalendarEntity):
     """A device for getting calendar events from entities."""
 
     def __init__(
@@ -164,11 +164,21 @@ class TidesCalendarDevice(CalendarEventDevice):
 
         # unique id  to retrieve sensor name
         self._unique_id = unique_id
-        # entity
-        self._main_entity = None
 
-        # DATA
-        self._event_data = TidesCalendarData(name, unit_to_display)
+        # characteristic for tide server
+        self._unit_to_display = unit_to_display
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
+            self._unit_to_display
+        )
+        self._convert_meter_to_feet = convert_meter_to_feet
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            self._measurement_unit = "ft"
+        else:
+            self._measurement_unit = "m"
+
+        # following update keep event
+        self._worldtide_data_coordinator = None
+        self._event = None
 
     def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
 
@@ -195,9 +205,6 @@ class TidesCalendarDevice(CalendarEventDevice):
         if entity_id_main_sensor is None:
             entity_id_main_sensor = "sensor." + self._name + SENSOR_NEXT_TIDE_SUFFIX
 
-        # for latter usage
-        self._main_entity = entity_id_main_sensor
-
         async_track_state_change_event(
             self._hass,
             [entity_id_main_sensor],
@@ -213,7 +220,7 @@ class TidesCalendarDevice(CalendarEventDevice):
     @property
     def event(self):
         """Return the next upcoming event."""
-        return self._event_data.event
+        return self._event
 
     @property
     def name(self):
@@ -222,92 +229,12 @@ class TidesCalendarDevice(CalendarEventDevice):
 
     async def async_update(self):
         """Update all Calendars."""
-        await self._event_data.async_update(self._main_entity)
-
-    async def async_get_events(self, hass, start_date, end_date):
-        """Get all events in a specific time frame."""
-        return await self._event_data.async_get_events(
-            self._main_entity, start_date, end_date
-        )
-
-
-class TidesCalendarData:
-    """
-    Class used by the Entities Calendar Device service object to handle all entity events.
-    """
-
-    def __init__(
-        self,
-        name,
-        unit_to_display,
-    ):
-        """Initialize an Entities Calendar Project."""
-        self.event = None
-
-        self._name = name
-        self._unit_to_display = unit_to_display
-
-        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
-            self._unit_to_display
-        )
-        self._convert_meter_to_feet = convert_meter_to_feet
-
-        if self._unit_to_display == IMPERIAL_CONF_UNIT:
-            self._measurement_unit = "ft"
-        else:
-            self._measurement_unit = "m"
-
-    async def async_get_events(self, entity, start_date, end_date):
-        """Get all tasks in a specific time frame."""
-        events = []
-
-        worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
-        if worldtide_data_coordinator is None:
-            return events
-
-        # the tide info
-        tide_info = give_info_from_raw_data(
-            worldtide_data_coordinator.get_data().get("current_data")
-        )
-        epoch_frame_min = start_date.timestamp()
-        epoch_frame_max = end_date.timestamp()
-
-        extrema_data = tide_info.give_tide_extrema_within_time_frame(
-            epoch_frame_min, epoch_frame_max
-        )
-
-        for index in range(len(extrema_data.get("extrema_epoch"))):
-            tide_epoch = datetime.fromtimestamp(
-                extrema_data.get("extrema_epoch")[index]
-            )
-            tide_height = extrema_data.get("extrema_value")[index]
-            tide_type = extrema_data.get("extrema_type")[index]
-            event = {
-                "uid": entity,
-                "summary": self._name
-                + " "
-                + str(tide_type)
-                + " "
-                + str(round(tide_height * self._convert_meter_to_feet, ROUND_HEIGTH))
-                + self._measurement_unit,
-                "start": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-                "end": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-                "allDay": False,
-            }
-            events.append(event)
-
-        return events
-
-    async def async_update(self, entity):
-        """Get the latest data."""
-        # self.event = None
-
-        worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
-        if worldtide_data_coordinator is None:
+        self._worldtide_data_coordinator = worldtidesinfo_data_coordinator.get(self._name)
+        if self._worldtide_data_coordinator is None:
             return
         # the tide info
         tide_info = give_info_from_raw_data(
-            worldtide_data_coordinator.get_data().get("current_data")
+            self._worldtide_data_coordinator.get_data().get("current_data")
         )
         if tide_info is None:
             return
@@ -319,13 +246,13 @@ class TidesCalendarData:
         if next_tide_data.get("high_tide_time_epoch") > next_tide_data.get(
             "low_tide_time_epoch"
         ):
-            tide_epoch = datetime.fromtimestamp(
+            tide_datetime = datetime.fromtimestamp(
                 next_tide_data.get("low_tide_time_epoch")
             )
             tide_height = next_tide_data.get("low_tide_height")
             tide_type = "Low"
         else:
-            tide_epoch = datetime.fromtimestamp(
+            tide_datetime = datetime.fromtimestamp(
                 next_tide_data.get("high_tide_time_epoch")
             )
             tide_height = next_tide_data.get("high_tide_height")
@@ -334,21 +261,19 @@ class TidesCalendarData:
         _LOGGER.debug(
             "Tide Calendar %s EpochFound event: %s",
             self._name,
-            str(tide_epoch),
+            str(tide_datetime),
         )
 
-        event = {
-            "uid": entity,
-            "summary": self._name
+        event = CalendarEvent (
+            summary=self._name
             + " "
             + str(tide_type)
             + " "
             + str(round(tide_height * self._convert_meter_to_feet, ROUND_HEIGTH))
             + self._measurement_unit,
-            "start": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-            "end": {"dateTime": tide_epoch.strftime("%Y-%m-%d %H:%M")},
-            "allDay": False,
-        }
+            start=tide_datetime,
+            end=tide_datetime,
+        )
 
         _LOGGER.debug(
             "Tide Calendar %s Found event: %s",
@@ -356,4 +281,46 @@ class TidesCalendarData:
             str(event),
         )
 
-        self.event = event
+        self._event = event
+
+
+    async def async_get_events(self, hass, start_date, end_date):
+        """Get all events in a specific time frame."""
+        events = []
+
+        if self._worldtide_data_coordinator is None:
+            return events
+
+        # the tide info
+        tide_info = give_info_from_raw_data(
+            self._worldtide_data_coordinator.get_data().get("current_data")
+        )
+        epoch_frame_min = start_date.timestamp()
+        epoch_frame_max = end_date.timestamp()
+
+        extrema_data = tide_info.give_tide_extrema_within_time_frame(
+            epoch_frame_min, epoch_frame_max
+        )
+
+        for index in range(len(extrema_data.get("extrema_epoch"))):
+            tide_datetime = datetime.fromtimestamp(
+                extrema_data.get("extrema_epoch")[index]
+            )
+            tide_height = extrema_data.get("extrema_value")[index]
+            tide_type = extrema_data.get("extrema_type")[index]
+
+            event = CalendarEvent (
+                summary=self._name
+                + " "
+                + str(tide_type)
+                + " "
+                + str(round(tide_height * self._convert_meter_to_feet, ROUND_HEIGTH))
+                + self._measurement_unit,
+                start=tide_datetime,
+                end=tide_datetime,
+            )
+
+            events.append(event)
+
+        return events
+
