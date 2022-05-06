@@ -188,6 +188,8 @@ Hereafter an example under lovelace UI
 <p align="center">
   <img src="./doc/picture/RoyanTidesExample.JPG" alt="Size Limit CLI" width="738">
 </p>
+(*NB*: plot_color, plot_background options can be used to change color for plot curve)
+
 
 and a dedicated view on tide amplitude / coeff (over Mean Water Spring) on several days
 
@@ -205,6 +207,7 @@ An example of the camera that plot the current tide height respect to current pr
 <p align="center">
   <img src="./doc/picture/RoyanTidePlot.jpg" alt="Size Limit CLI" width="400">
 </p>
+(*NB*: mat_plot_transparent_background option can be used to have transparent background)
 
 
 Hereafter an example of picture element card under lovelace UI
@@ -212,6 +215,7 @@ Hereafter an example of picture element card under lovelace UI
 <p align="center">
   <img src="./doc/picture/RoyanTidesExample_pictureelement.JPG" alt="Size Limit CLI" width="400">
 </p>
+(*NB*: plot_color, plot_background options can be used to change color for plot curve)
 
 <details><summary>with the source code of the card (please **ADAPT** the name of sensors respect to your case)</summary>
 
@@ -321,7 +325,7 @@ camera_image: camera.royan_tides_curve
 type: picture-elements
 
 ```
-NB: watch out : in the code we use the camera_image keyword and not image
+*NB*: watch out : in the code we use the camera_image keyword and not image
 
 </details>
 
@@ -341,7 +345,7 @@ Hereafter an example of update thanks to a boat tracker :
 - blue : a boat tracker
 - purple : the difference place where tide info has been taken
 
-NB: a boat tracker can be easily given by running HomeAssistant Application on your phone. The application offers to you a tracker with lat/long of your current position.
+*NB*: a boat tracker can be easily given by running HomeAssistant Application on your phone. The application offers to you a tracker with lat/long of your current position.
 
 <p align="center">
   <img src="./doc/picture/BoatTracker.jpg" alt="Size Limit CLI" width="300">
