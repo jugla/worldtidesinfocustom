@@ -1,5 +1,4 @@
 {
   "name": "worldtidesinfocustom",
-  "domains": ["sensor", "camera"],
-  "iot_class": "cloud_polling"
+  "homeassistant" : "2022.4.0"
 }
