@@ -21,7 +21,7 @@ from homeassistant.components.calendar import (
     CalendarEvent,
 )
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, CONF_NAME, CONF_SOURCE
-from homeassistant.helpers.entity_registry import async_get_registry
+from homeassistant.helpers.entity_registry import async_get
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 from pyworldtidesinfo.worldtidesinfo_server import give_info_from_raw_data
@@ -200,7 +200,7 @@ class TidesCalendarEntity(CalendarEntity):
         entity_id_main_sensor = None
 
         # Fetch the name of sensor
-        registry = await async_get_registry(self.hass)
+        registry = async_get(self.hass)
         entity_id_main_sensor = registry.async_get_entity_id(
             "sensor", DOMAIN, self._unique_id + SENSOR_NEXT_TIDE_SUFFIX
         )
