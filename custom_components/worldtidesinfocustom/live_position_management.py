@@ -12,12 +12,12 @@ from homeassistant.const import (
     LENGTH_METERS,
     LENGTH_MILES,
 )
-from homeassistant.util.distance import convert as dist_convert
+from homeassistant.util.unit_conversion import DistanceConverter
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
-KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
-MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
-FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
+KM_PER_MI = DistanceConverter.convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
+MI_PER_KM = DistanceConverter.convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
+FT_PER_M = DistanceConverter.convert(1, LENGTH_METERS, LENGTH_FEET)
 
 # internal function
 from .basic_service import distance_lat_long

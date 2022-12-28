@@ -8,14 +8,14 @@ from homeassistant.const import (
     LENGTH_METERS,
     LENGTH_MILES,
 )
-from homeassistant.util.distance import convert as dist_convert
+from homeassistant.util.unit_conversion import DistanceConverter
 
 # import HA
 
 
-KM_PER_MI = dist_convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
-MI_PER_KM = dist_convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
-FT_PER_M = dist_convert(1, LENGTH_METERS, LENGTH_FEET)
+KM_PER_MI = DistanceConverter.convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
+MI_PER_KM = DistanceConverter.convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
+FT_PER_M = DistanceConverter.convert(1, LENGTH_METERS, LENGTH_FEET)
 
 # import .storage_mngt
 from pyworldtidesinfo.worldtidesinfo_server import (
