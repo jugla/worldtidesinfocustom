@@ -89,7 +89,6 @@ class WorldTidesInfo_server_scheduler:
         key,
         worldtidesinfo_server_parameter,
     ):
-
         self._Server_Parameter = worldtidesinfo_server_parameter
         self._parameter_updated = False
 

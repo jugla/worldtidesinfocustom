@@ -600,7 +600,6 @@ class WorldTidesInfoCustomSensorGeneric(SensorEntity):
 
 class WorldTidesInfoCustomSensorFollower(WorldTidesInfoCustomSensorGeneric):
     def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
-
         # retrieve state
         new_state = event.data.get("new_state")
         if new_state is None:
@@ -1548,7 +1547,6 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             self._live_position_manager.get_live_position_management()
             == FROM_SENSOR_CONF
         ):
-
             _LOGGER.info(
                 "World Tide add listener %s",
                 self._live_position_manager.get_source_id(),

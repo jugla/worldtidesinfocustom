@@ -185,7 +185,6 @@ class TidesCalendarEntity(CalendarEntity):
         self._event = None
 
     def _async_worldtidesinfo_follower_sensor_state_listener(self, event):
-
         # retrieve state
         new_state = event.data.get("new_state")
         if new_state is None:

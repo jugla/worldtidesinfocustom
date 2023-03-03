@@ -63,7 +63,6 @@ class Plot_Manager:
         return relative_time_value
 
     def compute_new_plot(self, data, current_time):
-
         if data is None:
             return
 
