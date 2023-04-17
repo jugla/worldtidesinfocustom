@@ -6,7 +6,7 @@ _LOGGER = logging.getLogger(__name__)
 
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import homeassistant.helpers.config_validation as cv
 
@@ -252,13 +252,13 @@ class TidesCalendarEntity(CalendarEntity):
             "low_tide_time_epoch"
         ):
             tide_datetime = datetime.fromtimestamp(
-                next_tide_data.get("low_tide_time_epoch")
+                next_tide_data.get("low_tide_time_epoch"), tz=timezone.utc
             )
             tide_height = next_tide_data.get("low_tide_height")
             tide_type = "Low"
         else:
             tide_datetime = datetime.fromtimestamp(
-                next_tide_data.get("high_tide_time_epoch")
+                next_tide_data.get("high_tide_time_epoch"), tz=timezone.utc
             )
             tide_height = next_tide_data.get("high_tide_height")
             tide_type = "High"
@@ -308,7 +308,7 @@ class TidesCalendarEntity(CalendarEntity):
 
         for index in range(len(extrema_data.get("extrema_epoch"))):
             tide_datetime = datetime.fromtimestamp(
-                extrema_data.get("extrema_epoch")[index]
+                extrema_data.get("extrema_epoch")[index], tz=timezone.utc
             )
             tide_height = extrema_data.get("extrema_value")[index]
             tide_type = extrema_data.get("extrema_type")[index]
