@@ -6,6 +6,6 @@
   "documentation": "https://github.com/jugla/worldtidesinfocustom",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jugla/worldtidesinfocustom/issues",
-  "requirements": ["matplotlib>=3.4.2","pyworldtidesinfo==3.0.1"],
-  "version" : "12.3.2"
+  "requirements": ["matplotlib","pyworldtidesinfo==3.0.1"],
+  "version" : "12.3.3"
 }
