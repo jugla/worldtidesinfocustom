@@ -2,7 +2,11 @@
 import time
 
 # matplot lib
-from matplotlib import pyplot as plt
+try:
+    from matplotlib import pyplot as plt
+    MATPLOTLIB_AVAILABLE = True
+except:
+    MATPLOTLIB_AVAILABLE = False
 
 # from component
 from pyworldtidesinfo.worldtidesinfo_server import give_info_from_raw_data
@@ -63,6 +67,9 @@ class Plot_Manager:
         return relative_time_value
 
     def compute_new_plot(self, data, current_time):
+        if not MATPLOTLIB_AVAILABLE:
+            return
+
         if data is None:
             return
 
