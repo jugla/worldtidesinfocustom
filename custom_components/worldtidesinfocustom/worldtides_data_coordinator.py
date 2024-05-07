@@ -8,18 +8,14 @@ import time
 from datetime import datetime, timedelta
 
 # HA library
-from homeassistant.const import (
-    LENGTH_FEET,
-    LENGTH_KILOMETERS,
-    LENGTH_METERS,
-    LENGTH_MILES,
-)
+from homeassistant.const import UnitOfLength
+
 from homeassistant.util.unit_conversion import DistanceConverter
 from homeassistant.util.unit_system import IMPERIAL_SYSTEM
 
-KM_PER_MI = DistanceConverter.convert(1, LENGTH_MILES, LENGTH_KILOMETERS)
-MI_PER_KM = DistanceConverter.convert(1, LENGTH_KILOMETERS, LENGTH_MILES)
-FT_PER_M = DistanceConverter.convert(1, LENGTH_METERS, LENGTH_FEET)
+KM_PER_MI = DistanceConverter.convert(1, UnitOfLength.MILES, UnitOfLength.KILOMETERS)
+MI_PER_KM = DistanceConverter.convert(1, UnitOfLength.KILOMETERS, UnitOfLength.MILES)
+FT_PER_M = DistanceConverter.convert(1, UnitOfLength.METERS, UnitOfLength.FEET)
 
 from pyworldtidesinfo.worldtidesinfo_server import (
     PLOT_CURVE_UNIT_FT,
