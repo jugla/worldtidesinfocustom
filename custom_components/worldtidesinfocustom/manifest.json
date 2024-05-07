@@ -7,5 +7,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jugla/worldtidesinfocustom/issues",
   "requirements": ["pyworldtidesinfo==3.0.1"],
-  "version" : "13.0.0"
+  "version" : "13.1.0"
 }
