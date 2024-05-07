@@ -11,6 +11,7 @@ This component is used to retrieve tide information for a dedicated location (al
 This component allows to :
 - display the tide curve (height)
 - give the current height
+- give a forcast height (1 hour)
 - give the next tide
 - give tide tendancy, amplitude
 - display location on default map
@@ -399,6 +400,7 @@ The platform create several sensors (name given in UI/configuration.yaml).
 |-------------------|-----------|--------|------|---------------------------------------------------------------------------------------------------------|
 | NAME given in configuration.yaml  (e.g. royan_tides)    |  v1.0.0 |  strings | **HA local time**  | gives the next tide low or high with HA local time     |
 | NAME_current_tide_height      |  v4.0.0 |  float | m/ft  | gives the current height      |
+| NAME_forecast_tide_height     |  v13.1.0 |  float | m/ft  | gives the forecast height (1 hour)      |
 | NAME_next_high_tide_height    |  v4.0.0 |  float | m/ft  | gives the next high tide height      |
 | NAME_next_low_tide_height     |  v4.0.0 |  float | m/ft  | gives the next low tide height       |
 | NAME_credit_used              |  v4.1.0 |  int   | N/A   | gives instantaneous credit used (due to worldtides info request)     |
