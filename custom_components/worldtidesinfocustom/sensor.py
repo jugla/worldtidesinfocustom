@@ -89,6 +89,8 @@ from .const import (
     SENSOR_CURRENT_TIDE_AMPLITUDE_SUFFIX,
     SENSOR_CURRENT_TIDE_COEFF_RESP_MWS_SUFFIX,
     SENSOR_CURRENT_TIDE_HEIGHT_SUFFIX,
+    SENSOR_FORECAST_TIDE_DURATION,
+    SENSOR_FORECAST_TIDE_HEIGHT_SUFFIX,
     SENSOR_GLOBAL_CREDIT_USED_SUFFIX,
     SENSOR_NEXT_HIGH_TIDE_HEIGHT_SUFFIX,
     SENSOR_NEXT_HIGH_TIDE_TIME_SUFFIX,
@@ -246,6 +248,17 @@ def setup_sensor(
         unique_id,
     )
 
+    # create forecast height
+    tides_forecast_height = WorldTidesInfoCustomSensorForecastHeight(
+        hass,
+        name,
+        unit_to_display,
+        show_on_map,
+        worldtide_data_coordinator,
+        live_position_manager,
+        unique_id,
+    )
+
     # next tide
     tides_next_low_tide_height = WorldTidesInfoCustomSensorNextLowTideHeight(
         hass,
@@ -353,6 +366,7 @@ def setup_sensor(
     return [
         tides,
         tides_current_height,
+        tides_forecast_height,
         tides_next_low_tide_height,
         tides_next_low_tide_time,
         tides_next_high_tide_height,
@@ -692,6 +706,86 @@ class WorldTidesInfoCustomSensorCurrentHeight(WorldTidesInfoCustomSensorFollower
         tide_info = get_tide_info(self._worldtide_data_coordinator)
         # The height
         return current_height_state(tide_info, current_time, convert_meter_to_feet)
+
+
+class WorldTidesInfoCustomSensorForecastHeight(WorldTidesInfoCustomSensorFollower):
+    """Representation of a WorldTidesInfo sensor."""
+
+    @property
+    def icon(self):
+        """return icon tendancy"""
+        current_time = time.time()
+        forecast_time = current_time + SENSOR_FORECAST_TIDE_DURATION
+        # the tide info
+        tide_info = get_tide_info(self._worldtide_data_coordinator)
+        return icon_tendancy(tide_info, forecast_time)
+
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return self._name + SENSOR_FORECAST_TIDE_HEIGHT_SUFFIX
+
+    @property
+    def unique_id(self):
+        return self._unique_id + SENSOR_FORECAST_TIDE_HEIGHT_SUFFIX
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit the value is expressed in."""
+        if self._unit_to_display == IMPERIAL_CONF_UNIT:
+            return "ft"
+        else:
+            return "m"
+
+    @property
+    def state_class(self):
+        """Return the state class for long term statistics."""
+        _LOGGER.debug(
+            "StateClass Tides sensor %s %s", self._name, SensorStateClass.MEASUREMENT
+        )
+        return SensorStateClass.MEASUREMENT
+
+    @property
+    def extra_state_attributes(self):
+        """Return the state attributes of this device."""
+        attr = {ATTR_ATTRIBUTION: ATTRIBUTION}
+        current_time = time.time()
+        forecast_time = current_time + SENSOR_FORECAST_TIDE_DURATION
+
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
+            self._unit_to_display
+        )
+
+        # Unit system
+        attr.update(give_unit_attribute(self._unit_to_display))
+
+        # the tide info
+        tide_info = get_tide_info(self._worldtide_data_coordinator)
+        # The height
+        attr.update(
+            current_height_attribute(tide_info, forecast_time, convert_meter_to_feet)
+        )
+
+        #forecast duration in hour
+        attr["forecast_duration_in_hour"] = SENSOR_FORECAST_TIDE_DURATION/60/60
+
+        return attr
+
+    @property
+    def native_value(self):
+        """Return the state of the device."""
+
+        current_time = time.time()
+        forecast_time = current_time + SENSOR_FORECAST_TIDE_DURATION
+        convert_meter_to_feet, convert_km_to_miles = convert_to_perform(
+            self._unit_to_display
+        )
+
+        # the tide info
+        tide_info = get_tide_info(self._worldtide_data_coordinator)
+        # The height
+        return current_height_state(tide_info, forecast_time, convert_meter_to_feet)
 
 
 class WorldTidesInfoCustomSensorNextLowTideHeight(WorldTidesInfoCustomSensorFollower):
