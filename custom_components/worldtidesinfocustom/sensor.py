@@ -1667,7 +1667,8 @@ class WorldTidesInfoCustomSensor(RestoreEntity, WorldTidesInfoCustomSensorGeneri
             # self.schedule_update_ha_state(force_refresh=True)
 
         current_time = time.time()
-        self._worldtide_data_coordinator.check_if_tide_file_exist_for_init(current_time)
+        # self._worldtide_data_coordinator.check_if_tide_file_exist_for_init(current_time)
+        await self._hass.async_add_executor_job(self._worldtide_data_coordinator.check_if_tide_file_exist_for_init, current_time)
 
         self.schedule_update_ha_state(force_refresh=True)
 
